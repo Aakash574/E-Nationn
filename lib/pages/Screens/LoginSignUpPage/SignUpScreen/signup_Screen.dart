@@ -1,11 +1,11 @@
 // ignore_for_file: use_build_context_synchronously, file_names, avoid_print
 
-import 'package:enationn/Api/constant_Api.dart';
+import 'package:enationn/ApiMap/APIs/UserEndPoints/loginAPI.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Screens/FormOFSignIn/apple_Sign_In.dart';
 import 'package:enationn/pages/Screens/FormOFSignIn/google_Sign_In.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/login_Screen.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/signup_Screen_Two.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_Screen.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/SignUpScreen/signup_Screen_Two.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -115,7 +115,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         onChanged: (value) {
                           setState(() {
-                            email = value;
+                            email = value.toLowerCase();
                           });
                         },
                       ),
@@ -188,16 +188,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: TextButton(
                     onPressed: () async {
                       // print(await ApiClient.getUserData(_emailController.text));
-                      if (await ApiClient()
+                      if (await LoginApiClient()
                               .getUserData(_emailController.text) !=
                           true) {
                         if (_emailController.text.isNotEmpty &
                                 _passwordController.text.isNotEmpty &&
                             _fullNameController.text.isNotEmpty) {
-                          await ApiClient().loginPostData(
-                            _emailController.text,
-                            _passwordController.text,
-                          );
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -215,14 +211,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         print("User Founded");
                         setState(() {
                           isUserFound = true;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return const LoginScreen();
-                              },
-                            ),
-                          );
                         });
                       }
                     },

@@ -1,10 +1,8 @@
 // ignore_for_file: file_names, use_build_context_synchronously, avoid_print
 
-import 'package:enationn/Api/constant_Api.dart';
+import 'package:enationn/ApiMap/APIs/UserEndPoints/passkeyAPI.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Screens/ExtraScreens/thankyou_Screen.dart';
-import 'package:enationn/pages/Screens/ExtraScreens/welcome_Screen.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/signup_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -169,8 +167,9 @@ class _PaymentPassCodeScreenState extends State<PaymentPassCodeScreen> {
               onTap: () async {
                 print("Nothin");
                 if (pinCode.length == 5 &&
-                    await ApiClient().passkey(pinCode.join("")) == true) {
-                  Navigator.push(
+                    await PasskeyApiClient().passkey(pinCode.join("")) ==
+                        true) {
+                  Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
                       builder: (context) {
@@ -178,6 +177,7 @@ class _PaymentPassCodeScreenState extends State<PaymentPassCodeScreen> {
                         return const ThankyouScreen();
                       },
                     ),
+                    (route) => false,
                   );
                 } else {
                   setState(() {

@@ -1,12 +1,13 @@
-// ignore_for_file: prefer_const_constructors, file_names
+// ignore_for_file: file_names
 
+import 'package:enationn/Provider/basicVariablesProvider.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Screens/PassCodeScreen/pass_Code_Screen.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/login_Screen.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/signup_Screen.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 class LoginSignupScreen extends StatefulWidget {
   const LoginSignupScreen({super.key});
@@ -18,16 +19,17 @@ class LoginSignupScreen extends StatefulWidget {
 class _LoginSignupScreenState extends State<LoginSignupScreen> {
   @override
   Widget build(BuildContext context) {
+    final screen = Provider.of<BasicVariableModel>(context);
     final size = MediaQuery.of(context).size;
     return Material(
       child: Container(
-        margin: EdgeInsets.all(24),
+        margin: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Container(
               height: size.height / 3,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   scale: 50,
                   image: AssetImage(
@@ -46,7 +48,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                     Colors.black,
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Text(
                   "Mentors on Prener will help you achieve your most ambitious goals. Come on, let’s smash them together!",
                   style: GoogleFonts.inter(
@@ -70,11 +72,14 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                   highlightColor: Colors.transparent,
                   // autofocus: false,
                   onTap: () {
+                    setState(() {
+                      screen.setWhichScreen("SignUpScreen");
+                    });
                     Navigator.push(
                       context,
                       PageTransition(
                         type: PageTransitionType.rightToLeft,
-                        child: PassCodeScreen(),
+                        child: const PassCodeScreen(),
                         inheritTheme: true,
                         ctx: context,
                       ),
@@ -88,7 +93,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                       borderRadius: BorderRadius.circular(50),
                       color: MyColors.primaryColor,
                     ),
-                    child: Text(
+                    child: const Text(
                       "Sign Up",
                       style: TextStyle(
                         color: Colors.white,
@@ -98,7 +103,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 InkWell(
                   customBorder: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
@@ -112,7 +117,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                       context,
                       PageTransition(
                         type: PageTransitionType.rightToLeft,
-                        child: LoginScreen(),
+                        child: const LoginScreen(),
                         inheritTheme: true,
                         ctx: context,
                       ),

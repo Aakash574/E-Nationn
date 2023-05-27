@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
-import 'package:enationn/pages/Screens/ExtraScreens/premuim_Plan_Screen_Details.dart';
+import 'package:enationn/pages/Screens/PaymentScreens/premuim_Plan_Screen_Details.dart';
 import 'package:enationn/pages/Screens/Dashboard/dashboard.dart';
-import 'package:enationn/pages/Screens/EventScreens/main_Event_Screen.dart';
+import 'package:enationn/pages/Screens/MainEventScreens/main_Event_Screen.dart';
 import 'package:enationn/pages/Screens/Profile/profile_Screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

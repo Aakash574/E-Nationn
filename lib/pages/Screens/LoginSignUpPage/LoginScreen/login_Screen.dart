@@ -1,14 +1,19 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, use_build_context_synchronously, avoid_print
 
-import 'package:enationn/Api/constant_Api.dart';
+import 'package:enationn/ApiMap/APIs/UserEndPoints/loginAPI.dart';
+import 'package:enationn/Provider/basicVariablesProvider.dart';
+import 'package:enationn/Provider/loginProvider.dart';
 import 'package:enationn/const.dart';
+import 'package:enationn/pages/Customs/shared_Pref.dart';
 import 'package:enationn/pages/Screens/PassCodeScreen/pass_Code_Screen.dart';
 import 'package:enationn/pages/Screens/FormOFSignIn/apple_Sign_In.dart';
 import 'package:enationn/pages/Screens/FormOFSignIn/google_Sign_In.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/forget_Password_Screen.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/signup_Screen.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/SignUpScreen/signup_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
+
+import '../ForgetScreen/forget_Password_Screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,8 +23,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   var _userName = "";
   var _password = "";
@@ -27,12 +32,33 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isVisible = false;
   bool isfound = false;
 
-  // API Call for User Fetch----------------------->
+  // Stay Login --------------------------->
+
+  void _onLoginButtonPressed() async {
+    // int id = ;
+    String email = _emailController.text;
+    String password = _passwordController.text;
+    // log(id.toString());
+    // Authenticate the user and save the credentials if successful
+    bool isAuthenticated = await authenticateUser(context, email, password);
+
+    if (isAuthenticated) {
+      // await saveUserCredentials(id, email, password, true);
+      // Navigate to the home screen
+      Navigator.pushReplacementNamed(
+          context, '/lib/pages/Screens/Dashboard/dashboard.dart');
+    } else {
+      // Show an error message
+      // _showErrorDialog();``
+      print("user logged Out");
+    }
+  }
 
   final formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
+    final model = Provider.of<LoginScreenModel>(context);
+    final basicVariables = Provider.of<BasicVariableModel>(context);
     final size = MediaQuery.of(context).size;
     return Material(
       color: Colors.white,
@@ -107,10 +133,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Color(0xff9CA3AF),
                           ),
                         ),
-                        controller: emailController,
+                        controller: _emailController,
                         onChanged: (value) {
                           setState(() {
                             _userName = value;
+                            model.setEmail(_userName);
                           });
                         },
                       ),
@@ -137,10 +164,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   color: Color(0xff9CA3AF),
                                 ),
                               ),
-                              controller: passwordController,
+                              controller: _passwordController,
                               onChanged: (value) {
                                 setState(() {
                                   _password = value;
+                                  model.setPassword(_password);
                                 });
                               },
                             ),
@@ -170,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return const ForgetPassworScreen();
+                              return const ForgetPasswordScreen();
                             },
                           ),
                         );
@@ -199,8 +227,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 child: TextButton(
                   onPressed: () async {
-                    if (await ApiClient().login(_userName, _password) == true) {
+                    if (await LoginApiClient().login(_userName, _password) ==
+                        true) {
                       setState(() {
+                        _onLoginButtonPressed();
+                        basicVariables.setWhichScreen("LoginScreen");
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(

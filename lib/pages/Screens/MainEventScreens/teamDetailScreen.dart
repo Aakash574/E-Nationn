@@ -1,11 +1,14 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, must_be_immutable
 
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/PaymentScreens/hackathon_Payment_Screen.dart';
+import 'package:enationn/pages/Screens/PaymentScreens/Payment_Screen.dart';
 import 'package:flutter/material.dart';
 
 class TeamDetailScreen extends StatefulWidget {
-  const TeamDetailScreen({super.key});
+  final int index;
+  List hackathonDetails;
+  TeamDetailScreen(
+      {super.key, required this.index, required this.hackathonDetails});
 
   @override
   State<TeamDetailScreen> createState() => _TeamDetailScreenState();
@@ -43,9 +46,9 @@ class _TeamDetailScreenState extends State<TeamDetailScreen> {
                       },
                     ),
                   ),
-                  const Text(
-                    "Apply",
-                    style: TextStyle(
+                  Text(
+                    widget.hackathonDetails[widget.index]['name'],
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -232,11 +235,17 @@ class _TeamDetailScreenState extends State<TeamDetailScreen> {
                 ),
                 child: TextButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) {
-                        return const HackathonPaymentScreen();
-                      },
-                    ));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return PaymentScreen(
+                            details: widget.hackathonDetails,
+                            index: widget.index,
+                          );
+                        },
+                      ),
+                    );
                   },
                   style:
                       const ButtonStyle(splashFactory: NoSplash.splashFactory),

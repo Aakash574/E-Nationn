@@ -15,13 +15,14 @@ class _ThankyouScreenState extends State<ThankyouScreen> {
     Future.delayed(
       const Duration(milliseconds: 1000),
       () {
-        Navigator.push(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (context) {
               return const HomeScreen();
             },
           ),
+          (route) => false,
         );
       },
     );
