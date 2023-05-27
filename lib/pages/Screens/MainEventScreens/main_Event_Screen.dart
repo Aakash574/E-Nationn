@@ -1,15 +1,15 @@
 // ignore_for_file: file_names
 
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/EventScreens/event_Screen.dart';
-import 'package:enationn/pages/Screens/EventScreens/workShop_Screen.dart';
+import 'package:enationn/pages/Screens/MainEventScreens/EventScreens/event_Screen.dart';
+import 'package:enationn/pages/Screens/MainEventScreens/InternShipScreens/internShip_Screen.dart';
 import 'package:flutter/material.dart';
 
-import 'hackathon_Screen.dart';
+import 'HackthonScreens/hackathon_Screen.dart';
 
 enum CategoriesSections {
   hackathon,
-  workshop,
+  internship,
   event,
 }
 
@@ -31,7 +31,8 @@ class _MainEventScreenState extends State<MainEventScreen> {
           image: DecorationImage(
             alignment: Alignment.topCenter,
             image: AssetImage(
-                "assets/PaymentScreenImg/paymentScreenBackground.png"),
+              "assets/PaymentScreenImg/paymentScreenBackground.png",
+            ),
             fit: BoxFit.cover,
           ),
         ),
@@ -45,28 +46,20 @@ class _MainEventScreenState extends State<MainEventScreen> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                border: Border.all(width: 1.5, color: Colors.white),
+                color: Colors.white,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                 ),
-                color: Colors.white,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: const Text(
-                      "Categories",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  MyFont().fontSize18Bold("Categories", Colors.black),
+                  const SizedBox(height: 15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -83,14 +76,14 @@ class _MainEventScreenState extends State<MainEventScreen> {
                         },
                       ),
                       CategorySectionButton(
-                        sectionName: "Workshop",
+                        sectionName: "Internship",
                         sectionColor: MyColors.secondaryColor,
-                        isActive: activeSection == CategoriesSections.workshop
+                        isActive: activeSection == CategoriesSections.internship
                             ? true
                             : false,
                         onTap: () {
                           setState(() {
-                            activeSection = CategoriesSections.workshop;
+                            activeSection = CategoriesSections.internship;
                           });
                         },
                       ),
@@ -113,15 +106,15 @@ class _MainEventScreenState extends State<MainEventScreen> {
             ),
             Expanded(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
                 color: Colors.white,
+                // padding: EdgeInsets.all(10),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
                       if (activeSection == CategoriesSections.hackathon)
                         const HackathonScreen(),
-                      if (activeSection == CategoriesSections.workshop)
-                        const WorkShopScreen(),
+                      if (activeSection == CategoriesSections.internship)
+                        const InternShipScreen(),
                       if (activeSection == CategoriesSections.event)
                         const EventScreen(),
                     ],

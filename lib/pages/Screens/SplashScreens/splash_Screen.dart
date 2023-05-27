@@ -1,7 +1,9 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_print
 
+import 'package:enationn/app.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/loginSignupPage.dart';
+import 'package:enationn/pages/Customs/shared_Pref.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_SignUp_Page.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,26 +14,43 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  sendToNextScreen() {
-    Future.delayed(
-      const Duration(milliseconds: 500),
-      () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return const LoginSignupScreen();
-            },
-          ),
-        );
-      },
-    );
+  sendToNextScreen() async {
+    bool isUserLoggedIn = await getIsUserLoggedIn();
+    print(isUserLoggedIn);
+    if (isUserLoggedIn) {
+      Future.delayed(
+        const Duration(milliseconds: 2000),
+        () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return const HomeScreen();
+              },
+            ),
+          );
+        },
+      );
+    } else {
+      Future.delayed(
+        const Duration(milliseconds: 1000),
+        () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return const LoginSignupScreen();
+              },
+            ),
+            (route) => false,
+          );
+        },
+      );
+    }
   }
 
   @override
   void initState() {
-    // ignore: todo
-    // TODO: implement initState
     super.initState();
     sendToNextScreen();
   }

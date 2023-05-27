@@ -1,8 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:enationn/Api/constant_Api.dart';
+import 'dart:developer';
+
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/ExtraScreens/plan_Screen.dart';
+import 'package:enationn/pages/Customs/shared_Pref.dart';
+import 'package:enationn/pages/Screens/PaymentScreens/plan_Screen.dart';
 import 'package:enationn/pages/Screens/PopScreens/subscribe_Pop_Up.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -57,6 +59,17 @@ class _DashboardState extends State<Dashboard> {
   final keyIsFirstLoaded = 'is_first_loaded';
   String userName = "";
 
+  //User Logged In ------------------------------>
+
+  void _checkLoginStatus() async {
+    final credentials = await getUserCredentials();
+    if (credentials['email'] == null || credentials['password'] == null) {
+      Navigator.pushReplacementNamed(context, '/login');
+    } else {}
+  }
+
+  // Subscribe Dialog --------------------------------->
+
   void _scaleDialog() {
     showGeneralDialog(
       context: context,
@@ -83,20 +96,23 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  void showDetails() async {
-    userName = await ApiClient().getSpecificUserDetails(
-      "sanjeevpal018@gmail.com",
-      "name",
-    );
+  Future<void> showDetails() async {
+    final loginCredentials = await getUserCredentials();
+    log(loginCredentials.toString());
+    final userData = await getUserData(loginCredentials['id']);
+    userName = userData['full_name'];
+    log(userData['email']);
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    setState(() {
-      showDialog();
-      showDetails();
-    });
+
+    showDialog();
+    showDetails();
+    _checkLoginStatus();
+    setState(() {});
   }
 
   @override
@@ -133,16 +149,21 @@ class _DashboardState extends State<Dashboard> {
                           children: [
                             MyFont().fontSize14Light("Hii,", Colors.white),
                             const SizedBox(height: 5),
-                            MyFont().fontSize16Bold(userName, Colors.white),
+                            MyFont().fontSize16Bold(
+                              userName,
+                              Colors.white,
+                            ),
                           ],
                         )
                       ],
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
-                        color: MyColors.secondaryColor.withOpacity(0.5),
+                        color: Colors.red.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Row(
@@ -158,13 +179,13 @@ class _DashboardState extends State<Dashboard> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return PlanScreen();
+                                    return const PlanScreen();
                                   },
                                 ),
                               );
                             },
                             child: MyFont().fontSize16Bold(
-                              "Premium",
+                              "Not Active",
                               MyColors.secondaryColor,
                             ),
                           ),

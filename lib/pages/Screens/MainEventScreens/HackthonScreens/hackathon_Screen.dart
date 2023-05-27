@@ -1,11 +1,262 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, must_be_immutable
 
+import 'dart:developer';
+
+import 'package:enationn/ApiMap/APIs/EventEndPoints/hackathonAPI.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/HackthonScreens/teamDetailScreen.dart';
+import 'package:enationn/pages/Screens/MainEventScreens/teamDetailScreen.dart';
 import 'package:flutter/material.dart';
 
+class HackathonScreen extends StatefulWidget {
+  const HackathonScreen({super.key});
+
+  @override
+  State<HackathonScreen> createState() => _HackathonScreenState();
+}
+
+class _HackathonScreenState extends State<HackathonScreen> {
+  String image = "";
+  String name = "";
+  String dateOfHackathon = "";
+  String lastDateOfHackathon = "";
+
+  List<dynamic> hackathonEventDetails = [];
+
+  void hackathonDetails() async {
+    hackathonEventDetails = await HackathonApiClient().getHackathonDetails();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    hackathonDetails();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return Material(
+      color: Colors.white,
+      child: SizedBox(
+        height: size.height,
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: ListView.builder(
+                itemCount: hackathonEventDetails.length,
+                padding: EdgeInsets.zero,
+                itemBuilder: (context, index) => ListTile(
+                  // contentPadding: EdgeInsetsGeometry(),
+                  title: InkWell(
+                    onTap: () {
+                      log(index.toString());
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) {
+                            return HackathonDetailsScreen(
+                              index: index,
+                              hackathon: hackathonEventDetails,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    child: hackathonCardView(
+                      size,
+                      "hackathonScreen",
+                      hackathonEventDetails[index]['name'],
+                      hackathonEventDetails[index]['date_of_hackathon']
+                          .toString()
+                          .substring(0, 2),
+                      hackathonEventDetails[index]['apply_status'] == "yes"
+                          ? "Applied"
+                          : "Not Applied",
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Container hackathonCardView(
+    Size size,
+    String image,
+    String name,
+    String date,
+    String isApply,
+  ) {
+    return Container(
+      width: size.width,
+      margin: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        color: MyColors.primaryColor.withOpacity(0.05),
+      ),
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Stack(
+              children: [
+                Image.asset(
+                  "assets/ExtrasScreens/$image.png",
+                  fit: BoxFit.cover,
+                ),
+                Row(
+                  children: [
+                    Container(
+                      width: 45,
+                      height: 45,
+                      margin: const EdgeInsets.all(12),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: MyColors.lightGreyColor.withOpacity(0.9),
+                      ),
+                      child: Text(
+                        date,
+                        style: TextStyle(
+                          color: MyColors.primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      width: 30,
+                      height: 30,
+                      margin: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(7),
+                        color: MyColors.lightGreyColor.withOpacity(0.9),
+                      ),
+                      child: Icon(
+                        Icons.bookmark,
+                        color: MyColors.primaryColor,
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.all(5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 5),
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Stack(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(left: 30),
+                          child: CircleAvatar(
+                            radius: 12,
+                            backgroundColor: MyColors.tealGreenColor,
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(left: 15),
+                          child: const CircleAvatar(
+                            radius: 12,
+                            backgroundColor: Colors.white,
+                          ),
+                        ),
+                        const CircleAvatar(
+                          radius: 12,
+                          backgroundColor: Colors.red,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 10),
+                    const Text(
+                      "+20 Teams",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xff3F38DD),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_on_rounded,
+                      size: 18,
+                      color: const Color(0xff2B2849).withOpacity(0.5),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      "CRTD Technologies",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: const Color(0xff2B2849).withOpacity(0.5),
+                        // fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const Spacer(),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          isApply,
+                          style: TextStyle(
+                            color: isApply == "Applied"
+                                ? MyColors.tealGreenColor
+                                : Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// On tap of Hackathon Card ------------>
+
 class HackathonDetailsScreen extends StatefulWidget {
-  const HackathonDetailsScreen({super.key});
+  int index;
+  List hackathon;
+  HackathonDetailsScreen({
+    super.key,
+    required this.index,
+    required this.hackathon,
+  });
 
   @override
   State<HackathonDetailsScreen> createState() => _HackathonDetailsScreenState();
@@ -22,7 +273,6 @@ class _HackathonDetailsScreenState extends State<HackathonDetailsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Stack(
-              // alignment: Alignment.center,
               children: [
                 Container(
                   height: 262,
@@ -102,7 +352,8 @@ class _HackathonDetailsScreenState extends State<HackathonDetailsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     MyFont().fontSize16Bold(
-                                      "14 April, 2023",
+                                      widget.hackathon[widget.index]
+                                          ['date_of_hackathon'],
                                       Colors.black,
                                     ),
                                     const SizedBox(height: 5),
@@ -207,7 +458,8 @@ class _HackathonDetailsScreenState extends State<HackathonDetailsScreen> {
                                     ),
                                     const SizedBox(height: 5),
                                     MyFont().fontSize14Weight500(
-                                      "20 Mar 2023",
+                                      widget.hackathon[widget.index]
+                                          ['last_date_to_apply'],
                                       MyColors.lightGreyColor,
                                     ),
                                   ],
@@ -230,7 +482,7 @@ class _HackathonDetailsScreenState extends State<HackathonDetailsScreen> {
                                     ),
                                     const SizedBox(height: 5),
                                     MyFont().fontSize14Weight500(
-                                      "RS-XXX",
+                                      widget.hackathon[widget.index]['charge'],
                                       MyColors.lightGreyColor,
                                     ),
                                   ],
@@ -269,7 +521,10 @@ class _HackathonDetailsScreenState extends State<HackathonDetailsScreen> {
                           onPressed: () {
                             Navigator.push(context, MaterialPageRoute(
                               builder: (context) {
-                                return const TeamDetailScreen();
+                                return TeamDetailScreen(
+                                  index: widget.index,
+                                  hackathonDetails: widget.hackathon,
+                                );
                               },
                             ));
                           },

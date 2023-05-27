@@ -1,17 +1,28 @@
-import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/PassCodeScreen/payment_Pass_Code_Screen.dart';
-import 'package:flutter/material.dart';
+// ignore_for_file: must_be_immutable, prefer_const_constructors, file_names
 
-class HackathonPaymentScreen extends StatefulWidget {
-  const HackathonPaymentScreen({super.key});
+import 'package:enationn/Provider/basicVariablesProvider.dart';
+import 'package:enationn/const.dart';
+import 'package:enationn/pages/Screens/PassCodeScreen/pass_Code_Screen.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class PaymentScreen extends StatefulWidget {
+  final int index;
+  List details;
+  PaymentScreen({
+    super.key,
+    required this.index,
+    required this.details,
+  });
 
   @override
-  State<HackathonPaymentScreen> createState() => _HackathonPaymentScreenState();
+  State<PaymentScreen> createState() => _PaymentScreenState();
 }
 
-class _HackathonPaymentScreenState extends State<HackathonPaymentScreen> {
+class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
+    final screen = Provider.of<BasicVariableModel>(context);
     final size = MediaQuery.of(context).size;
     return Material(
       child: SizedBox(
@@ -59,9 +70,9 @@ class _HackathonPaymentScreenState extends State<HackathonPaymentScreen> {
                           "assets/PaymentScreenImg/paymentLogo.png",
                           scale: 2,
                         ),
-                        const Text(
-                          "Code Hackathon",
-                          style: TextStyle(
+                        Text(
+                          widget.details[widget.index]['name'],
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -77,9 +88,9 @@ class _HackathonPaymentScreenState extends State<HackathonPaymentScreen> {
                           ),
                         ),
                         const SizedBox(height: 80),
-                        const Text(
-                          "RS-999",
-                          style: TextStyle(
+                        Text(
+                          "₹${widget.details[widget.index]['charge']}",
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -93,9 +104,9 @@ class _HackathonPaymentScreenState extends State<HackathonPaymentScreen> {
                             borderRadius: BorderRadius.circular(12),
                             color: Colors.white.withOpacity(0.2),
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: const [
+                            children: [
                               Icon(
                                 Icons.warning_amber_rounded,
                                 color: Colors.white,
@@ -217,17 +228,20 @@ class _HackathonPaymentScreenState extends State<HackathonPaymentScreen> {
                     ),
                     child: TextButton(
                       onPressed: () {
-                        Navigator.push(
+                        screen.setWhichScreen("PaymentScreen");
+                        Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return const PaymentPassCodeScreen();
+                              return const PassCodeScreen();
                             },
                           ),
+                          (route) => false,
                         );
                       },
                       style: const ButtonStyle(
-                          splashFactory: NoSplash.splashFactory),
+                        splashFactory: NoSplash.splashFactory,
+                      ),
                       child: const Text(
                         "Proceed to Pay",
                         style: TextStyle(

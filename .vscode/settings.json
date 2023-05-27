@@ -2,9 +2,11 @@
     "cSpell.words": [
         "cupertino",
         "enationn",
-        "razorpay"
+        "razorpay",
+        "signupkey"
     ],
     "githubPullRequests.ignoredPullRequestBranches": [
         "main"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
