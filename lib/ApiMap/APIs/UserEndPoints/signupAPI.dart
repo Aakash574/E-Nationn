@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, file_names
+// ignore_for_file: use_build_context_synchronously, file_names, avoid_print
 
 import 'dart:convert';
 import 'dart:developer';
@@ -90,10 +90,11 @@ class SignUpApiClient {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
+    log("Email : $email");
+    log("Choose : $choose");
     final userData = await jsonDecode(response.body);
-    // log(userData.toString());
     for (var i = 0; i < userData.length; i++) {
-      if (userData[i]['email'] == email) {
+      if (await userData[i]['email'] == email) {
         switch (choose) {
           case 'id':
             return userData[i]['id'].toString();
@@ -127,10 +128,45 @@ class SignUpApiClient {
 
           default:
         }
-        // return userData[i]['id'];
       }
     }
     return "0";
-    // log(userData[2]['email']);
+  }
+
+  Future<bool> updatePassword(String newPassword, String userId) async {
+    log(userId);
+    final url =
+        Uri.parse('http://13.232.155.227:8000/account/api/Signup/$userId/');
+
+    // Create the request body as a JSON object
+    final requestBody = jsonEncode({
+      'password': newPassword,
+    });
+
+    try {
+      final response = await http.patch(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: requestBody,
+      );
+
+      log(response.body);
+
+      if (response.statusCode == 200) {
+        // Password update successful
+        print('Password updated successfully');
+        return true;
+      } else {
+        // Password update failed
+        print('Password update failed');
+        return false;
+        // Handle the error response or show an appropriate error message
+      }
+    } catch (e) {
+      // An error occurred
+      print('Error: $e');
+      return false;
+      // Handle the error and show an appropriate error message
+    }
   }
 }

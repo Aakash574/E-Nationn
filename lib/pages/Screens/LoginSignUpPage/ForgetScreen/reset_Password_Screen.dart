@@ -1,15 +1,19 @@
 // ignore_for_file: file_names, prefer_const_constructors, use_build_context_synchronously
 
 import 'dart:developer';
+import 'package:enationn/ApiMap/APIs/UserEndPoints/signupAPI.dart';
 import 'package:enationn/const.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_Screen.dart';
 import 'package:flutter/material.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({
     super.key,
     required this.id,
+    required this.email,
   });
   final String id;
+  final String email;
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
@@ -22,28 +26,31 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   bool isVisible = true;
   bool notValidPassword = false;
 
-  // Future<void> _resetPassword() async {
-  //   bool passwordReset = await SignUpApiClient()
-  //       .updatePassword(_confirmPasswordController.text, widget.id, context);
+  Future<void> _resetPassword() async {
+    String userId =
+        await SignUpApiClient().getUserDataByEmail(widget.email, 'id');
+    bool passwordReset = await SignUpApiClient()
+        .updatePassword(_passwordController.text, userId);
 
-  //   log("Reset Password : $passwordReset");
+    log("User ID : $userId");
+    log("Reset Password : $passwordReset");
 
-  //   if (passwordReset) {
-  //     //Navigate to Login Screen
+    if (passwordReset) {
+      //Navigate to Login Screen
 
-  //     Navigator.pushAndRemoveUntil(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (_) {
-  //           return LoginScreen();
-  //         },
-  //       ),
-  //       (route) => false,
-  //     );
-  //   } else {
-  //     log("Field Empty");
-  //   }
-  // }
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (_) {
+            return LoginScreen();
+          },
+        ),
+        (route) => false,
+      );
+    } else {
+      log("Field Empty");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,6 +183,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 onTap: () async {
                   log("Password : ${_passwordController.text}");
                   log("Confirm Password ${_confirmPasswordController.text}");
+                  _resetPassword();
                   // setState(() {
                   //   _passwordController.text ==
                   //               _confirmPasswordController.text &&

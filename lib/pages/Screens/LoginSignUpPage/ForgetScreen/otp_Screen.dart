@@ -101,20 +101,6 @@ class _OTPScreenState extends State<OTPScreen> {
     log("Status : ${myAuth.sendOTP()}");
     bool status = await myAuth.sendOTP();
     if (status) {
-      // log("OTP Send Successfully");
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (_) {
-      //       return OTPScreen(
-      //         myauth: myAuth,
-      //         email: email,
-      //         id: widget.id,
-      //       );
-      //     },
-      //   ),
-      // );
-
       // For Success and Error Massages ---
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -231,23 +217,26 @@ class _OTPScreenState extends State<OTPScreen> {
                                   otp3Controller.text +
                                   otp4Controller.text) ==
                           true) {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text("OTP is verified"),
-                        ));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("OTP is verified"),
+                          ),
+                        );
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => ResetPasswordScreen(
                               id: widget.id,
+                              email: widget.email,
                             ),
                           ),
                         );
                       } else {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text("Invalid OTP"),
-                        ));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Invalid OTP"),
+                          ),
+                        );
                       }
                     },
                     child: Container(
