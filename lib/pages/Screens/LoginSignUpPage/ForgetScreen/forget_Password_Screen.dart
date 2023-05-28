@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:email_otp/email_otp.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:enationn/ApiMap/APIs/UserEndPoints/loginAPI.dart';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/signupAPI.dart';
 import 'package:enationn/const.dart';
 import 'package:flutter/material.dart';
@@ -29,16 +30,16 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
 
     //Get User Credentials ----
 
-    // log(await SignUpApiClient().getUserData(email));
-    final userEmail =
-        await SignUpApiClient().getUserDataByEmail(email, 'email');
+    // log(await LoginApiClient().getUserData(email));
+    final userFound = await LoginApiClient().getUserData(email);
     final userId = await SignUpApiClient().getUserDataByEmail(email, 'id');
 
     // Checking Valid User ---
-    log("UserEmail $userEmail");
+    log("UserId : $userId");
+    // log("UserEmail $userEmail");
     log("Email Valid : ${EmailValidator.validate(email).toString()}");
 
-    if (EmailValidator.validate(email) && email == userEmail) {
+    if (EmailValidator.validate(email) && userFound) {
       //Sending Opt With this Credentials ---
 
       myAuth.setConfig(
@@ -79,7 +80,9 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
           ),
         );
       }
-    } else {}
+    } else {
+      log("InvalidEmail");
+    }
 
     // /
   }

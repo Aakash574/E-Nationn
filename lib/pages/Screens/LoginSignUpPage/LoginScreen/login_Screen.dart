@@ -1,6 +1,7 @@
 // ignore_for_file: file_names, use_build_context_synchronously, avoid_print
 
 import 'package:enationn/ApiMap/APIs/UserEndPoints/loginAPI.dart';
+import 'package:enationn/ApiMap/APIs/UserEndPoints/signupAPI.dart';
 import 'package:enationn/Provider/basicVariablesProvider.dart';
 import 'package:enationn/Provider/loginProvider.dart';
 import 'package:enationn/const.dart';
@@ -41,15 +42,14 @@ class _LoginScreenState extends State<LoginScreen> {
     // log(id.toString());
     // Authenticate the user and save the credentials if successful
     bool isAuthenticated = await authenticateUser(context, email, password);
-
+    String id = await SignUpApiClient().getUserDataByEmail(email, 'id');
+    final int uniqueId = int.parse(id);
     if (isAuthenticated) {
-      // await saveUserCredentials(id, email, password, true);
+      await saveUserCredentials(uniqueId, email, password, true);
       // Navigate to the home screen
       Navigator.pushReplacementNamed(
           context, '/lib/pages/Screens/Dashboard/dashboard.dart');
     } else {
-      // Show an error message
-      // _showErrorDialog();``
       print("user logged Out");
     }
   }

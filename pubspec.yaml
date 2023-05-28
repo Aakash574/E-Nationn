@@ -34,6 +34,7 @@ dependencies:
   #Email Validator...
   email_validator: ^2.1.17
   email_otp: ^2.0.1
+  usage_stats: ^1.2.0
 
 dev_dependencies:
   flutter_test:
