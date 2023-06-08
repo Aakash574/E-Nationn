@@ -1,11 +1,12 @@
-// ignore_for_file: file_names
+import 'dart:developer';
 
+import 'package:enationn/ApiMap/APIs/EventEndPoints/event_api.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Screens/MainEventScreens/EventScreens/event_Screen.dart';
 import 'package:enationn/pages/Screens/MainEventScreens/InternShipScreens/internShip_Screen.dart';
 import 'package:flutter/material.dart';
 
-import 'HackthonScreens/hackathon_Screen.dart';
+import 'HackathonScreens/hackathon_Screen.dart';
 
 enum CategoriesSections {
   hackathon,
@@ -22,6 +23,18 @@ class MainEventScreen extends StatefulWidget {
 
 class _MainEventScreenState extends State<MainEventScreen> {
   CategoriesSections activeSection = CategoriesSections.hackathon;
+
+  void eventDetails() async {
+    final eventData = await EventApiClient().getEventById(1);
+
+    log(eventData.toString());
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    eventDetails();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +120,6 @@ class _MainEventScreenState extends State<MainEventScreen> {
             Expanded(
               child: Container(
                 color: Colors.white,
-                // padding: EdgeInsets.all(10),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [

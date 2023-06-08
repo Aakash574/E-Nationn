@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, file_names
+// ignore_for_file: use_build_context_synchronously, file_names, unrelated_type_equality_checks
 
 import 'dart:developer';
 import 'dart:async';
@@ -8,54 +8,6 @@ import 'package:enationn/const.dart';
 import 'package:enationn/pages/Screens/LoginSignUpPage/ForgetScreen/reset_Password_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-class OTP extends StatelessWidget {
-  const OTP({
-    Key? key,
-    required this.otpController,
-  }) : super(key: key);
-  final TextEditingController otpController;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        border: Border.all(
-          width: 1,
-          color: Colors.grey.withOpacity(0.5),
-        ),
-        borderRadius: BorderRadius.circular(8),
-        // color: Colors.grey.withOpacity(0.1),
-        color: MyColors.primaryColor.withOpacity(0.1),
-      ),
-      child: TextFormField(
-        controller: otpController,
-        keyboardType: TextInputType.number,
-        style: Theme.of(context).textTheme.titleLarge,
-        textAlign: TextAlign.center,
-        inputFormatters: [
-          LengthLimitingTextInputFormatter(1),
-          FilteringTextInputFormatter.digitsOnly
-        ],
-        onChanged: (value) {
-          if (value.length == 1) {
-            FocusScope.of(context).nextFocus();
-          }
-          if (value.isEmpty) {
-            FocusScope.of(context).previousFocus();
-          }
-        },
-        decoration: const InputDecoration(
-          hintText: ('0'),
-          border: InputBorder.none,
-        ),
-        onSaved: (value) {},
-      ),
-    );
-  }
-}
 
 class OTPScreen extends StatefulWidget {
   const OTPScreen({
@@ -98,7 +50,6 @@ class _OTPScreenState extends State<OTPScreen> {
       otpLength: 4,
       otpType: OTPType.digitsOnly,
     );
-    log("Status : ${myAuth.sendOTP()}");
     bool status = await myAuth.sendOTP();
     if (status) {
       // For Success and Error Massages ---
@@ -173,15 +124,19 @@ class _OTPScreenState extends State<OTPScreen> {
                 children: [
                   OTP(
                     otpController: otp1Controller,
+                    index: "0",
                   ),
                   OTP(
                     otpController: otp2Controller,
+                    index: "1",
                   ),
                   OTP(
                     otpController: otp3Controller,
+                    index: "2",
                   ),
                   OTP(
                     otpController: otp4Controller,
+                    index: "3",
                   ),
                 ],
               ),
@@ -261,6 +216,61 @@ class _OTPScreenState extends State<OTPScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class OTP extends StatefulWidget {
+  const OTP({
+    Key? key,
+    required this.otpController,
+    required this.index,
+  }) : super(key: key);
+  final TextEditingController otpController;
+  final String index;
+
+  @override
+  State<OTP> createState() => _OTPState();
+}
+
+class _OTPState extends State<OTP> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 1,
+          color: Colors.grey.withOpacity(0.5),
+        ),
+        borderRadius: BorderRadius.circular(8),
+        color: MyColors.primaryColor.withOpacity(0.1),
+      ),
+      child: TextFormField(
+        controller: widget.otpController,
+        keyboardType: TextInputType.number,
+        style: Theme.of(context).textTheme.titleLarge,
+        textAlign: TextAlign.center,
+        inputFormatters: [
+          LengthLimitingTextInputFormatter(1),
+          FilteringTextInputFormatter.digitsOnly
+        ],
+        onChanged: (value) {
+          if (value.length == 1 && widget.index != "3") {
+            FocusScope.of(context).nextFocus();
+          }
+          if (value.isEmpty && widget.index != "0") {
+            FocusScope.of(context).previousFocus();
+          }
+          setState(() {});
+        },
+        decoration: const InputDecoration(
+          hintText: ('0'),
+          border: InputBorder.none,
+        ),
+        onSaved: (value) {},
       ),
     );
   }

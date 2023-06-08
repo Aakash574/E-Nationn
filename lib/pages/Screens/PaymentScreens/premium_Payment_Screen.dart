@@ -1,7 +1,7 @@
 // ignore_for_file: file_names, unused_local_variable
 
 import 'dart:core';
-import 'package:enationn/Provider/basicVariablesProvider.dart';
+import 'package:enationn/Provider/basic_Variables_Provider.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Screens/PassCodeScreen/pass_Code_Screen.dart';
 import 'package:flutter/material.dart';
@@ -19,13 +19,6 @@ class PremiumPaymentScreen extends StatefulWidget {
 class _PremiumPaymentScreenState extends State<PremiumPaymentScreen> {
   String date = DateFormat("MMMM dd, yyyy").format(DateTime.now());
   double width = 30;
-
-  @override
-  void initState() {
-    // ignore: todo
-    // TODO: implement initState
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {

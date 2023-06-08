@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/ExtraScreens/plan_Screen.dart';
+import 'package:enationn/pages/Screens/ExtraScreens/plan_screen.dart';
 import 'package:flutter/material.dart';
 
 class PremiumPlanDetailScreen extends StatefulWidget {

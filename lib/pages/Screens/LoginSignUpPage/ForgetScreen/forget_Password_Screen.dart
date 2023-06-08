@@ -4,22 +4,41 @@ import 'dart:developer';
 
 import 'package:email_otp/email_otp.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:enationn/ApiMap/APIs/UserEndPoints/loginAPI.dart';
-import 'package:enationn/ApiMap/APIs/UserEndPoints/signupAPI.dart';
+import 'package:enationn/ApiMap/APIs/UserEndPoints/login_api.dart';
+import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
 import 'package:enationn/const.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/ForgetScreen/otp_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'otp_Screen.dart';
-
 class ForgetPasswordScreen extends StatefulWidget {
-  const ForgetPasswordScreen({super.key});
-
+  const ForgetPasswordScreen({
+    super.key,
+    required this.title,
+  });
+  final String title;
   @override
   State<ForgetPasswordScreen> createState() => _ForgetPasswordScreenState();
 }
 
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
+
+  bool isSendingOTP = false;
+  bool isFound = false;
+
+  Future<void> isOtpSending() async {
+    // Simulating an asynchronous task
+    setState(() {
+      isSendingOTP = true;
+    });
+
+    // Simulating OTP sending process
+    await Future.delayed(const Duration(seconds: 8));
+
+    setState(() {
+      isSendingOTP = false;
+    });
+  }
 
   Future<void> resetPassword() async {
     final String email = _emailController.text.trim();
@@ -49,7 +68,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         otpLength: 4,
         otpType: OTPType.digitsOnly,
       );
-      log("Status : ${await myAuth.sendOTP()}");
       bool status = await myAuth.sendOTP();
       if (status) {
         log("OTP Send Successfully");
@@ -120,7 +138,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     ),
                   ),
                   const Spacer(),
-                  MyFont().fontSize16Bold("Forget Password", Colors.black),
+                  MyFont().fontSize16Bold(widget.title, Colors.black),
                   const Spacer(),
                   const SizedBox(width: 30),
                 ],
@@ -132,14 +150,26 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 height: 50,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 1,
-                    color: EmailValidator.validate(_emailController.text) ||
-                            _emailController.text.isEmpty
-                        ? MyColors.primaryColor
-                        : Colors.red,
-                  ),
+                  border: isFound
+                      ? Border.all(
+                          width: 1,
+                          color: EmailValidator.validate(_emailController.text)
+                              ? isFound
+                                  ? Colors.green
+                                  : Colors.red
+                              : MyColors.primaryColor,
+                        )
+                      : _emailController.text.isEmpty
+                          ? Border.all(
+                              width: 1,
+                              color: MyColors.primaryColor,
+                            )
+                          : Border.all(
+                              width: 1,
+                              color: Colors.red,
+                            ),
                   borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey.withOpacity(0.10),
                 ),
                 child: Row(
                   children: [
@@ -149,16 +179,27 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      flex: 2,
+                      flex: 4,
                       child: TextField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
-                          // labelText: 'Email',
                           hintText: "Email",
                           border: InputBorder.none,
                         ),
-                        onChanged: (value) => setState(() {}),
+                        onChanged: (value) async {
+                          log("Email Found : ${await LoginApiClient().getUserDataByEmail(_emailController.text, 'email') == _emailController.text}");
+                          if (await LoginApiClient().getUserDataByEmail(
+                                  _emailController.text, 'email') ==
+                              _emailController.text) {
+                            isFound = true;
+                          } else {
+                            isFound = false;
+                          }
+                          setState(
+                            () {},
+                          );
+                        },
                       ),
                     ),
                     const Spacer(),
@@ -176,14 +217,22 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   ],
                 ),
               ),
+              const SizedBox(height: 10),
+              Container(
+                alignment: Alignment.centerRight,
+                child: isFound
+                    ? MyFont().fontSize14Bold("Verified", Colors.green)
+                    : null,
+              ),
               // const SizedBox(height: 20.0),
               const Spacer(),
               InkWell(
                 onTap: () async {
                   resetPassword();
+                  isOtpSending();
+                  await Future.delayed(const Duration(seconds: 8));
                   log("Button Pressed");
-                  // log(await SignUpApiClient()
-                  //     .getSpecificUserDetails(_emailController.text, 'email'));
+                  setState(() {});
                 },
                 child: Container(
                   height: 50,
@@ -196,8 +245,13 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     color: MyColors.primaryColor,
                   ),
                   child: Center(
-                    child:
-                        MyFont().fontSize14Weight700("Send Code", Colors.white),
+                    child: isSendingOTP
+                        ? const CircularProgressIndicator(
+                            strokeWidth: 2.0,
+                            color: Colors.white,
+                          )
+                        : MyFont()
+                            .fontSize14Weight700("Send Code", Colors.white),
                   ),
                 ),
               ),

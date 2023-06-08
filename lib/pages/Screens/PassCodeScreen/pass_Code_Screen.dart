@@ -1,11 +1,11 @@
 // ignore_for_file: file_names, use_build_context_synchronously, avoid_print
 
-import 'package:enationn/ApiMap/APIs/UserEndPoints/passkeyAPI.dart';
-import 'package:enationn/Provider/basicVariablesProvider.dart';
+import 'dart:developer';
+import 'package:enationn/ApiMap/APIs/UserEndPoints/passkey_api.dart';
+import 'package:enationn/Provider/basic_Variables_Provider.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Screens/ExtraScreens/thankyou_Screen.dart';
 import 'package:enationn/pages/Screens/ExtraScreens/welcome_Screen.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -182,8 +182,18 @@ class _PassCodeScreenState extends State<PassCodeScreen> {
                   print("Nothing");
                   if (pinCode.length == 5 &&
                       await PasskeyApiClient().passkey(pinCode.join(""))) {
-                    print(screen.whichScreen);
+                    log(screen.whichScreen);
                     switch (screen.whichScreen) {
+                      case "VoucherScreen":
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return const WelcomeScreen();
+                            },
+                          ),
+                        );
+                        break;
                       case "LoginScreen":
                         Navigator.push(
                           context,
@@ -199,7 +209,7 @@ class _PassCodeScreenState extends State<PassCodeScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return const LoginScreen();
+                              return const WelcomeScreen();
                             },
                           ),
                         );

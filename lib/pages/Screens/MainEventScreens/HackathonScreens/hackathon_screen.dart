@@ -1,11 +1,11 @@
-// ignore_for_file: file_names, must_be_immutable
-
 import 'dart:developer';
-
-import 'package:enationn/ApiMap/APIs/EventEndPoints/hackathonAPI.dart';
+import 'package:enationn/ApiMap/APIs/EventEndPoints/hackathon_api.dart';
+import 'package:enationn/Provider/hackathon_provider.dart';
+import 'package:enationn/Provider/user_Provider.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/MainEventScreens/teamDetailScreen.dart';
+import 'package:enationn/pages/Screens/PaymentScreens/voucher_Code_Screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HackathonScreen extends StatefulWidget {
   const HackathonScreen({super.key});
@@ -33,6 +33,10 @@ class _HackathonScreenState extends State<HackathonScreen> {
     hackathonDetails();
   }
 
+  String length(int length) {
+    return length.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -48,7 +52,6 @@ class _HackathonScreenState extends State<HackathonScreen> {
                 itemCount: hackathonEventDetails.length,
                 padding: EdgeInsets.zero,
                 itemBuilder: (context, index) => ListTile(
-                  // contentPadding: EdgeInsetsGeometry(),
                   title: InkWell(
                     onTap: () {
                       log(index.toString());
@@ -74,6 +77,7 @@ class _HackathonScreenState extends State<HackathonScreen> {
                       hackathonEventDetails[index]['apply_status'] == "yes"
                           ? "Applied"
                           : "Not Applied",
+                      index == hackathonEventDetails.length - 1 ? 400 : 0,
                     ),
                   ),
                 ),
@@ -91,10 +95,16 @@ class _HackathonScreenState extends State<HackathonScreen> {
     String name,
     String date,
     String isApply,
+    double listLength,
   ) {
     return Container(
       width: size.width,
-      margin: const EdgeInsets.all(8),
+      margin: EdgeInsets.only(
+        top: 8,
+        right: 8,
+        left: 8,
+        bottom: listLength,
+      ),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
@@ -250,9 +260,9 @@ class _HackathonScreenState extends State<HackathonScreen> {
 // On tap of Hackathon Card ------------>
 
 class HackathonDetailsScreen extends StatefulWidget {
-  int index;
-  List hackathon;
-  HackathonDetailsScreen({
+  final int index;
+  final List hackathon;
+  const HackathonDetailsScreen({
     super.key,
     required this.index,
     required this.hackathon,
@@ -308,20 +318,21 @@ class _HackathonDetailsScreenState extends State<HackathonDetailsScreen> {
                         ),
                       ),
                       const SizedBox(height: 5),
+
                       MyFont().fontSize16Weight500(
-                        "Code Bite 🏹",
+                        widget.hackathon[widget.index]['name'],
                         MyColors.darkGreyColor,
                       ),
 
                       const SizedBox(height: 5),
                       MyFont().fontSize16Weight500(
-                        "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,",
+                        "Details",
                         Colors.black.withOpacity(0.8),
                       ),
 
                       const SizedBox(height: 5),
                       MyFont().fontSize14Weight500(
-                        "Lorem ipsum dolor sit amet, onsectrs iscing elit,\nsed do eiusmo tempor incididun labore et dolore\nmagna aliqua. Ut enim ad minim veniam, quis\nnostrud int occaecat upidatat non proident, sunt\nin culpa qui officia serunt mollit anim id est\nlaborum.",
+                        "Dis...",
                         MyColors.darkGreyColor.withOpacity(0.8),
                       ),
                       const SizedBox(height: 5),
@@ -453,7 +464,7 @@ class _HackathonDetailsScreenState extends State<HackathonDetailsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     MyFont().fontSize16Weight500(
-                                      "Last Registratioin Date",
+                                      "Last Registration Date",
                                       Colors.black,
                                     ),
                                     const SizedBox(height: 5),
@@ -540,6 +551,276 @@ class _HackathonDetailsScreenState extends State<HackathonDetailsScreen> {
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class TeamDetailScreen extends StatefulWidget {
+  final int index;
+  final List hackathonDetails;
+  const TeamDetailScreen({
+    super.key,
+    required this.index,
+    required this.hackathonDetails,
+  });
+
+  @override
+  State<TeamDetailScreen> createState() => _TeamDetailScreenState();
+}
+
+class _TeamDetailScreenState extends State<TeamDetailScreen> {
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _teamNameController = TextEditingController();
+  final TextEditingController _noOfMemberController = TextEditingController();
+
+  bool isEmpty = false;
+  bool isVisible = false;
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final userDataProvider = Provider.of<UserProvider>(context, listen: false);
+    final hackathonProvider =
+        Provider.of<HackathonProvider>(context, listen: false);
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            height: size.height - 100,
+            margin: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1,
+                          color: const Color(0xff6B7280).withOpacity(0.2),
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                    Text(
+                      widget.hackathonDetails[widget.index]['name'],
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 45,
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 500,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "Team Leader : ",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: MyColors.darkGreyColor,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            userDataProvider.fullName,
+                            style: TextStyle(
+                              color: MyColors.secondPrimaryColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            "Email : ",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: MyColors.darkGreyColor,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            userDataProvider.email,
+                            style: TextStyle(
+                              color: MyColors.secondPrimaryColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.only(left: 12, right: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffF9FAFB),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isEmpty ? Colors.red : MyColors.primaryColor,
+                            width: 1,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: _teamNameController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            labelText: "Team Name",
+                            labelStyle: TextStyle(
+                              color: MyColors.secondPrimaryColor,
+                              fontSize: 16,
+                            ),
+                            hintText: "Coder",
+                            hintStyle: TextStyle(
+                              color: MyColors.lightGreyColor,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.only(left: 12, right: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffF9FAFB),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isEmpty ? Colors.red : MyColors.primaryColor,
+                            width: 1,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: _noOfMemberController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            labelText: "No of members",
+                            labelStyle: TextStyle(
+                              color: MyColors.secondPrimaryColor,
+                              fontSize: 16,
+                            ),
+                            hintText: "0",
+                            hintStyle: TextStyle(
+                              color: MyColors.lightGreyColor,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.only(left: 12, right: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffF9FAFB),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isEmpty ? Colors.red : MyColors.primaryColor,
+                            width: 1,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: _phoneController,
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            labelText: "Phone Number",
+                            labelStyle: TextStyle(
+                              color: MyColors.secondPrimaryColor,
+                              fontSize: 16,
+                            ),
+                            hintText: "xxx-xxx-xx-xx",
+                            hintStyle: TextStyle(
+                              color: MyColors.lightGreyColor,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: size.width / 1.5,
+                  height: 56,
+                  // alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: MyColors.primaryColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TextButton(
+                    onPressed: () {
+                      if (_teamNameController.text.isNotEmpty &&
+                          _noOfMemberController.text.isNotEmpty &&
+                          _phoneController.text.isNotEmpty) {
+                        hackathonProvider.setTeamName(_teamNameController.text);
+                        hackathonProvider
+                            .setNoOfMembers(_noOfMemberController.text);
+                        hackathonProvider.setPhoneNo(_phoneController.text);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return VoucherCodeScreen(
+                                name: widget.hackathonDetails[widget.index]
+                                    ['name'],
+                                events: widget.hackathonDetails,
+                                index: widget.index,
+                                screen: 'HackathonDetailScreen',
+                              );
+                            },
+                          ),
+                        );
+                        isEmpty = false;
+                        setState(() {});
+                      } else {
+                        isEmpty = true;
+                        setState(() {});
+                      }
+                    },
+                    style: const ButtonStyle(
+                        splashFactory: NoSplash.splashFactory),
+                    child: const Text(
+                      "Submit",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

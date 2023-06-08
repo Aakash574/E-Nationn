@@ -1,8 +1,13 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, use_build_context_synchronously
 
+import 'dart:developer';
+
+import 'package:enationn/ApiMap/APIs/VoucherCodeEndPoint/voucher_code_api.dart';
+import 'package:enationn/Provider/basic_Variables_Provider.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/PaymentScreens/premium_Payment_Screen.dart';
+import 'package:enationn/pages/Screens/PaymentScreens/voucher_Code_Screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PlanScreen extends StatefulWidget {
   const PlanScreen({super.key});
@@ -14,9 +19,22 @@ class PlanScreen extends StatefulWidget {
 class _PlanScreenState extends State<PlanScreen> {
   bool isActive = false;
 
+  Future<void> executeState() async {
+    final wait = await PaymentVoucherApiClient().getVoucherCode();
+    log(wait.toString());
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    executeState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final basicVariable =
+        Provider.of<BasicVariableModel>(context, listen: false);
     return Material(
       child: SafeArea(
         child: Stack(
@@ -111,6 +129,9 @@ class _PlanScreenState extends State<PlanScreen> {
                               padding: const EdgeInsets.all(12),
                               child: InkWell(
                                 onTap: () {
+                                  basicVariable.setPlan("basic");
+                                  log(basicVariable.plan);
+
                                   setState(() {
                                     isActive = true;
                                   });
@@ -178,6 +199,9 @@ class _PlanScreenState extends State<PlanScreen> {
                                   padding: const EdgeInsets.all(12),
                                   child: InkWell(
                                     onTap: () {
+                                      basicVariable.setPlan("premium");
+                                      log(basicVariable.plan);
+
                                       setState(() {
                                         isActive = false;
                                       });
@@ -333,7 +357,6 @@ class _PlanScreenState extends State<PlanScreen> {
                           width: size.width / 1.2,
                           height: 124,
                           padding: const EdgeInsets.all(16),
-                          // color: Colors.pink,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
@@ -342,7 +365,6 @@ class _PlanScreenState extends State<PlanScreen> {
                                   ? MyColors.primaryColor
                                   : MyColors.secondaryColor,
                             ),
-                            // color: Colors.amber,
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -417,15 +439,29 @@ class _PlanScreenState extends State<PlanScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: TextButton(
-                            onPressed: () {
-                              Navigator.pushAndRemoveUntil(
+                            onPressed: () async {
+                              if (isActive) {
+                                basicVariable.setPlan('basic');
+                              } else if (isActive) {
+                                basicVariable.setPlan('premium');
+                              } else {
+                                basicVariable.setPlan('Not Active');
+                              }
+
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return const PremiumPaymentScreen();
+                                    return VoucherCodeScreen(
+                                      name: basicVariable.plan == "basic"
+                                          ? "Basic Plan"
+                                          : "Premium Plan",
+                                      events: const [],
+                                      index: 0,
+                                      screen: "PlanScreen",
+                                    );
                                   },
                                 ),
-                                (route) => false,
                               );
                             },
                             child: MyFont().fontSize16Bold(

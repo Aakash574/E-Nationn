@@ -1,12 +1,18 @@
 // ignore_for_file: file_names, use_build_context_synchronously
 
+import 'dart:developer';
+
+import 'package:enationn/Provider/user_Provider.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Customs/shared_Pref.dart';
 import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_Screen.dart';
+import 'package:enationn/pages/Screens/Profile/Sections/event_Status_Screen.dart';
 import 'package:enationn/pages/Screens/Profile/Sections/help_Screen.dart';
 import 'package:enationn/pages/Screens/Profile/Sections/privacy_Policy_Screen.dart';
 import 'package:enationn/pages/Screens/Profile/Sections/security_Screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Sections/personal_Info_screen.dart';
 
@@ -18,26 +24,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String userName = "";
-  String userEmail = "";
-  String userBranch = "";
-  String userCollege = "";
-  var userData = {};
-  void userCredentials() async {
-    var loginCredentials = await getUserCredentials();
-    userData = await getUserData(loginCredentials['id']);
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    userCredentials();
-  }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final userDataProvider = Provider.of<UserProvider>(context, listen: false);
     return Material(
       color: Colors.white,
       child: Container(
@@ -95,13 +85,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 35),
-                          const Text(
-                            "General",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Row(
+                            children: [
+                              MyFont().fontSize16Bold("General", Colors.black),
+                              const Spacer(),
+                              MyFont().fontSize12Weight700(
+                                "UID : ${userDataProvider.uId}",
+                                MyColors.lightGreyColor,
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 30),
                           InkWell(
@@ -151,22 +143,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           "Personal Info", Colors.black),
                                       const SizedBox(height: 5),
                                       MyFont().fontSize12Weight500(
-                                        "Name : ${userData['full_name']}",
+                                        "Name : ${userDataProvider.fullName}",
                                         Colors.black.withOpacity(0.5),
                                       ),
                                       const SizedBox(height: 2),
                                       MyFont().fontSize12Weight500(
-                                        "Email : ${userData['email']}",
+                                        "Email : ${userDataProvider.email}",
                                         Colors.black.withOpacity(0.5),
                                       ),
                                       const SizedBox(height: 2),
                                       MyFont().fontSize12Weight500(
-                                        "Branch : ${userData['branch']}",
+                                        "Branch : ${userDataProvider.branch}",
                                         Colors.black.withOpacity(0.5),
                                       ),
                                       const SizedBox(height: 2),
                                       MyFont().fontSize12Weight500(
-                                        "College : ${userData['college']}",
+                                        "College : ${userDataProvider.college}",
                                         Colors.black.withOpacity(0.5),
                                       ),
                                     ],
@@ -178,6 +170,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ],
                               ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          profileSection(
+                            () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const EventStatusScreen(),
+                                ),
+                              );
+                            },
+                            "Event Status",
+                            "Check Event You Join",
+                            Icon(
+                              Icons.shield_moon,
+                              color: MyColors.primaryColor,
+                              size: 20,
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -236,9 +246,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           const SizedBox(height: 20),
                           InkWell(
-                            onTap: () {
+                            onTap: () async {
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
                               setState(() {
                                 setUserLoggedIn(false);
+                                prefs.clear();
+                                log("User Credentials is clear");
+                                log(getUserCredentials().toString());
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
