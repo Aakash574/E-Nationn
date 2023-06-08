@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:enationn/ApiMap/Models/LoginUserModel.dart';
+import 'package:enationn/ApiMap/Models/login_user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
@@ -11,6 +11,45 @@ class LoginApiClient {
   Uri loginURL = Uri.parse('http://13.232.155.227:8000/account/api/Login/');
 
   // Get user Data ---------------------------->
+
+  Future<Map<dynamic, dynamic>> getUserDataById(int id) async {
+    Uri url = Uri.parse('http://13.232.155.227:8000/account/api/Login/$id/');
+    Response response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    final Map userData = json.decode(response.body);
+
+    return userData;
+  }
+
+  Future<String> getUserDataByEmail(String email, String choose) async {
+    Uri url = Uri.parse('http://13.232.155.227:8000/account/api/Login/');
+    Response response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    final userData = await jsonDecode(response.body);
+    for (var i = 0; i < userData.length; i++) {
+      if (await userData[i]['email'] == email) {
+        switch (choose) {
+          case 'id':
+            return userData[i]['id'].toString();
+
+          case 'email':
+            return await userData[i]['email'];
+
+          default:
+        }
+      }
+    }
+    return "0";
+  }
 
   Future<bool> getUserData(String email) async {
     Response response = await http.get(
@@ -76,7 +115,9 @@ class LoginApiClient {
       },
     );
     List userResponseList = await jsonDecode(response.body);
+    log(email.toString());
     for (var i = 0; i < userResponseList.length; i++) {
+      // log((await userResponseList[i]['email']).toString());
       if (await userResponseList[i]['email'] == email &&
           await userResponseList[i]['password'] == password) {
         return true;
@@ -97,5 +138,20 @@ class LoginApiClient {
     } else {
       // Handle error
     }
+  }
+
+  Future<bool> deleteUserCredentials(String id) async {
+    log(id);
+    Uri signUpApi =
+        Uri.parse('http://13.232.155.227:8000/account/api/Login/$id/');
+
+    Response response = await http.delete(signUpApi);
+
+    log(response.statusCode.toString());
+    if (response.statusCode == 200) {
+      log("Delete SuccessFully");
+      return true;
+    }
+    return false;
   }
 }

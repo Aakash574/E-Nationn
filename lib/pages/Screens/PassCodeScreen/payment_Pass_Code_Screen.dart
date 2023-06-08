@@ -1,6 +1,6 @@
-// ignore_for_file: file_names, use_build_context_synchronously, avoid_print
+// ignore_for_file: use_build_context_synchronously
 
-import 'package:enationn/ApiMap/APIs/UserEndPoints/passkeyAPI.dart';
+import 'package:enationn/ApiMap/APIs/UserEndPoints/passkey_api.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Screens/ExtraScreens/thankyou_Screen.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,7 @@ class _PaymentPassCodeScreenState extends State<PaymentPassCodeScreen> {
   void showDialog() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool? isFirstLoaded = prefs.getBool(keyIsFirstLoaded);
-    print(context.widget.toString());
+
     if (isFirstLoaded == null &&
         context.widget.toStringShort() == "SignUpScreen") {}
   }
@@ -130,7 +130,6 @@ class _PaymentPassCodeScreenState extends State<PaymentPassCodeScreen> {
                           setState(() {
                             if (pinCode.isNotEmpty) {
                               pinCode.removeLast();
-                              print(pinCode);
                             }
                           });
                         },
@@ -165,7 +164,6 @@ class _PaymentPassCodeScreenState extends State<PaymentPassCodeScreen> {
             const SizedBox(height: 20),
             InkWell(
               onTap: () async {
-                print("Nothin");
                 if (pinCode.length == 5 &&
                     await PasskeyApiClient().passkey(pinCode.join("")) ==
                         true) {
@@ -183,8 +181,6 @@ class _PaymentPassCodeScreenState extends State<PaymentPassCodeScreen> {
                   setState(() {
                     error = true;
                     pinCode.clear();
-                    print("PinCode : $pinCode");
-                    print("object");
                   });
                 }
               },
@@ -244,8 +240,6 @@ class _PaymentPassCodeScreenState extends State<PaymentPassCodeScreen> {
         setState(() {
           if (pinCode.length < 5) {
             pinCode.add(nums);
-            print("Code Returns");
-            print(pinCode);
           }
         });
       },

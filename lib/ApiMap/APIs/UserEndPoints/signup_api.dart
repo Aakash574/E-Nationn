@@ -2,7 +2,8 @@
 
 import 'dart:convert';
 import 'dart:developer';
-import 'package:enationn/ApiMap/Models/SignUpUSerModel.dart';
+import 'package:enationn/ApiMap/APIs/UserEndPoints/login_api.dart';
+import 'package:enationn/ApiMap/Models/signup_user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
@@ -133,10 +134,59 @@ class SignUpApiClient {
     return "0";
   }
 
-  Future<bool> updatePassword(String newPassword, String userId) async {
-    log(userId);
-    final url =
+  Future<bool> updateDetails(
+    String key,
+    String value,
+    String userId,
+    String email,
+  ) async {
+    log("Key : $key,\nValue : $value,\nUserId : $userId,\nEmail : $email,");
+    final signUpUrl =
         Uri.parse('http://13.232.155.227:8000/account/api/Signup/$userId/');
+
+    // Create the request body as a JSON object
+    final requestBody = jsonEncode({
+      key: value,
+    });
+
+    try {
+      final signUpResponse = await http.patch(
+        signUpUrl,
+        headers: {'Content-Type': 'application/json'},
+        body: requestBody,
+      );
+
+      log(signUpResponse.body);
+
+      if (signUpResponse.statusCode == 200) {
+        // Password update successful
+        print('Details updated successfully');
+        return true;
+      } else {
+        // Password update failed
+        print('Details update failed');
+        return false;
+        // Handle the error response or show an appropriate error message
+      }
+    } catch (e) {
+      // An error occurred
+      print('Error: $e');
+      return false;
+      // Handle the error and show an appropriate error message
+    }
+  }
+
+  Future<bool> updatePassword(
+    String newPassword,
+    String userId,
+    String email,
+  ) async {
+    final loginId = await LoginApiClient().getUserDataByEmail(email, 'id');
+    log(loginId);
+    final signUpUrl =
+        Uri.parse('http://13.232.155.227:8000/account/api/Signup/$userId/');
+    final loginUrl =
+        Uri.parse('http://13.232.155.227:8000/account/api/Login/$loginId/');
 
     // Create the request body as a JSON object
     final requestBody = jsonEncode({
@@ -144,15 +194,21 @@ class SignUpApiClient {
     });
 
     try {
-      final response = await http.patch(
-        url,
+      final signUpResponse = await http.patch(
+        signUpUrl,
+        headers: {'Content-Type': 'application/json'},
+        body: requestBody,
+      );
+      final loginResponse = await http.patch(
+        loginUrl,
         headers: {'Content-Type': 'application/json'},
         body: requestBody,
       );
 
-      log(response.body);
+      log(loginResponse.body);
+      log(signUpResponse.body);
 
-      if (response.statusCode == 200) {
+      if (signUpResponse.statusCode == 200 && loginResponse.statusCode == 200) {
         // Password update successful
         print('Password updated successfully');
         return true;
@@ -168,5 +224,20 @@ class SignUpApiClient {
       return false;
       // Handle the error and show an appropriate error message
     }
+  }
+
+  Future<bool> deleteUser(String id) async {
+    log(id);
+    Uri signUpApi =
+        Uri.parse('http://13.232.155.227:8000/account/api/Signup/$id/');
+
+    Response response = await http.delete(signUpApi);
+
+    log(response.statusCode.toString());
+    if (response.statusCode == 200) {
+      log("Delete SuccessFully");
+      return true;
+    }
+    return false;
   }
 }

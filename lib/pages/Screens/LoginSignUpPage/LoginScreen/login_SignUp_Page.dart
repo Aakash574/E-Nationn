@@ -1,8 +1,8 @@
 // ignore_for_file: file_names
 
-import 'package:enationn/Provider/basicVariablesProvider.dart';
+import 'package:enationn/Provider/basic_Variables_Provider.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/PassCodeScreen/pass_Code_Screen.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/SignUpScreen/signup_Screen.dart';
 import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -78,8 +78,8 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                     Navigator.push(
                       context,
                       PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        child: const PassCodeScreen(),
+                        type: PageTransitionType.fade,
+                        child: const SignUpScreen(),
                         inheritTheme: true,
                         ctx: context,
                       ),
@@ -116,7 +116,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                     Navigator.push(
                       context,
                       PageTransition(
-                        type: PageTransitionType.rightToLeft,
+                        type: PageTransitionType.fade,
                         child: const LoginScreen(),
                         inheritTheme: true,
                         ctx: context,

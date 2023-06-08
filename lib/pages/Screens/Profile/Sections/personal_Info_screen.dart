@@ -1,7 +1,8 @@
 // ignore_for_file: file_names, prefer_typing_uninitialized_variables
 
-import 'package:enationn/pages/Customs/shared_Pref.dart';
+import 'package:enationn/Provider/user_Provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../const.dart';
 
@@ -13,29 +14,9 @@ class PersonalInfoScreen extends StatefulWidget {
 }
 
 class PersonalInfoScreenState extends State<PersonalInfoScreen> {
-  var userData;
-  String userName = "";
-  String userEmail = "";
-  String dateOfBirth = "";
-  // final  = "";
-
-  void userCredentials() async {
-    var loginCredentials = await getUserCredentials();
-    userData = await getUserData(loginCredentials['id']);
-    userName = userData['full_name'];
-    userEmail = userData['email'];
-    dateOfBirth = userData['date_of_birth'];
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    userCredentials();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final userDataProvider = Provider.of<UserProvider>(context, listen: false);
     final size = MediaQuery.of(context).size;
     return Material(
       child: SafeArea(
@@ -90,12 +71,12 @@ class PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 ),
                 const SizedBox(height: 10),
                 MyFont().fontSize16Bold(
-                  userName,
+                  userDataProvider.fullName,
                   Colors.black,
                 ),
                 const SizedBox(height: 3),
                 MyFont().fontSize12Weight500(
-                  "@$userName",
+                  "UID : ${userDataProvider.uId}",
                   Colors.black.withOpacity(0.5),
                 ),
                 const SizedBox(height: 30),
@@ -106,7 +87,7 @@ class PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 const SizedBox(height: 20),
                 fieldForUserCredential(
                   size,
-                  " $userName",
+                  userDataProvider.fullName,
                   "Full Name",
                 ),
                 const SizedBox(height: 20),
@@ -120,7 +101,7 @@ class PersonalInfoScreenState extends State<PersonalInfoScreen> {
                     ),
                     fieldForUserCredential(
                       size / 2.4,
-                      dateOfBirth,
+                      userDataProvider.dateOfBirth,
                       "Date of Birth",
                     ),
                   ],
@@ -128,13 +109,13 @@ class PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 const SizedBox(height: 20),
                 fieldForUserCredential(
                   size,
-                  userEmail,
+                  userDataProvider.email,
                   "Email",
                 ),
                 const SizedBox(height: 20),
                 fieldForUserCredential(
                   size,
-                  "@$userName",
+                  "@${userDataProvider.fullName}",
                   "User Name",
                 ),
                 const Spacer(),

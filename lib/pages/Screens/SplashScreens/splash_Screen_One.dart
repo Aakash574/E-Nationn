@@ -109,7 +109,7 @@ class _SplashScreenOneState extends State<SplashScreenOne> {
                                   Navigator.push(
                                     context,
                                     PageTransition(
-                                      type: PageTransitionType.rightToLeft,
+                                      type: PageTransitionType.fade,
                                       child: const SplashScreen(),
                                       inheritTheme: true,
                                       ctx: context,
@@ -149,7 +149,7 @@ class _SplashScreenOneState extends State<SplashScreenOne> {
                           Navigator.push(
                             context,
                             PageTransition(
-                              type: PageTransitionType.rightToLeft,
+                              type: PageTransitionType.fade,
                               child: const SplashScreenTwo(),
                               inheritTheme: true,
                               ctx: context,

@@ -1,7 +1,7 @@
 // ignore_for_file: file_names, prefer_const_constructors, use_build_context_synchronously
 
 import 'dart:developer';
-import 'package:enationn/ApiMap/APIs/UserEndPoints/signupAPI.dart';
+import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_Screen.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     String userId =
         await SignUpApiClient().getUserDataByEmail(widget.email, 'id');
     bool passwordReset = await SignUpApiClient()
-        .updatePassword(_passwordController.text, userId);
+        .updatePassword(_passwordController.text, userId, widget.email);
 
     log("User ID : $userId");
     log("Reset Password : $passwordReset");

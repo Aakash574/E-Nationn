@@ -1,7 +1,10 @@
-import 'package:enationn/Provider/basicVariablesProvider.dart';
-import 'package:enationn/Provider/hackathonDetailProvider.dart';
-import 'package:enationn/Provider/loginProvider.dart';
-import 'package:enationn/pages/Customs/shared_Pref.dart';
+// ignore_for_file:
+
+import 'package:enationn/Provider/basic_Variables_Provider.dart';
+import 'package:enationn/Provider/hackathon_Detail_Provider.dart';
+import 'package:enationn/Provider/hackathon_Provider.dart';
+import 'package:enationn/Provider/user_Provider.dart';
+import 'package:enationn/pages/Customs/shared_pref.dart';
 import 'package:enationn/pages/Screens/SplashScreens/splash_Screen_One.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,9 +22,10 @@ class MyApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => LoginScreenModel()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => BasicVariableModel()),
         ChangeNotifierProvider(create: (_) => HackathonDetailProvider()),
+        ChangeNotifierProvider(create: (_) => HackathonProvider()),
       ],
       child: const MaterialApp(
         home: HomePage(),
@@ -60,7 +64,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: SafeArea(
         child: isFirstUser ? const SplashScreen() : const SplashScreenOne(),
-        // child: ApiClientCCAvenue(),
       ),
     );
   }
@@ -69,8 +72,6 @@ class _HomePageState extends State<HomePage> {
 
 // MOM :-
 // 1.)Internship,Event form update and add duration as well
-// 2.)After submit require voucher code(i will send api for the same)
-// 3.)Need to add uid in User 3detail
 // 4.)we have show in profile,which internship or event already applied
 // 5.)Use patch for update password in forget
 // 6.)I will send privacy policy content

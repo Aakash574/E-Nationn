@@ -108,7 +108,7 @@ class _SplashScreenTwoState extends State<SplashScreenTwo> {
                                   Navigator.push(
                                     context,
                                     PageTransition(
-                                      type: PageTransitionType.rightToLeft,
+                                      type: PageTransitionType.fade,
                                       child: const SplashScreenThree(),
                                       inheritTheme: true,
                                       ctx: context,

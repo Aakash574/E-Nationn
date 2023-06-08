@@ -105,7 +105,7 @@ class _SplashScreenThreeState extends State<SplashScreenThree> {
                                   Navigator.push(
                                     context,
                                     PageTransition(
-                                      type: PageTransitionType.rightToLeft,
+                                      type: PageTransitionType.fade,
                                       child: const SplashScreen(),
                                       inheritTheme: true,
                                       ctx: context,

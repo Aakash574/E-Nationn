@@ -1,12 +1,16 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:async';
 import 'dart:developer';
-
+import 'package:enationn/ApiMap/APIs/EventEndPoints/event_api.dart';
+import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
+import 'package:enationn/Provider/user_Provider.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Customs/shared_Pref.dart';
 import 'package:enationn/pages/Screens/PaymentScreens/plan_Screen.dart';
 import 'package:enationn/pages/Screens/PopScreens/subscribe_Pop_Up.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Dashboard extends StatefulWidget {
@@ -56,8 +60,14 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  // Local Variables--------->
+
   final keyIsFirstLoaded = 'is_first_loaded';
   String userName = "";
+  int index = 0;
+  bool isPremiumActive = false;
+  bool isBasicActive = false;
+  late Timer timer;
 
   //User Logged In ------------------------------>
 
@@ -87,7 +97,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  void showDialog() async {
+  void showDialog(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool? isFirstLoaded = prefs.getBool(keyIsFirstLoaded);
     if (isFirstLoaded == null &&
@@ -98,25 +108,82 @@ class _DashboardState extends State<Dashboard> {
 
   Future<void> showDetails() async {
     final loginCredentials = await getUserCredentials();
-    log(loginCredentials.toString());
+    // log(loginCredentials['id']);
     final userData = await getUserData(loginCredentials['id']);
-    userName = userData['full_name'];
-    log(userData['email']);
+    if (userData['plan_status'] == "Basic") {
+      isPremiumActive = false;
+    }
+    if (userData['plan_status'] == 'Premium') {
+      isPremiumActive = true;
+    }
     setState(() {});
+  }
+
+  // Setting Up user Data --------->
+
+  void setUserCredentials(BuildContext context) async {
+    final setUserCredentials =
+        Provider.of<UserProvider>(context, listen: false);
+    final userData = await getUserCredentials();
+    String id =
+        await SignUpApiClient().getUserDataByEmail(userData['email'], 'id');
+    final userCredentials =
+        await SignUpApiClient().getUserDataById(int.parse(id));
+    log(userCredentials.toString());
+    log(userCredentials['id'].toString());
+    setUserCredentials.setID(userCredentials['id'].toString());
+    setUserCredentials.setFullName(userCredentials['full_name']);
+    setUserCredentials.setEmail(userCredentials['email']);
+    setUserCredentials.setFatherName(userCredentials['father_name']);
+    setUserCredentials.setCollege(userCredentials['college']);
+    setUserCredentials.setBranch(userCredentials['branch']);
+    setUserCredentials.setYearOfPassout(userCredentials['year_of_passout']);
+    setUserCredentials.setDateOfBirth(userCredentials['date_of_birth']);
+    setUserCredentials.setPlaceOfBirth(userCredentials['place_of_birth']);
+    setUserCredentials.setUID(userCredentials['uid']);
+    setUserCredentials.setInternshipStatus(
+      userCredentials['internship_status'],
+    );
+    setUserCredentials.setEventStatus(userCredentials['event_status']);
+    setUserCredentials.setHackathonStatus(userCredentials['hackathon_status']);
+    setUserCredentials.setSignupKey(userCredentials['signupkey']);
+    setUserCredentials.setApplyStatus(userCredentials['Apply_status']);
+    setUserCredentials.setPlanStatus(userCredentials['plan_status']);
   }
 
   @override
   void initState() {
     super.initState();
 
-    showDialog();
+    timer = Timer.periodic(
+      const Duration(minutes: 5),
+      (Timer timer) {
+        showDialog(context);
+      },
+    );
+
     showDetails();
     _checkLoginStatus();
+
+    // Get Api Updates -------------->
+    EventApiClient().getEventDetails();
+
+    // Setting Up User Data
+
+    setUserCredentials(context);
+
     setState(() {});
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    timer.cancel();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final userDataProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -150,7 +217,7 @@ class _DashboardState extends State<Dashboard> {
                             MyFont().fontSize14Light("Hii,", Colors.white),
                             const SizedBox(height: 5),
                             MyFont().fontSize16Bold(
-                              userName,
+                              userDataProvider.fullName,
                               Colors.white,
                             ),
                           ],
@@ -163,7 +230,11 @@ class _DashboardState extends State<Dashboard> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.5),
+                        color: userDataProvider.planStatus == 'basic'
+                            ? MyColors.primaryColor.withOpacity(0.5)
+                            : userDataProvider.planStatus == 'premium'
+                                ? Colors.white.withOpacity(0.5)
+                                : Colors.red.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Row(
@@ -185,7 +256,11 @@ class _DashboardState extends State<Dashboard> {
                               );
                             },
                             child: MyFont().fontSize16Bold(
-                              "Not Active",
+                              userDataProvider.planStatus == 'basic'
+                                  ? "Basic"
+                                  : userDataProvider.planStatus == 'premium'
+                                      ? "Premium"
+                                      : "Not Active",
                               MyColors.secondaryColor,
                             ),
                           ),
@@ -247,7 +322,11 @@ class _DashboardState extends State<Dashboard> {
                             ),
                             Container(
                               margin: const EdgeInsets.only(
-                                  top: 12, bottom: 12, left: 22, right: 22),
+                                top: 12,
+                                bottom: 12,
+                                left: 22,
+                                right: 22,
+                              ),
                               color: MyColors.primaryColor,
                               height: 2,
                               width: 170,
@@ -257,6 +336,10 @@ class _DashboardState extends State<Dashboard> {
                               margin: const EdgeInsets.symmetric(vertical: 12),
                               height: 141,
                               child: PageView(
+                                onPageChanged: (value) {
+                                  index = value;
+                                  setState(() {});
+                                },
                                 children: [
                                   Container(
                                     margin: const EdgeInsets.symmetric(
@@ -302,6 +385,43 @@ class _DashboardState extends State<Dashboard> {
                                   ),
                                 ],
                               ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const SizedBox(width: 160),
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: index == 0
+                                        ? MyColors.primaryColor
+                                        : Colors.grey,
+                                  ),
+                                ),
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: index == 1
+                                        ? MyColors.primaryColor
+                                        : Colors.grey,
+                                  ),
+                                ),
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: index == 2
+                                        ? MyColors.primaryColor
+                                        : Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(width: 160),
+                              ],
                             ),
                             Container(
                               margin: const EdgeInsets.only(
