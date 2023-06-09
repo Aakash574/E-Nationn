@@ -31,8 +31,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   void initState() {
-    // ignore: todo
-    // TODO: implement initState
     super.initState();
     sendToNextScreen();
   }

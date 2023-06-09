@@ -4,14 +4,16 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:enationn/ApiMap/APIs/EventEndPoints/event_api.dart';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
-import 'package:enationn/Provider/user_Provider.dart';
+import 'package:enationn/Provider/user_provider.dart';
+
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Customs/shared_Pref.dart';
-import 'package:enationn/pages/Screens/PaymentScreens/plan_Screen.dart';
-import 'package:enationn/pages/Screens/PopScreens/subscribe_Pop_Up.dart';
+import 'package:enationn/pages/Screens/PaymentScreens/plan_screen.dart';
+import 'package:enationn/pages/Screens/PopScreens/subscribe_pop_up.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../Customs/shared_pref.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -72,7 +74,7 @@ class _DashboardState extends State<Dashboard> {
   //User Logged In ------------------------------>
 
   void _checkLoginStatus() async {
-    final credentials = await getUserCredentials();
+    final credentials = await SharedPref().getUserCredentials();
     if (credentials['email'] == null || credentials['password'] == null) {
       Navigator.pushReplacementNamed(context, '/login');
     } else {}
@@ -107,9 +109,9 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> showDetails() async {
-    final loginCredentials = await getUserCredentials();
-    // log(loginCredentials['id']);
-    final userData = await getUserData(loginCredentials['id']);
+    final loginCredentials = await SharedPref().getUserCredentials();
+    log(loginCredentials['id'].toString());
+    final userData = await SharedPref().getUserData(loginCredentials['id']);
     if (userData['plan_status'] == "Basic") {
       isPremiumActive = false;
     }
@@ -124,7 +126,7 @@ class _DashboardState extends State<Dashboard> {
   void setUserCredentials(BuildContext context) async {
     final setUserCredentials =
         Provider.of<UserProvider>(context, listen: false);
-    final userData = await getUserCredentials();
+    final userData = await SharedPref().getUserCredentials();
     String id =
         await SignUpApiClient().getUserDataByEmail(userData['email'], 'id');
     final userCredentials =

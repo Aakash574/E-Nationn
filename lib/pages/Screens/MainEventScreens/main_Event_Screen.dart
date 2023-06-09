@@ -2,11 +2,11 @@ import 'dart:developer';
 
 import 'package:enationn/ApiMap/APIs/EventEndPoints/event_api.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/MainEventScreens/EventScreens/event_Screen.dart';
-import 'package:enationn/pages/Screens/MainEventScreens/InternShipScreens/internShip_Screen.dart';
 import 'package:flutter/material.dart';
 
-import 'HackathonScreens/hackathon_Screen.dart';
+import 'EventScreens/event_screen.dart';
+import 'HackathonScreens/hackathon_screen.dart';
+import 'InternShipScreens/internship_screen.dart';
 
 enum CategoriesSections {
   hackathon,
@@ -38,8 +38,8 @@ class _MainEventScreenState extends State<MainEventScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
+    return Scaffold(
+      body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
             alignment: Alignment.topCenter,

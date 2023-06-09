@@ -22,9 +22,6 @@ dependencies:
   google_fonts: ^4.0.3
   custom_sliding_segmented_control: ^1.7.4
 
-  #Flutter Notification..
-  # flutter_local_notifications: ^14.1.0
-
   #Api Calls...
   http: ^0.13.5
 

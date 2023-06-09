@@ -1,10 +1,9 @@
 // ignore_for_file: file_names, prefer_typing_uninitialized_variables
 
-import 'package:enationn/Provider/user_Provider.dart';
+import 'package:enationn/Provider/user_provider.dart';
+import 'package:enationn/const.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../const.dart';
 
 class PersonalInfoScreen extends StatefulWidget {
   const PersonalInfoScreen({super.key});

@@ -16,6 +16,7 @@ class UserInternshipApiClient {
     String applyStatus,
     String paymentStatus,
     String price,
+    String uniqueId,
   ) async {
     Uri url =
         Uri.parse('http://13.232.155.227:8000/account/api/Internship_account/');
@@ -26,11 +27,12 @@ class UserInternshipApiClient {
         'father_name': fatherName,
         'college': college,
         'date_of_birth': dateOfBirth,
-        'date_of_hackathon': dateOfEvent,
         'internship_name': internshipName,
         'apply_status': applyStatus,
         'payment_status': paymentStatus,
+        'date_of_hackathon': dateOfEvent,
         'price': price,
+        'uniqueid': uniqueId,
       },
     );
 

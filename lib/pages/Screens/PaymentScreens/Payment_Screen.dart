@@ -1,8 +1,8 @@
-// ignore_for_file: must_be_immutable, prefer_const_constructors, file_names
+// ignore_for_file: must_be_immutable
 
-import 'package:enationn/Provider/basic_Variables_Provider.dart';
+import 'package:enationn/Provider/basic_variables_provider.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/PassCodeScreen/pass_Code_Screen.dart';
+import 'package:enationn/pages/Screens/PassCodeScreen/pass_code_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

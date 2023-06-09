@@ -3,8 +3,8 @@
 import 'dart:developer';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Customs/shared_Pref.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_SignUp_Page.dart';
+import 'package:enationn/pages/Customs/shared_pref.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_signup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -74,7 +74,7 @@ class _DeleteMyAccountPopUpState extends State<DeleteMyAccountPopUp> {
                         SharedPreferences prefs =
                             await SharedPreferences.getInstance();
                         log("Developer");
-                        final id = await getUserCredentials();
+                        final id = await SharedPref().getUserCredentials();
                         log(id['id'].toString());
                         await SignUpApiClient().deleteUser(id['id'].toString());
                         Navigator.pushAndRemoveUntil(

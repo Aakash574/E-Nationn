@@ -1,20 +1,23 @@
 // ignore_for_file: file_names, use_build_context_synchronously
 
-import 'dart:developer';
+//Flutter defaults
 
-import 'package:enationn/Provider/user_Provider.dart';
-import 'package:enationn/const.dart';
-import 'package:enationn/pages/Customs/shared_Pref.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_Screen.dart';
-import 'package:enationn/pages/Screens/Profile/Sections/event_Status_Screen.dart';
-import 'package:enationn/pages/Screens/Profile/Sections/help_Screen.dart';
-import 'package:enationn/pages/Screens/Profile/Sections/privacy_Policy_Screen.dart';
-import 'package:enationn/pages/Screens/Profile/Sections/security_Screen.dart';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+// User Define
+
+import 'package:enationn/const.dart';
+import 'package:enationn/Provider/user_provider.dart';
+import 'package:enationn/pages/Customs/shared_pref.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'Sections/event_status_screen.dart';
+import 'Sections/help_screen.dart';
 import 'Sections/personal_Info_screen.dart';
+import 'Sections/privacy_policy_screen.dart';
+import 'Sections/security_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -133,35 +136,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 20),
-                                  Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      MyFont().fontSize14Bold(
-                                          "Personal Info", Colors.black),
-                                      const SizedBox(height: 5),
-                                      MyFont().fontSize12Weight500(
-                                        "Name : ${userDataProvider.fullName}",
-                                        Colors.black.withOpacity(0.5),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      MyFont().fontSize12Weight500(
-                                        "Email : ${userDataProvider.email}",
-                                        Colors.black.withOpacity(0.5),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      MyFont().fontSize12Weight500(
-                                        "Branch : ${userDataProvider.branch}",
-                                        Colors.black.withOpacity(0.5),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      MyFont().fontSize12Weight500(
-                                        "College : ${userDataProvider.college}",
-                                        Colors.black.withOpacity(0.5),
-                                      ),
-                                    ],
+                                  Container(
+                                    width: 200,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        MyFont().fontSize14Bold(
+                                            "Personal Info", Colors.black),
+                                        const SizedBox(height: 5),
+                                        MyFont().fontSize12Weight500(
+                                          "Name : ${userDataProvider.fullName}",
+                                          Colors.black.withOpacity(0.5),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        MyFont().fontSize12Weight500(
+                                          "Email : ${userDataProvider.email}",
+                                          Colors.black.withOpacity(0.5),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        MyFont().fontSize12Weight500(
+                                          "Branch : ${userDataProvider.branch}",
+                                          Colors.black.withOpacity(0.5),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        MyFont().fontSize12Weight500(
+                                          "College : ${userDataProvider.college}",
+                                          Colors.black.withOpacity(0.5),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   const Spacer(),
                                   Icon(
@@ -250,10 +256,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               SharedPreferences prefs =
                                   await SharedPreferences.getInstance();
                               setState(() {
-                                setUserLoggedIn(false);
+                                SharedPref().setUserLoggedIn(false);
                                 prefs.clear();
                                 log("User Credentials is clear");
-                                log(getUserCredentials().toString());
+                                log(SharedPref()
+                                    .getUserCredentials()
+                                    .toString());
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(

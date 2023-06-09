@@ -1,14 +1,12 @@
 // ignore_for_file:
 
-import 'package:enationn/Provider/basic_Variables_Provider.dart';
-import 'package:enationn/Provider/hackathon_Detail_Provider.dart';
-import 'package:enationn/Provider/hackathon_Provider.dart';
-import 'package:enationn/Provider/user_Provider.dart';
+import 'package:enationn/Provider/hackathon_provider.dart';
+import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/pages/Customs/shared_pref.dart';
-import 'package:enationn/pages/Screens/SplashScreens/splash_Screen_One.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'pages/Screens/SplashScreens/splash_Screen.dart';
+import 'Provider/basic_variables_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,10 +20,9 @@ class MyApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => BasicVariableModel()),
-        ChangeNotifierProvider(create: (_) => HackathonDetailProvider()),
-        ChangeNotifierProvider(create: (_) => HackathonProvider()),
+        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => BasicVariableModel()),
+        ChangeNotifierProvider(create: (context) => HackathonProvider()),
       ],
       child: const MaterialApp(
         home: HomePage(),
@@ -46,10 +43,10 @@ class _HomePageState extends State<HomePage> {
   late bool isFirstUser = false;
 
   isFirstUserLoggedIn() async {
-    isFirstUser = await getShowIntroScreen();
+    isFirstUser = await SharedPref().getShowIntroScreen();
     setState(() {});
     if (isFirstUser == false) {
-      setShowIntroScreen(true);
+      SharedPref().setShowIntroScreen(true);
     }
   }
 
@@ -63,7 +60,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: isFirstUser ? const SplashScreen() : const SplashScreenOne(),
+        // child: isFirstUser ? const SplashScreen() : const SplashScreenOne(),
+        child: LoginScreen(),
       ),
     );
   }

@@ -1,9 +1,10 @@
 // ignore_for_file: file_names
 
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/SplashScreens/splash_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+
+import 'splash_screen.dart';
 
 class SplashScreenThree extends StatefulWidget {
   const SplashScreenThree({super.key});

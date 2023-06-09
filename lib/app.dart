@@ -1,12 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
-import 'package:enationn/pages/Screens/PaymentScreens/premuim_Plan_Screen_Details.dart';
+import 'package:enationn/pages/Screens/PaymentScreens/premuim_plan_screen_Details.dart';
 import 'package:enationn/pages/Screens/Dashboard/dashboard.dart';
-import 'package:enationn/pages/Screens/MainEventScreens/main_Event_Screen.dart';
-import 'package:enationn/pages/Screens/Profile/profile_Screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'pages/Screens/MainEventScreens/main_event_screen.dart';
+import 'pages/Screens/Profile/profile_screen.dart';
 
 const Color blueTextColor = Color(0xFF0B3B96);
 const Color blueDividerColor = Color(0xFF4B89A8);
@@ -30,7 +31,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final size = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
         child: Container(

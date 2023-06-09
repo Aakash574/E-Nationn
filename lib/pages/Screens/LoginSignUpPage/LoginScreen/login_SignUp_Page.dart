@@ -1,13 +1,13 @@
 // ignore_for_file: file_names
-
-import 'package:enationn/Provider/basic_Variables_Provider.dart';
+import 'package:enationn/Provider/basic_variables_provider.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/SignUpScreen/signup_Screen.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_Screen.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/SignUpScreen/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+
+import 'login_screen.dart';
 
 class LoginSignupScreen extends StatefulWidget {
   const LoginSignupScreen({super.key});

@@ -2,8 +2,8 @@
 
 import 'package:enationn/app.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Customs/shared_Pref.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_SignUp_Page.dart';
+import 'package:enationn/pages/Customs/shared_pref.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_signup_page.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,7 +15,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   sendToNextScreen() async {
-    bool isUserLoggedIn = await getIsUserLoggedIn();
+    bool isUserLoggedIn = await SharedPref().getIsUserLoggedIn();
     print(isUserLoggedIn);
     if (isUserLoggedIn) {
       Future.delayed(

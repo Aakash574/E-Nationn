@@ -14,8 +14,8 @@ class UserHackathonApiClient {
     String noOfMembers,
     String phone,
     String applyStatus,
+    String uniqueId,
   ) async {
-
     Uri url =
         Uri.parse('http://13.232.155.227:8000/account/api/Hackathon_account/');
 
@@ -28,6 +28,7 @@ class UserHackathonApiClient {
         'phone': phone,
         'email': email,
         'apply_status': applyStatus,
+        'uniqueid': uniqueId,
       },
     );
 

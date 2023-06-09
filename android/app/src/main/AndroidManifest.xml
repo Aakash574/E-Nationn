@@ -4,7 +4,7 @@
 
    <application
    
-        android:label="enationn"
+        android:label="E-Nationn"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

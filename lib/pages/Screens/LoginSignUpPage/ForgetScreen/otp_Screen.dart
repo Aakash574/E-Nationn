@@ -5,9 +5,10 @@ import 'dart:async';
 
 import 'package:email_otp/email_otp.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/ForgetScreen/reset_Password_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'reset_password_screen.dart';
 
 class OTPScreen extends StatefulWidget {
   const OTPScreen({
