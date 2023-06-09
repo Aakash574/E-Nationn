@@ -1,11 +1,12 @@
 import 'package:enationn/ApiMap/APIs/UserEndPoints/login_api.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/FormOFSignIn/apple_Signin.dart';
-import 'package:enationn/pages/Screens/FormOFSignIn/google_Signin.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_Screen.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/SignUpScreen/signup_Screen_Two.dart';
+import 'package:enationn/pages/Screens/FormOFSignIn/apple_signin.dart';
+import 'package:enationn/pages/Screens/FormOFSignIn/google_signin.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+
+import 'signup_screen_two.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

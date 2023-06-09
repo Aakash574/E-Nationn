@@ -4,14 +4,16 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:enationn/ApiMap/APIs/EventEndPoints/event_api.dart';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
-import 'package:enationn/Provider/user_Provider.dart';
+import 'package:enationn/Provider/user_provider.dart';
+
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Customs/shared_Pref.dart';
-import 'package:enationn/pages/Screens/PaymentScreens/plan_Screen.dart';
-import 'package:enationn/pages/Screens/PopScreens/subscribe_Pop_Up.dart';
+import 'package:enationn/pages/Screens/PaymentScreens/plan_screen.dart';
+import 'package:enationn/pages/Screens/PopScreens/subscribe_pop_up.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../Customs/shared_pref.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);

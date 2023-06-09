@@ -1,11 +1,10 @@
 // ignore_for_file: file_names, prefer_typing_uninitialized_variables
 
-import 'package:enationn/pages/Customs/shared_Pref.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/ForgetScreen/forget_Password_Screen.dart';
-import 'package:enationn/pages/Screens/PopScreens/delete_My_Account.dart';
+import 'package:enationn/const.dart';
+import 'package:enationn/pages/Customs/shared_pref.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/ForgetScreen/forget_password_screen.dart';
+import 'package:enationn/pages/Screens/PopScreens/delete_my_account.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../const.dart';
 
 class SecurityScreen extends StatefulWidget {
   const SecurityScreen({super.key});
@@ -96,7 +95,8 @@ class SecurityScreenState extends State<SecurityScreen> {
                       MaterialPageRoute(
                         builder: (_) {
                           return const ForgetPasswordScreen(
-                              title: "Reset Password");
+                            title: "Reset Password",
+                          );
                         },
                       ),
                     );

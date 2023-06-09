@@ -3,7 +3,7 @@
 import 'dart:developer';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_Screen.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class ResetPasswordScreen extends StatefulWidget {

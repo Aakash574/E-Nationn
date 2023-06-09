@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:enationn/ApiMap/APIs/EventEndPoints/internship_api.dart';
-import 'package:enationn/Provider/user_Provider.dart';
+import 'package:enationn/ApiMap/APIs/UserEventEndPoints/user_internship_api.dart';
+import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/PaymentScreens/voucher_Code_Screen.dart';
+import 'package:enationn/pages/Screens/PaymentScreens/voucher_code_screen.dart';
 import 'package:enationn/pages/Screens/PopScreens/already_applied.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +17,10 @@ class InternShipScreen extends StatefulWidget {
 }
 
 class _InternShipScreenState extends State<InternShipScreen> {
+  bool isApplied = false;
+
   List internship = [];
+  List<dynamic> internshipUserData = [];
 
   void internshipDetails() async {
     internship = await InternShipApiClient().getInternshipDetails();
@@ -47,6 +53,7 @@ class _InternShipScreenState extends State<InternShipScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     return Material(
       color: Colors.white,
       child: SingleChildScrollView(
@@ -58,31 +65,59 @@ class _InternShipScreenState extends State<InternShipScreen> {
                 child: ListView.builder(
                   itemCount: internship.length,
                   itemBuilder: (context, index) => ListTile(
-                    title: InkWell(
-                      onTap: () {
-                        if (internship[index]['apply_status'] == 'active') {
-                          _scaleDialog();
-                        } else {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) {
-                                return EventTeamDetailsScreen(
-                                  index: index,
-                                  internships: internship,
-                                );
-                              },
+                    title: internship.isEmpty
+                        ? Container(
+                            alignment: Alignment.center,
+                            child: MyFont().fontSize16Bold(
+                              "Hackathon Not Available...",
+                              Colors.black45,
                             ),
-                          );
-                        }
-                      },
-                      child: InternshipSection(
-                        index: index,
-                        internship: internship,
-                        listLength: index == internship.length - 1 ? 300 : 0,
-                        // isApplyColor: Colors.red,
-                      ),
-                    ),
+                          )
+                        : InkWell(
+                            onTap: () async {
+                              internshipUserData =
+                                  await UserInternshipApiClient()
+                                      .getUserInternshipData();
+
+                              final l1 = internshipUserData.length;
+
+                              for (var i = 0; i < l1; i++) {
+                                if (internship[index]['name'] ==
+                                        internshipUserData[i]
+                                            ['internship_name'] &&
+                                    internshipUserData[i]['uniqueid'] ==
+                                        userProvider.uId) {
+                                  isApplied = true;
+                                  setState(() {});
+                                  break;
+                                } else {
+                                  isApplied = false;
+                                  setState(() {});
+                                }
+                              }
+
+                              if (!mounted) return;
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) {
+                                    return InternshipDetailsScreen(
+                                      index: index,
+                                      internship: internship,
+                                      isApplied: isApplied,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            child: InternshipSection(
+                              index: index,
+                              internship: internship,
+                              listLength:
+                                  index == internship.length - 1 ? 300 : 0,
+                              // isApplyColor: Colors.red,
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -94,20 +129,22 @@ class _InternShipScreenState extends State<InternShipScreen> {
   }
 }
 
-class EventTeamDetailsScreen extends StatefulWidget {
+class InternshipTeamDetailsScreen extends StatefulWidget {
   final int index;
   final List internships;
-  const EventTeamDetailsScreen({
+  const InternshipTeamDetailsScreen({
     super.key,
     required this.index,
     required this.internships,
   });
 
   @override
-  State<EventTeamDetailsScreen> createState() => _EventTeamDetailsScreenState();
+  State<InternshipTeamDetailsScreen> createState() =>
+      _InternshipTeamDetailsScreenState();
 }
 
-class _EventTeamDetailsScreenState extends State<EventTeamDetailsScreen> {
+class _InternshipTeamDetailsScreenState
+    extends State<InternshipTeamDetailsScreen> {
   Map<dynamic, dynamic> internshipsDetails = {};
   bool isLoading = true;
 
@@ -163,7 +200,7 @@ class _EventTeamDetailsScreenState extends State<EventTeamDetailsScreen> {
                     ),
                   ),
                   Text(
-                    internshipsDetails['name'].toString(),
+                    widget.internships[widget.index]['name'].toString(),
                     style: const TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -203,13 +240,8 @@ class _EventTeamDetailsScreenState extends State<EventTeamDetailsScreen> {
                     ),
                     userDetailField(
                       "Date Of Interview",
-                      internshipsDetails['date_of_interview'] ??
+                      widget.internships[widget.index]['date_of_interview'] ??
                           "Not Available",
-                      size,
-                    ),
-                    userDetailField(
-                      "Price",
-                      internshipsDetails['charge'].toString(),
                       size,
                     ),
                   ],
@@ -316,28 +348,20 @@ class _InternshipSectionState extends State<InternshipSection> {
           height: 200,
           margin: EdgeInsets.only(top: 20, bottom: widget.listLength),
           alignment: Alignment.bottomCenter,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("assets/Logos/TeamLogin.jpg"),
+              image: NetworkImage(
+                widget.internship[widget.index]['image'].toString(),
+              ),
               fit: BoxFit.cover,
             ),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(4),
-              bottomLeft: Radius.circular(4),
-              bottomRight: Radius.circular(8),
-              topRight: Radius.circular(8),
-            ),
+            borderRadius: BorderRadius.circular(12),
             // color: MyColors.primaryColor.withOpacity(0.5),
           ),
           child: Container(
             height: 80,
             decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(4),
-                bottomLeft: Radius.circular(4),
-                bottomRight: Radius.circular(8),
-                topRight: Radius.circular(8),
-              ),
+              borderRadius: BorderRadius.circular(8),
               color: Colors.white.withAlpha(1000),
             ),
             child: Row(
@@ -391,7 +415,7 @@ class _InternshipSectionState extends State<InternshipSection> {
                           fontSize: 16,
                         ),
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 6),
                       Row(
                         children: [
                           Icon(
@@ -403,7 +427,7 @@ class _InternshipSectionState extends State<InternshipSection> {
                             width: 10,
                           ),
                           Text(
-                            "10:00Am To 12:00Pm",
+                            widget.internship[widget.index]['time'],
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: const Color(0xff2B2849).withOpacity(0.5),
@@ -425,7 +449,7 @@ class _InternshipSectionState extends State<InternshipSection> {
                             width: 10,
                           ),
                           Text(
-                            "Crtd Technologies",
+                            widget.internship[widget.index]['location'],
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: const Color(0xff2B2849).withOpacity(0.5),
@@ -447,15 +471,15 @@ class _InternshipSectionState extends State<InternshipSection> {
                     children: [
                       Text(
                         widget.internship[widget.index]['apply_status'] ==
-                                'active'
-                            ? "Applied"
-                            : "Not Applied",
+                                'Available'
+                            ? "Available"
+                            : "Not Available",
                         style: TextStyle(
                           color: widget.internship[widget.index]
-                                      ['apply_status'] ==
-                                  'active'
-                              ? MyColors.tealGreenColor
-                              : Colors.red,
+                                      ['apply_status'] !=
+                                  'Available'
+                              ? Colors.red
+                              : MyColors.tealGreenColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -469,6 +493,277 @@ class _InternshipSectionState extends State<InternshipSection> {
         ),
         // SizedBox(height: 30),
       ],
+    );
+  }
+}
+
+class InternshipDetailsScreen extends StatefulWidget {
+  final int index;
+  final List internship;
+  final bool isApplied;
+  const InternshipDetailsScreen({
+    super.key,
+    required this.index,
+    required this.internship,
+    required this.isApplied,
+  });
+
+  @override
+  State<InternshipDetailsScreen> createState() =>
+      _InternshipDetailsScreenState();
+}
+
+class _InternshipDetailsScreenState extends State<InternshipDetailsScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    return Material(
+      child: SizedBox(
+        height: size.height,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              children: [
+                Container(
+                  height: 262,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage("assets/Logos/TeamLogin.jpg"),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: size.width,
+                  height: size.height - 220,
+                  margin: const EdgeInsets.only(top: 220),
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
+                    color: Colors.white,
+                  ),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 46,
+                          height: 2,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+
+                        MyFont().fontSize16Weight500(
+                          widget.internship[widget.index]['name'].toString(),
+                          MyColors.darkGreyColor,
+                        ),
+
+                        const SizedBox(height: 15),
+                        MyFont().fontSize16Weight500(
+                          widget.internship[widget.index]['title'].toString(),
+                          Colors.black.withOpacity(0.8),
+                        ),
+
+                        const SizedBox(height: 15),
+                        MyFont().fontSize14Weight500(
+                          widget.internship[widget.index]['desc'].toString(),
+                          MyColors.darkGreyColor.withOpacity(0.8),
+                        ),
+                        const SizedBox(height: 15),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.all(8),
+                              child: Row(
+                                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: const Color(0xffE1E9F4),
+                                    ),
+                                    child: Icon(
+                                      Icons.calendar_month_outlined,
+                                      color: MyColors.primaryColor,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 15),
+                                  Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      MyFont().fontSize16Bold(
+                                        widget.internship[widget.index]
+                                            ['date_of_interview'],
+                                        Colors.black,
+                                      ),
+                                      const SizedBox(height: 15),
+                                      MyFont().fontSize14Weight500(
+                                        widget.internship[widget.index]['time'],
+                                        MyColors.lightGreyColor,
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 45),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.all(8),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: const Color(0xffE1E9F4),
+                                    ),
+                                    child: Icon(
+                                      Icons.location_on_rounded,
+                                      color: MyColors.primaryColor,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 15),
+                                  Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      MyFont().fontSize16Bold(
+                                        "Gala Convention Center",
+                                        Colors.black,
+                                      ),
+                                      const SizedBox(height: 15),
+                                      MyFont().fontSize14Weight500(
+                                        widget.internship[widget.index]
+                                            ['location'],
+                                        MyColors.lightGreyColor,
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 45),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 15),
+                        Container(
+                          width: 46,
+                          height: 2,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: Colors.grey,
+                          ),
+                        ),
+                        // SizedBox(height: 5),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(
+                                top: 12,
+                                bottom: 12,
+                                right: 12,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  MyFont().fontSize16Weight500(
+                                    "Last Registration Date",
+                                    Colors.black,
+                                  ),
+                                  const SizedBox(height: 15),
+                                  MyFont().fontSize14Weight500(
+                                    widget.internship[widget.index]
+                                        ['last_date_to_apply'],
+                                    MyColors.lightGreyColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                top: 12,
+                                bottom: 12,
+                                right: 12,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  MyFont().fontSize16Weight500(
+                                    "Apply Status",
+                                    Colors.black,
+                                  ),
+                                  const SizedBox(height: 15),
+                                  MyFont().fontSize14Weight500(
+                                    widget.isApplied
+                                        ? "Applied"
+                                        : "Not Applied",
+                                    MyColors.lightGreyColor,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          width: size.width,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: widget.isApplied
+                                ? MyColors.lightGreyColor
+                                : MyColors.primaryColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: TextButton(
+                            onPressed: () {
+                              widget.isApplied
+                                  ? log("Already Applied")
+                                  : Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return InternshipTeamDetailsScreen(
+                                            index: widget.index,
+                                            internships: widget.internship,
+                                          );
+                                        },
+                                      ),
+                                    );
+                            },
+                            child: MyFont().fontSize16Bold(
+                              widget.isApplied ? "Applied" : "Apply",
+                              Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

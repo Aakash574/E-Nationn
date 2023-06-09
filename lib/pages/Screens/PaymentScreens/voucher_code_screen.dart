@@ -6,9 +6,9 @@ import 'package:enationn/ApiMap/APIs/UserEventEndPoints/user_event_api.dart';
 import 'package:enationn/ApiMap/APIs/UserEventEndPoints/user_hackathon_api.dart';
 import 'package:enationn/ApiMap/APIs/UserEventEndPoints/user_internship_api.dart';
 import 'package:enationn/ApiMap/APIs/VoucherCodeEndPoint/voucher_code_api.dart';
-import 'package:enationn/Provider/basic_Variables_Provider.dart';
-import 'package:enationn/Provider/hackathon_Provider.dart';
-import 'package:enationn/Provider/user_Provider.dart';
+import 'package:enationn/Provider/basic_variables_provider.dart';
+import 'package:enationn/Provider/hackathon_provider.dart';
+import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Screens/ExtraScreens/thankyou_Screen.dart';
 import 'package:flutter/material.dart';
@@ -34,9 +34,15 @@ class VoucherCodeScreen extends StatefulWidget {
 }
 
 class _VoucherCodeScreenState extends State<VoucherCodeScreen> {
+  // Date ->
   String date = DateFormat("MMMM dd, yyyy").format(DateTime.now());
+
+  //Controllers --->
   final TextEditingController voucherController = TextEditingController();
+
+  // Local Variables -->
   double width = 30;
+  bool isValid = false;
 
   @override
   void initState() {
@@ -113,6 +119,12 @@ class _VoucherCodeScreenState extends State<VoucherCodeScreen> {
                             height: 50,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                width: 1,
+                                color: isValid
+                                    ? Colors.red
+                                    : MyColors.tealGreenColor,
+                              ),
                               color: Colors.white,
                             ),
                             child: TextFormField(
@@ -129,33 +141,67 @@ class _VoucherCodeScreenState extends State<VoucherCodeScreen> {
                               onChanged: (value) {},
                             ),
                           ),
+                          // const SizedBox(height: 20),
+                          // MyFont().fontSize14Bold(
+                          //   isValid ?  : " ",
+                          //   isValid ? MyColors.secondaryColor : Colors.white,
+                          // ),
                           const SizedBox(height: 20),
-                          Container(
-                            width: size.width,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: Colors.white.withOpacity(0.2),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Icon(
-                                  Icons.warning_amber_rounded,
-                                  color: Colors.white,
-                                  // size: 1,
-                                ),
-                                Text(
-                                  "Lorem ipsum is placeholder text",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
+                          isValid
+                              ? Container(
+                                  width: size.width - 100,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: Colors.white.withOpacity(0.2),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Icon(
+                                        Icons.warning_amber_rounded,
+                                        color: MyColors.secondaryColor,
+                                        // size: 1,
+                                      ),
+                                      Text(
+                                        "Please enter valid voucher code.",
+                                        style: TextStyle(
+                                          color: MyColors.secondaryColor,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                    ],
+                                  ),
+                                )
+                              : Container(
+                                  width: size.width - 100,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: Colors.white.withOpacity(0.2),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Icon(
+                                        Icons.warning_amber_rounded,
+                                        color: MyColors.secondaryColor,
+                                        // size: 1,
+                                      ),
+                                      Text(
+                                        "Please Enter voucher code.",
+                                        style: TextStyle(
+                                          color: MyColors.tealGreenColor,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                    ],
                                   ),
                                 ),
-                                SizedBox(width: 10),
-                              ],
-                            ),
-                          ),
                         ],
                       ),
                       Container(
@@ -191,6 +237,7 @@ class _VoucherCodeScreenState extends State<VoucherCodeScreen> {
                                     "active",
                                     "active",
                                     widget.events[widget.index]['charge'],
+                                    userDataProvider.uId,
                                   );
                                   log("Register : ${isRegister.toString()}");
                                   if (isRegister) {
@@ -233,12 +280,12 @@ class _VoucherCodeScreenState extends State<VoucherCodeScreen> {
                                     "Applied",
                                     "Applied",
                                     widget.events[widget.index]['charge'],
+                                    userDataProvider.uId,
                                   );
                                   log("Register : ${isRegister.toString()}");
                                   if (isRegister) {
                                     log("Registered ");
                                     if (!mounted) return;
-
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -266,6 +313,7 @@ class _VoucherCodeScreenState extends State<VoucherCodeScreen> {
                                     hackathonDataProvider.noOfMembers,
                                     hackathonDataProvider.phoneNo,
                                     "Applied",
+                                    userDataProvider.uId,
                                   );
                                   log("Register : ${isRegister.toString()}");
                                   if (isRegister) {
@@ -284,6 +332,9 @@ class _VoucherCodeScreenState extends State<VoucherCodeScreen> {
                                     log("Please Try Again");
                                   }
                                   break;
+
+                                //For Premium Plan -------------->
+
                                 case "PlanScreen":
                                   final plan = basicVariable.plan;
                                   log(plan);
@@ -328,6 +379,9 @@ class _VoucherCodeScreenState extends State<VoucherCodeScreen> {
                                   break;
                                 default:
                               }
+                            } else {
+                              voucherController.clear();
+                              isValid = true;
                             }
                             setState(() {});
                           },

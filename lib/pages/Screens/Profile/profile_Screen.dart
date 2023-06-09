@@ -1,20 +1,23 @@
 // ignore_for_file: file_names, use_build_context_synchronously
 
-import 'dart:developer';
+//Flutter defaults
 
-import 'package:enationn/Provider/user_Provider.dart';
-import 'package:enationn/const.dart';
-import 'package:enationn/pages/Customs/shared_Pref.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_Screen.dart';
-import 'package:enationn/pages/Screens/Profile/Sections/event_Status_Screen.dart';
-import 'package:enationn/pages/Screens/Profile/Sections/help_Screen.dart';
-import 'package:enationn/pages/Screens/Profile/Sections/privacy_Policy_Screen.dart';
-import 'package:enationn/pages/Screens/Profile/Sections/security_Screen.dart';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+// User Define
+
+import 'package:enationn/const.dart';
+import 'package:enationn/Provider/user_provider.dart';
+import 'package:enationn/pages/Customs/shared_pref.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'Sections/event_status_screen.dart';
+import 'Sections/help_screen.dart';
 import 'Sections/personal_Info_screen.dart';
+import 'Sections/privacy_policy_screen.dart';
+import 'Sections/security_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

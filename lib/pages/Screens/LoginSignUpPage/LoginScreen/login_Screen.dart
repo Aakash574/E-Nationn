@@ -1,17 +1,16 @@
 import 'package:enationn/ApiMap/APIs/UserEndPoints/login_api.dart';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
-import 'package:enationn/Provider/basic_Variables_Provider.dart';
+import 'package:enationn/Provider/basic_variables_provider.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Customs/shared_Pref.dart';
-import 'package:enationn/pages/Screens/PassCodeScreen/pass_Code_Screen.dart';
-import 'package:enationn/pages/Screens/FormOFSignIn/apple_Signin.dart';
-import 'package:enationn/pages/Screens/FormOFSignIn/google_Signin.dart';
+import 'package:enationn/pages/Customs/shared_pref.dart';
+import 'package:enationn/pages/Screens/FormOFSignIn/apple_signin.dart';
+import 'package:enationn/pages/Screens/FormOFSignIn/google_signin.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/ForgetScreen/forget_password_screen.dart';
 import 'package:enationn/pages/Screens/LoginSignUpPage/SignUpScreen/signup_Screen.dart';
+import 'package:enationn/pages/Screens/PassCodeScreen/pass_code_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-
-import '../ForgetScreen/forget_Password_Screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

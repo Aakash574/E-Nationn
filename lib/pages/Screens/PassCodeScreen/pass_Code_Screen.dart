@@ -2,10 +2,10 @@
 
 import 'dart:developer';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/passkey_api.dart';
-import 'package:enationn/Provider/basic_Variables_Provider.dart';
+import 'package:enationn/Provider/basic_variables_provider.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Screens/ExtraScreens/thankyou_Screen.dart';
-import 'package:enationn/pages/Screens/ExtraScreens/welcome_Screen.dart';
+import 'package:enationn/pages/Screens/ExtraScreens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

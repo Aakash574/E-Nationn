@@ -16,6 +16,7 @@ class UserEventApiClient {
     String applyStatus,
     String paymentStatus,
     String price,
+    String uniqueId,
   ) async {
     Uri url =
         Uri.parse('http://13.232.155.227:8000/account/api/Event_account/');
@@ -31,6 +32,7 @@ class UserEventApiClient {
         'apply_status': applyStatus,
         'payment_status': paymentStatus,
         'price': price,
+        'uniqueid': uniqueId,
       },
     );
 
