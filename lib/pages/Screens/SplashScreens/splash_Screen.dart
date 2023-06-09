@@ -15,7 +15,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   sendToNextScreen() async {
-    bool isUserLoggedIn = await getIsUserLoggedIn();
+    bool isUserLoggedIn = await SharedPref().getIsUserLoggedIn();
     print(isUserLoggedIn);
     if (isUserLoggedIn) {
       Future.delayed(

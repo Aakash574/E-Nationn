@@ -38,8 +38,8 @@ class SecurityScreenState extends State<SecurityScreen> {
   }
 
   void userCredentials() async {
-    var loginCredentials = await getUserCredentials();
-    userData = await getUserData(loginCredentials['id']);
+    var loginCredentials = await SharedPref().getUserCredentials();
+    userData = await SharedPref().getUserData(loginCredentials['id']);
     userName = userData['full_name'];
     userEmail = userData['email'];
     dateOfBirth = userData['date_of_birth'];

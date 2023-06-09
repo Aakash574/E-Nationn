@@ -136,35 +136,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 20),
-                                  Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      MyFont().fontSize14Bold(
-                                          "Personal Info", Colors.black),
-                                      const SizedBox(height: 5),
-                                      MyFont().fontSize12Weight500(
-                                        "Name : ${userDataProvider.fullName}",
-                                        Colors.black.withOpacity(0.5),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      MyFont().fontSize12Weight500(
-                                        "Email : ${userDataProvider.email}",
-                                        Colors.black.withOpacity(0.5),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      MyFont().fontSize12Weight500(
-                                        "Branch : ${userDataProvider.branch}",
-                                        Colors.black.withOpacity(0.5),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      MyFont().fontSize12Weight500(
-                                        "College : ${userDataProvider.college}",
-                                        Colors.black.withOpacity(0.5),
-                                      ),
-                                    ],
+                                  Container(
+                                    width: 200,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        MyFont().fontSize14Bold(
+                                            "Personal Info", Colors.black),
+                                        const SizedBox(height: 5),
+                                        MyFont().fontSize12Weight500(
+                                          "Name : ${userDataProvider.fullName}",
+                                          Colors.black.withOpacity(0.5),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        MyFont().fontSize12Weight500(
+                                          "Email : ${userDataProvider.email}",
+                                          Colors.black.withOpacity(0.5),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        MyFont().fontSize12Weight500(
+                                          "Branch : ${userDataProvider.branch}",
+                                          Colors.black.withOpacity(0.5),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        MyFont().fontSize12Weight500(
+                                          "College : ${userDataProvider.college}",
+                                          Colors.black.withOpacity(0.5),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   const Spacer(),
                                   Icon(
@@ -253,10 +256,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               SharedPreferences prefs =
                                   await SharedPreferences.getInstance();
                               setState(() {
-                                setUserLoggedIn(false);
+                                SharedPref().setUserLoggedIn(false);
                                 prefs.clear();
                                 log("User Credentials is clear");
-                                log(getUserCredentials().toString());
+                                log(SharedPref()
+                                    .getUserCredentials()
+                                    .toString());
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(

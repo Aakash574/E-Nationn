@@ -74,7 +74,7 @@ class _DeleteMyAccountPopUpState extends State<DeleteMyAccountPopUp> {
                         SharedPreferences prefs =
                             await SharedPreferences.getInstance();
                         log("Developer");
-                        final id = await getUserCredentials();
+                        final id = await SharedPref().getUserCredentials();
                         log(id['id'].toString());
                         await SignUpApiClient().deleteUser(id['id'].toString());
                         Navigator.pushAndRemoveUntil(

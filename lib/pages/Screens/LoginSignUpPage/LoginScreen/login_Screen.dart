@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:enationn/ApiMap/APIs/UserEndPoints/login_api.dart';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
 import 'package:enationn/Provider/basic_variables_provider.dart';
@@ -34,17 +36,17 @@ class _LoginScreenState extends State<LoginScreen> {
     String password = _passwordController.text;
 
     // Authenticate the user and save the credentials if successful
-
-    bool isAuthenticated = await authenticateUser(context, email, password);
+    log(email);
+    bool isAuthenticated =
+        await SharedPref().authenticateUser(context, email, password);
     String id = await SignUpApiClient().getUserDataByEmail(email, 'id');
 
     final int uniqueId = int.parse(id);
 
     if (isAuthenticated) {
-      await saveUserCredentials(uniqueId, email, password, true);
+      await SharedPref().saveUserCredentials(uniqueId, email, password, true);
       // Navigate to the home screen
       if (!mounted) return;
-
       Navigator.pushReplacementNamed(
         context,
         '/lib/pages/Screens/Dashboard/dashboard.dart',

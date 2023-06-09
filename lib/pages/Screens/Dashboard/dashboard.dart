@@ -74,7 +74,7 @@ class _DashboardState extends State<Dashboard> {
   //User Logged In ------------------------------>
 
   void _checkLoginStatus() async {
-    final credentials = await getUserCredentials();
+    final credentials = await SharedPref().getUserCredentials();
     if (credentials['email'] == null || credentials['password'] == null) {
       Navigator.pushReplacementNamed(context, '/login');
     } else {}
@@ -109,9 +109,9 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> showDetails() async {
-    final loginCredentials = await getUserCredentials();
-    // log(loginCredentials['id']);
-    final userData = await getUserData(loginCredentials['id']);
+    final loginCredentials = await SharedPref().getUserCredentials();
+    log(loginCredentials['id'].toString());
+    final userData = await SharedPref().getUserData(loginCredentials['id']);
     if (userData['plan_status'] == "Basic") {
       isPremiumActive = false;
     }
@@ -126,7 +126,7 @@ class _DashboardState extends State<Dashboard> {
   void setUserCredentials(BuildContext context) async {
     final setUserCredentials =
         Provider.of<UserProvider>(context, listen: false);
-    final userData = await getUserCredentials();
+    final userData = await SharedPref().getUserCredentials();
     String id =
         await SignUpApiClient().getUserDataByEmail(userData['email'], 'id');
     final userCredentials =

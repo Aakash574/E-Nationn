@@ -1,12 +1,10 @@
-// ignore_for_file: file_names, use_build_context_synchronously
-
 import 'dart:developer';
-import 'package:enationn/Provider/basic_variables_provider.dart';
-import 'package:enationn/Provider/user_provider.dart';
-import 'package:enationn/const.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:enationn/Provider/basic_variables_provider.dart';
+import 'package:enationn/Provider/user_provider.dart';
+import 'package:enationn/const.dart';
 import 'voucher_code_screen.dart';
 
 class PlanScreen extends StatefulWidget {
@@ -343,12 +341,26 @@ class _PlanScreenState extends State<PlanScreen> {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(5),
-                                          color: Colors.green,
+                                          color: !isActive &&
+                                                  userProvider.planStatus ==
+                                                      'premium'
+                                              ? MyColors.secondaryColor
+                                              : isActive &&
+                                                      userProvider.planStatus ==
+                                                          'basic'
+                                                  ? MyColors.primaryColor
+                                                  : MyColors.lightGreenColor,
                                         ),
                                         child: MyFont().fontSize12Bold(
-                                          basicVariable.plan == "premium"
-                                              ? "Active"
-                                              : "Not Eligible",
+                                          !isActive &&
+                                                  userProvider.planStatus ==
+                                                      'premium'
+                                              ? "Activated"
+                                              : isActive &&
+                                                      userProvider.planStatus ==
+                                                          'basic'
+                                                  ? "Activated"
+                                                  : "Eligible",
                                           Colors.white,
                                         ),
                                       ),
@@ -358,97 +370,17 @@ class _PlanScreenState extends State<PlanScreen> {
                               ),
                             ),
                             const Spacer(),
-                            userProvider.planStatus == "premium"
-                                ? Container(
-                                    width: size.width / 1.2,
-                                    height: 124,
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        width: 1,
-                                        color: isActive
-                                            ? MyColors.primaryColor
-                                            : MyColors.secondaryColor,
-                                      ),
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        MyFont().fontSize14Bold(
-                                          isActive
-                                              ? "Basic Plan"
-                                              : "Premium Plan",
-                                          isActive
-                                              ? MyColors.primaryColor
-                                              : MyColors.secondaryColor,
-                                        ),
-                                        const SizedBox(),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            MyFont().fontSize14Bold(
-                                              "Eligible For This Plan",
-                                              MyColors.darkGreyColor,
-                                            ),
-                                            Container(
-                                              height: 25,
-                                              width: 25,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
-                                                color: Colors.red,
-                                              ),
-                                              child: const Icon(
-                                                Icons.clear,
-                                                color: Colors.white,
-                                                size: 16,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            const Text(
-                                              "Status",
-                                              style: TextStyle(
-                                                color: Colors.grey,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            Container(
-                                              height: 20,
-                                              width: 80,
-                                              alignment: Alignment.center,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                color: Colors.red,
-                                              ),
-                                              child: MyFont().fontSize12Bold(
-                                                "Not Eligible",
-                                                Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : Container(),
-                            const Spacer(),
                             Container(
                               width: size.width,
                               height: 56,
                               decoration: BoxDecoration(
-                                color: MyColors.primaryColor,
+                                color: !isActive
+                                    ? userProvider.planStatus == 'premium'
+                                        ? MyColors.lightGreyColor
+                                        : MyColors.primaryColor
+                                    : userProvider.planStatus == 'basic'
+                                        ? MyColors.lightGreyColor
+                                        : MyColors.primaryColor,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: TextButton(
@@ -460,25 +392,53 @@ class _PlanScreenState extends State<PlanScreen> {
                                   } else {
                                     basicVariable.setPlan('Not Active');
                                   }
-
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return VoucherCodeScreen(
-                                          name: basicVariable.plan == "basic"
-                                              ? "Basic Plan"
-                                              : "Premium Plan",
-                                          events: const [],
-                                          index: 0,
-                                          screen: "PlanScreen",
-                                        );
-                                      },
-                                    ),
-                                  );
+                                  log(isActive.toString());
+                                  isActive && userProvider.planStatus != 'basic'
+                                      ? Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return VoucherCodeScreen(
+                                                name: basicVariable.plan ==
+                                                        "basic"
+                                                    ? "Basic Plan"
+                                                    : "Premium Plan",
+                                                events: const [],
+                                                index: 0,
+                                                screen: "PlanScreen",
+                                              );
+                                            },
+                                          ),
+                                        )
+                                      : !isActive &&
+                                              userProvider.planStatus !=
+                                                  'premium'
+                                          ? Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) {
+                                                  return VoucherCodeScreen(
+                                                    name: basicVariable.plan ==
+                                                            "basic"
+                                                        ? "Basic Plan"
+                                                        : "Premium Plan",
+                                                    events: const [],
+                                                    index: 0,
+                                                    screen: "PlanScreen",
+                                                  );
+                                                },
+                                              ),
+                                            )
+                                          : log('dkjsfh');
                                 },
                                 child: MyFont().fontSize16Bold(
-                                  "Apply",
+                                  !isActive &&
+                                          userProvider.planStatus == 'premium'
+                                      ? "Activated"
+                                      : isActive &&
+                                              userProvider.planStatus == 'basic'
+                                          ? "Activated"
+                                          : "Apply",
                                   Colors.white,
                                 ),
                               ),
