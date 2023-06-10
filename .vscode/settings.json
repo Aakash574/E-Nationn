@@ -10,5 +10,6 @@
         "main"
     ],
     "java.configuration.updateBuildConfiguration": "interactive",
-    "cmake.configureOnOpen": true
+    "cmake.configureOnOpen": true,
+    "cmake.sourceDirectory": "C:/Users/HP/Desktop/enationn/enationn_app/windows"
 }
