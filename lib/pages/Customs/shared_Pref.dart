@@ -2,9 +2,7 @@
 
 import 'dart:developer';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
-import 'package:enationn/Provider/user_Provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPref {
