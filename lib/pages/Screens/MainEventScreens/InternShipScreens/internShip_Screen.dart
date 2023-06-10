@@ -113,9 +113,10 @@ class _InternShipScreenState extends State<InternShipScreen> {
                             child: InternshipSection(
                               index: index,
                               internship: internship,
+                              isApplied: isApplied,
                               listLength:
                                   index == internship.length - 1 ? 300 : 0,
-                              // isApplyColor: Colors.red,
+                      
                             ),
                           ),
                   ),
@@ -327,11 +328,13 @@ class InternshipSection extends StatefulWidget {
     required this.index,
     required this.internship,
     required this.listLength,
+    required this.isApplied,
   });
 
   final int index;
   final List internship;
   final double listLength;
+  final bool isApplied;
 
   @override
   State<InternshipSection> createState() => _InternshipSectionState();
@@ -470,16 +473,11 @@ class _InternshipSectionState extends State<InternshipSection> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        widget.internship[widget.index]['apply_status'] ==
-                                'Available'
-                            ? "Available"
-                            : "Not Available",
+                        widget.isApplied ? "Applied" : "Not Applied",
                         style: TextStyle(
-                          color: widget.internship[widget.index]
-                                      ['apply_status'] !=
-                                  'Available'
-                              ? Colors.red
-                              : MyColors.tealGreenColor,
+                          color: widget.isApplied
+                              ? MyColors.tealGreenColor
+                              : Colors.red,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),

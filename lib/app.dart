@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, must_be_immutable
 
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:enationn/pages/Screens/PaymentScreens/premuim_plan_screen_Details.dart';
@@ -14,14 +14,15 @@ const Color blueDividerColor = Color(0xFF4B89A8);
 const Color bgColor = Colors.white;
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  int activeIndex = 1;
+  HomeScreen({super.key, required this.activeIndex});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _activeIndex = 1;
+  // int _activeIndex = 1;
   static const List body = [
     Dashboard(),
     PremiumPlanDetailScreen(),
@@ -34,15 +35,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          child: body.elementAt(_activeIndex - 1),
+          child: body.elementAt(widget.activeIndex - 1),
         ),
       ),
       bottomNavigationBar: BottomNavBar(
-        activeIndex: _activeIndex,
+        activeIndex: widget.activeIndex,
         blueTextColor: blueTextColor,
         onTapChange: (int onChangeActiveIndex) {
           setState(() {
-            _activeIndex = onChangeActiveIndex;
+            widget.activeIndex = onChangeActiveIndex;
           });
         },
       ),

@@ -19,7 +19,7 @@ class _ThankyouScreenState extends State<ThankyouScreen> {
           context,
           MaterialPageRoute(
             builder: (context) {
-              return const HomeScreen();
+              return  HomeScreen(activeIndex: 1,);
             },
           ),
           (route) => false,

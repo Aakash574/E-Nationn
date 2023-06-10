@@ -20,4 +20,5 @@ class HackathonApiClient {
 
     return hackathonDetails;
   }
+
 }
