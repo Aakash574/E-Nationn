@@ -20,7 +20,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           context,
           MaterialPageRoute(
             builder: (context) {
-              return const HomeScreen();
+              return HomeScreen(activeIndex: 1,);
             },
           ),
           (route) => false,

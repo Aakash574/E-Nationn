@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:enationn/ApiMap/APIs/EventEndPoints/event_api.dart';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
 import 'package:enationn/Provider/user_provider.dart';
+import 'package:enationn/app.dart';
 
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Screens/PaymentScreens/plan_screen.dart';
@@ -14,6 +15,12 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Customs/shared_pref.dart';
+
+enum CategoriesSections {
+  hackathon,
+  internship,
+  event,
+}
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -32,15 +39,15 @@ class Dashboard extends StatefulWidget {
       'imgPath': 'assets/Dashboard/three.png',
     },
     {
-      'name': 'Center 1',
+      'name': 'Events',
       'imgPath': 'assets/Dashboard/four.png',
     },
     {
-      'name': 'Center 2',
+      'name': 'Jobs',
       'imgPath': 'assets/Dashboard/five.png',
     },
     {
-      'name': 'Center 3',
+      'name': 'Practice',
       'imgPath': 'assets/Dashboard/six.png',
     },
     {
@@ -487,57 +494,96 @@ class _DashboardState extends State<Dashboard> {
                                     mainAxisExtent: 138,
                                   ),
                                   itemBuilder: (context, index) {
-                                    return Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Stack(
-                                        children: [
-                                          Positioned.fill(
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                              child: Image.asset(
-                                                Dashboard.fakeData[index]
-                                                    ['imgPath'],
-                                                fit: BoxFit.cover,
-                                              ),
-                                              // child: Image.network(
-                                              //   fakeData[index]['imgPath'],
-                                              //   fit: BoxFit.cover,
-                                              // ),
-                                            ),
-                                          ),
-                                          Positioned(
-                                            left: 1,
-                                            right: 1,
-                                            bottom: 1,
-                                            child: Container(
-                                              height: 24,
-                                              decoration: const BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: BorderRadius.only(
-                                                  bottomLeft:
-                                                      Radius.circular(4),
-                                                  bottomRight:
-                                                      Radius.circular(4),
+                                    return InkWell(
+                                      onTap: () {
+                                        switch (index) {
+                                          case 1:
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    HomeScreen(
+                                                  activeIndex: 3,
                                                 ),
                                               ),
-                                              child: Center(
-                                                child: Text(
+                                            );
+                                            break;
+                                          case 2:
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    HomeScreen(
+                                                  activeIndex: 3,
+                                                ),
+                                              ),
+                                            );
+                                            break;
+                                          case 3:
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    HomeScreen(
+                                                  activeIndex: 3,
+                                                ),
+                                              ),
+                                            );
+                                            break;
+                                          default:
+                                        }
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Stack(
+                                          children: [
+                                            Positioned.fill(
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                child: Image.asset(
                                                   Dashboard.fakeData[index]
-                                                      ['name'],
-                                                  style: const TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.w500,
+                                                      ['imgPath'],
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              left: 1,
+                                              right: 1,
+                                              bottom: 1,
+                                              child: Container(
+                                                height: 24,
+                                                decoration: const BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    bottomLeft:
+                                                        Radius.circular(4),
+                                                    bottomRight:
+                                                        Radius.circular(4),
+                                                  ),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    Dashboard.fakeData[index]
+                                                        ['name'],
+                                                    style: const TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     );
                                   },

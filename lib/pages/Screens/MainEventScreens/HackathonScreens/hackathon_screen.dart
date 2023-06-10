@@ -17,10 +17,6 @@ class HackathonScreen extends StatefulWidget {
 }
 
 class _HackathonScreenState extends State<HackathonScreen> {
-  String image = "";
-  String name = "";
-  String dateOfHackathon = "";
-  String lastDateOfHackathon = "";
   bool isApplied = false;
 
   List<dynamic> hackathonEventDetails = [];
@@ -258,16 +254,11 @@ class _HackathonScreenState extends State<HackathonScreen> {
                                                   CrossAxisAlignment.end,
                                               children: [
                                                 Text(
-                                                  hackathonEventDetails[index][
-                                                              'apply_status'] ==
-                                                          "Available"
-                                                      ? "Available"
-                                                      : "Not Available",
+                                                  isApplied
+                                                      ? "Applied"
+                                                      : "Not Applied",
                                                   style: TextStyle(
-                                                    color: hackathonEventDetails[
-                                                                    index][
-                                                                'apply_status'] ==
-                                                            "Available"
+                                                    color: isApplied
                                                         ? MyColors
                                                             .tealGreenColor
                                                         : Colors.red,

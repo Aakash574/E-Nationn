@@ -136,7 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 20),
-                                  Container(
+                                  SizedBox(
                                     width: 200,
                                     child: Column(
                                       mainAxisAlignment:

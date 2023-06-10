@@ -62,4 +62,18 @@ class UserHackathonApiClient {
 
     return userHackathonData;
   }
+  Future<dynamic> getSpecificUserHackathonDetails(int id) async {
+    Uri url =
+        Uri.parse('http://13.232.155.227:8000/account/api/Hackathon_account/$id/');
+    Response response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    List<dynamic> userHackathonData = await json.decode(response.body);
+
+    return userHackathonData;
+  }
 }
