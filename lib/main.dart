@@ -3,10 +3,11 @@
 import 'package:enationn/Provider/hackathon_provider.dart';
 import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/pages/Customs/shared_pref.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'Provider/basic_variables_provider.dart';
+import 'pages/Screens/SplashScreens/splash_screen.dart';
+import 'pages/Screens/SplashScreens/splash_screen_one.dart';
 
 void main() {
   runApp(const MyApp());
@@ -60,8 +61,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        // child: isFirstUser ? const SplashScreen() : const SplashScreenOne(),
-        child: LoginScreen(),
+        child: isFirstUser ? const SplashScreen() : const SplashScreenOne(),
+        // child: LoginScreen(),
       ),
     );
   }
