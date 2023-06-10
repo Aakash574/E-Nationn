@@ -189,10 +189,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           //   Icons.payment,
                           // ),
                         ),
-                        Column(
+                        const Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             SizedBox(height: 10),
                             Text(
                               "Phone Pay",
