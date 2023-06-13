@@ -37,15 +37,7 @@ class LoginApiClient {
     final userData = await jsonDecode(response.body);
     for (var i = 0; i < userData.length; i++) {
       if (await userData[i]['email'] == email) {
-        switch (choose) {
-          case 'id':
-            return userData[i]['id'].toString();
-
-          case 'email':
-            return await userData[i]['email'];
-
-          default:
-        }
+        return userData[i][choose].toString();
       }
     }
     return "0";
@@ -60,15 +52,13 @@ class LoginApiClient {
     );
 
     final userData = await jsonDecode(response.body);
+
     log(response.body);
     log(response.statusCode.toString());
-    log("email : $email");
 
     if (response.statusCode == 200) {
       for (var i = 0; i < userData.length; i++) {
-        log("$i} : " + await userData[i]['email']);
         if (await userData[i]['email'] == email) {
-          log("Email Come Form API : " + await userData[i]['email']);
           return true;
         }
       }

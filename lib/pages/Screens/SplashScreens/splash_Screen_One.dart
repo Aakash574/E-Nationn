@@ -25,7 +25,7 @@ class _SplashScreenOneState extends State<SplashScreenOne> {
             image: AssetImage(
               "assets/SplashScreenImg/splash_One.png",
             ),
-            scale: 1.0,
+            // scale: 0.1,
             fit: BoxFit.cover,
           ),
         ),
@@ -37,10 +37,12 @@ class _SplashScreenOneState extends State<SplashScreenOne> {
               SizedBox(
                 width: size.width,
                 height: size.height / 2.3,
-                child:
-                    Image.asset("assets/SplashScreenImg/SplashScreenOne.png"),
+                child: Image.asset(
+                  "assets/SplashScreenImg/SplashScreenOne.png",
+                  scale: 1.5,
+                ),
               ),
-              const SizedBox(height: 30),
+              // const SizedBox(height: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

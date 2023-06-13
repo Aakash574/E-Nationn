@@ -107,17 +107,18 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void showDialog(BuildContext context) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool? isFirstLoaded = prefs.getBool(keyIsFirstLoaded);
-    if (isFirstLoaded == null &&
-        context.widget.toStringShort() == "Dashboard") {
-      _scaleDialog();
-    }
+    isFirstLoaded == null && context.widget.toStringShort() == "Dashboard"
+        ? userProvider.planStatus != 'premium'
+            ? _scaleDialog()
+            : log("True")
+        : log("true");
   }
 
   Future<void> showDetails() async {
     final loginCredentials = await SharedPref().getUserCredentials();
-    log(loginCredentials['id'].toString());
     final userData = await SharedPref().getUserData(loginCredentials['id']);
     if (userData['plan_status'] == "Basic") {
       isPremiumActive = false;
@@ -131,33 +132,37 @@ class _DashboardState extends State<Dashboard> {
   // Setting Up user Data --------->
 
   void setUserCredentials(BuildContext context) async {
-    final setUserCredentials =
-        Provider.of<UserProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     final userData = await SharedPref().getUserCredentials();
     String id =
         await SignUpApiClient().getUserDataByEmail(userData['email'], 'id');
-    final userCredentials =
-        await SignUpApiClient().getUserDataById(int.parse(id));
-    log(userCredentials.toString());
-    log(userCredentials['id'].toString());
-    setUserCredentials.setID(userCredentials['id'].toString());
-    setUserCredentials.setFullName(userCredentials['full_name']);
-    setUserCredentials.setEmail(userCredentials['email']);
-    setUserCredentials.setFatherName(userCredentials['father_name']);
-    setUserCredentials.setCollege(userCredentials['college']);
-    setUserCredentials.setBranch(userCredentials['branch']);
-    setUserCredentials.setYearOfPassout(userCredentials['year_of_passout']);
-    setUserCredentials.setDateOfBirth(userCredentials['date_of_birth']);
-    setUserCredentials.setPlaceOfBirth(userCredentials['place_of_birth']);
-    setUserCredentials.setUID(userCredentials['uid']);
-    setUserCredentials.setInternshipStatus(
-      userCredentials['internship_status'],
+    final getUser = await SignUpApiClient().getUserDataById(int.parse(id));
+
+    userProvider.setID(getUser['id'].toString());
+    userProvider.setFullName(getUser['full_name']);
+    userProvider.setEmail(getUser['email']);
+    userProvider.setGender(getUser['gender']);
+    userProvider.setFatherName(getUser['father_name']);
+    userProvider.setCollege(getUser['college']);
+    userProvider.setBranch(getUser['branch']);
+    userProvider.setYearOfPassout(getUser['year_of_passout']);
+    userProvider.setDateOfBirth(getUser['date_of_birth']);
+    userProvider.setPlaceOfBirth(getUser['place_of_birth']);
+    userProvider.setUID(getUser['uid']);
+    userProvider.setInternshipStatus(
+      getUser['internship_status'],
     );
-    setUserCredentials.setEventStatus(userCredentials['event_status']);
-    setUserCredentials.setHackathonStatus(userCredentials['hackathon_status']);
-    setUserCredentials.setSignupKey(userCredentials['signupkey']);
-    setUserCredentials.setApplyStatus(userCredentials['Apply_status']);
-    setUserCredentials.setPlanStatus(userCredentials['plan_status']);
+    userProvider.setEventStatus(getUser['event_status']);
+    userProvider.setHackathonStatus(getUser['hackathon_status']);
+    userProvider.setSignupKey(getUser['signupkey']);
+    userProvider.setApplyStatus(getUser['Apply_status']);
+    userProvider.setPlanStatus(getUser['plan_status']);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    timer.cancel();
   }
 
   @override
@@ -165,7 +170,7 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
 
     timer = Timer.periodic(
-      const Duration(minutes: 5),
+      const Duration(minutes: 30),
       (Timer timer) {
         showDialog(context);
       },
@@ -182,12 +187,6 @@ class _DashboardState extends State<Dashboard> {
     setUserCredentials(context);
 
     setState(() {});
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    timer.cancel();
   }
 
   @override
@@ -223,7 +222,7 @@ class _DashboardState extends State<Dashboard> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            MyFont().fontSize14Light("Hii,", Colors.white),
+                            MyFont().fontSize14Light("Hey,", Colors.white),
                             const SizedBox(height: 5),
                             MyFont().fontSize16Bold(
                               userDataProvider.fullName,

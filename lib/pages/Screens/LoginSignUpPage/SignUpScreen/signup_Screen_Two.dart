@@ -29,9 +29,13 @@ class SignUpScreenTwo extends StatefulWidget {
 
 class _SignUpScreenTwoState extends State<SignUpScreenTwo> {
   bool isVisible = false;
+
+  // For Sign Up ------------>>
+
   final TextEditingController _dateController = TextEditingController();
 
   String uId = "";
+  String gender = "";
   String fathersName = "";
   String branch = "";
   String college = "";
@@ -53,6 +57,7 @@ class _SignUpScreenTwoState extends State<SignUpScreenTwo> {
       await SignUpApiClient().registerUser(
         uId,
         widget.email,
+        gender,
         branch,
         college,
         widget.password,
@@ -82,202 +87,267 @@ class _SignUpScreenTwoState extends State<SignUpScreenTwo> {
     }
   }
 
+  // For Drop Down ----------->
+
+  static const List<String> selectGender = <String>[
+    'Select gender',
+    'Male',
+    'Female'
+  ];
+
+  String dropdownValue = selectGender.first;
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final basicVariables = Provider.of<BasicVariableModel>(context);
     return Scaffold(
       body: SafeArea(
-        child: Material(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: SizedBox(
-              height: size.height - 100,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 1,
-                        color: MyColors.lightGreyColor,
-                      ),
-                      borderRadius: BorderRadius.circular(15),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: SizedBox(
+            height: size.height - 100,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 1,
+                      color: MyColors.lightGreyColor,
                     ),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
+                    borderRadius: BorderRadius.circular(15),
                   ),
-                  // SizedBox(height: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    // mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      // SizedBox(height: 50),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            child: MyFont().fontSize26Bold(
-                              "Enter Your Details",
-                              MyColors.primaryColor,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                // SizedBox(height: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  // mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // SizedBox(height: 50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          child: MyFont().fontSize26Bold(
+                            "Enter Your Details",
+                            MyColors.primaryColor,
+                          ),
+                        ),
+                        Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: MyColors.primaryColor,
+                          ),
+                          child: Transform.rotate(
+                            angle: 4.7,
+                            child: const Icon(
+                              Icons.logout_outlined,
+                              color: Colors.white,
+                              size: 26,
                             ),
                           ),
-                          Container(
-                            height: 60,
-                            width: 60,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              color: MyColors.primaryColor,
+                        ),
+                      ],
+                    ),
+                    // SizedBox(height: 10),
+                    Text(
+                      "Please Fill all the details\ncorrectly !!",
+                      style: TextStyle(
+                        color: MyColors.darkGreyColor,
+                        fontSize: 16,
+                      ),
+                    )
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: size.width,
+                      margin: const EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.only(left: 12, right: 12),
+                      decoration: BoxDecoration(
+                        color: MyColors.lightGreyColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: DropdownButton<String>(
+                        alignment: Alignment.centerRight,
+                        borderRadius: BorderRadius.circular(10),
+                        underline: Row(
+                          children: [
+                            // Text(dropdownValue),
+                            MyFont().fontSize16Weight500(
+                                dropdownValue, MyColors.lightGreyColor),
+                            const Spacer(),
+                            Icon(
+                              Icons.arrow_drop_down_rounded,
+                              size: 32,
+                              color: MyColors.lightGreyColor,
                             ),
-                            child: Transform.rotate(
-                              angle: 4.7,
-                              child: const Icon(
-                                Icons.logout_outlined,
-                                color: Colors.white,
-                                size: 26,
+                          ],
+                        ),
+                        iconSize: 0.0,
+                        elevation: 16,
+                        style: TextStyle(
+                          color: MyColors.lightGreyColor,
+                          fontSize: 16,
+                        ),
+                        onChanged: (String? value) {
+                          setState(() {
+                            dropdownValue = value!;
+                            gender = value;
+                            log(gender);
+                          });
+                        },
+                        items: selectGender
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    textFieldForDetails(
+                      hintText: "Father's Name",
+                      onChange: (newValue) {
+                        setState(() {
+                          fathersName = newValue;
+                        });
+                      },
+                    ),
+                    textFieldForDetails(
+                      hintText: "College",
+                      onChange: (newValue) {
+                        setState(() {
+                          college = newValue;
+                        });
+                      },
+                    ),
+                    textFieldForDetails(
+                      hintText: "Branch",
+                      onChange: (newValue) {
+                        setState(() {
+                          branch = newValue;
+                        });
+                      },
+                    ),
+                    textFieldForDetails(
+                      hintText: "Year of passout",
+                      onChange: (newValue) {
+                        setState(() {
+                          yearOfPassout = newValue;
+                        });
+                      },
+                    ),
+                    Container(
+                      // height: 50,
+                      margin: const EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.only(left: 12, right: 12),
+                      decoration: BoxDecoration(
+                        color: MyColors.lightGreyColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _dateController,
+                              keyboardType: TextInputType.emailAddress,
+                              readOnly: true,
+                              decoration: InputDecoration(
+                                suffixIcon: Icon(
+                                  Icons.calendar_month_sharp,
+                                  color: MyColors.lightGreyColor,
+                                ),
+                                border: InputBorder.none,
+                                hintText: "Date of birth",
+                                hintStyle: TextStyle(
+                                  color: MyColors.lightGreyColor,
+                                  fontSize: 16,
+                                ),
                               ),
+                              onTap: () async {
+                                DateTime? pickedDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(1900),
+                                  lastDate: DateTime.now(),
+                                );
+                                if (pickedDate != null) {
+                                  String formattedDate =
+                                      DateFormat('yyyy-MM-dd')
+                                          .format(pickedDate);
+                                  setState(() {
+                                    _dateController.text = formattedDate;
+                                    dateOfBirth = _dateController.text;
+                                  });
+                                } else {}
+                              },
                             ),
                           ),
                         ],
                       ),
-                      // SizedBox(height: 10),
-                      Text(
-                        "Please Fill all the details\ncorrectly !!",
-                        style: TextStyle(
-                          color: MyColors.darkGreyColor,
-                          fontSize: 16,
-                        ),
-                      )
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      textFieldForDetails(
-                        hintText: "Father's Name",
-                        onChange: (newValue) {
-                          setState(() {
-                            fathersName = newValue;
-                          });
-                        },
-                      ),
-                      textFieldForDetails(
-                        hintText: "College",
-                        onChange: (newValue) {
-                          setState(() {
-                            college = newValue;
-                          });
-                        },
-                      ),
-                      textFieldForDetails(
-                        hintText: "Branch",
-                        onChange: (newValue) {
-                          setState(() {
-                            branch = newValue;
-                          });
-                        },
-                      ),
-                      textFieldForDetails(
-                        hintText: "Year of passout",
-                        onChange: (newValue) {
-                          setState(() {
-                            yearOfPassout = newValue;
-                          });
-                        },
-                      ),
-                      Container(
-                        // height: 50,
-                        margin: const EdgeInsets.only(top: 16),
-                        padding: const EdgeInsets.only(left: 12, right: 12),
-                        decoration: BoxDecoration(
-                          color: MyColors.lightGreyColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _dateController,
-                                keyboardType: TextInputType.emailAddress,
-                                readOnly: true,
-                                decoration: InputDecoration(
-                                  suffixIcon: Icon(
-                                    Icons.calendar_month_sharp,
-                                    color: MyColors.lightGreyColor,
-                                  ),
-                                  border: InputBorder.none,
-                                  hintText: "Date of birth",
-                                  hintStyle: TextStyle(
-                                    color: MyColors.lightGreyColor,
-                                  ),
-                                ),
-                                onTap: () async {
-                                  DateTime? pickedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime(1900),
-                                    lastDate: DateTime.now(),
-                                  );
-                                  if (pickedDate != null) {
-                                    String formattedDate =
-                                        DateFormat('yyyy-MM-dd')
-                                            .format(pickedDate);
-                                    setState(() {
-                                      _dateController.text = formattedDate;
-                                      dateOfBirth = _dateController.text;
-                                    });
-                                  } else {}
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      textFieldForDetails(
-                        hintText: "Place of birth",
-                        onChange: (newValue) {
-                          setState(() {
-                            placeOfBirth = newValue;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  Container(
-                    width: size.width,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: MyColors.primaryColor,
-                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: TextButton(
-                      onPressed: () async {
-                        final uId = "CN101${math.Random().nextInt(99999999)}";
-                        final signUpKey = "CN101${math.Random().nextInt(9999)}";
-                        basicVariables.setWhichScreen("SignUpScreen");
-
-                        userRegisterForm(uId, signUpKey);
+                    textFieldForDetails(
+                      hintText: "Place of birth",
+                      onChange: (newValue) {
+                        setState(() {
+                          placeOfBirth = newValue;
+                        });
                       },
-                      style: const ButtonStyle(
-                          splashFactory: NoSplash.splashFactory),
-                      child: const Text(
-                        "Save",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    ),
+                  ],
+                ),
+                Container(
+                  width: size.width,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: MyColors.primaryColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TextButton(
+                    onPressed: () async {
+                      String uId = "CN101${math.Random().nextInt(99999999)}";
+                      final signUpKey = "CN101${math.Random().nextInt(9999)}";
+                      basicVariables.setWhichScreen("SignUpScreen");
+                      final users = await SignUpApiClient().getUsers();
+                      for (var i = 0; i < users.length; i++) {
+                        log(users[i]['uid']);
+                        if (users[i]['uid'] != uId) {
+                          userRegisterForm(uId, signUpKey);
+                          break;
+                        } else {
+                          uId = "CN101${math.Random().nextInt(99999999)}";
+                          setState(() {});
+                        }
+                      }
+                      // log(users.toString());
+                    },
+                    style: const ButtonStyle(
+                        splashFactory: NoSplash.splashFactory),
+                    child: const Text(
+                      "Save",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -302,9 +372,7 @@ class _SignUpScreenTwoState extends State<SignUpScreenTwo> {
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: hintText,
-          hintStyle: TextStyle(
-            color: MyColors.lightGreyColor,
-          ),
+          hintStyle: TextStyle(color: MyColors.lightGreyColor, fontSize: 16),
         ),
         // onTap: () {},
         onChanged: (value) {

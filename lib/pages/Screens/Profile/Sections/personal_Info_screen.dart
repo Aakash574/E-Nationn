@@ -95,7 +95,7 @@ class PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   children: [
                     fieldForUserCredential(
                       size / 2.4,
-                      "Male",
+                      userDataProvider.gender.toString(),
                       "Gender",
                     ),
                     fieldForUserCredential(

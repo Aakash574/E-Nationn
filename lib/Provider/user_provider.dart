@@ -6,6 +6,7 @@ class UserProvider extends ChangeNotifier {
   String _id = '';
   String _fullName = '';
   String _email = '';
+  String _gender = '';
   String _password = '';
   String _fatherName = '';
   String _college = '';
@@ -24,6 +25,7 @@ class UserProvider extends ChangeNotifier {
   String get id => _id;
   String get fullName => _fullName;
   String get email => _email;
+  String get gender => _gender;
   String get password => _password;
   String get fatherName => _fatherName;
   String get college => _college;
@@ -51,6 +53,11 @@ class UserProvider extends ChangeNotifier {
 
   void setEmail(String email) {
     _email = email;
+    notifyListeners();
+  }
+
+  void setGender(String gender) {
+    _gender = gender;
     notifyListeners();
   }
 

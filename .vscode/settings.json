@@ -11,5 +11,6 @@
     ],
     "java.configuration.updateBuildConfiguration": "interactive",
     "cmake.configureOnOpen": true,
-    "cmake.sourceDirectory": "C:/Users/HP/Desktop/enationn/enationn_app/windows"
+    "cmake.sourceDirectory": "C:/Users/HP/Desktop/enationn/enationn_app/windows",
+    "dart.flutterSdkPath": "C:\\Flutter SDK"
 }

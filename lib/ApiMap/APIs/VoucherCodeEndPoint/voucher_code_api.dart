@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
 class PaymentVoucherApiClient {
+  // Get all Voucher Codes -------------->>
+
   Future<List<dynamic>> getVoucherCode() async {
     log("Getting all Voucher Code ......");
 
@@ -24,6 +26,8 @@ class PaymentVoucherApiClient {
 
     return voucherCode;
   }
+
+  // Validate all Voucher Codes -------------->>
 
   Future<bool> validVoucherCode(String userVoucherCode) async {
     log("Validating Voucher Code .........");
@@ -49,6 +53,8 @@ class PaymentVoucherApiClient {
     return false;
   }
 
+  // Get Voucher Code ID -------------->>
+
   Future<String> getIdByVoucherCode(String userVoucherCode) async {
     log("getting Id Voucher code....");
 
@@ -73,6 +79,8 @@ class PaymentVoucherApiClient {
 
     return "Voucher Code Not Found";
   }
+
+  // Delete Voucher Codes -------------->>
 
   Future<bool> deleteVoucherCode(String id) async {
     log(id);

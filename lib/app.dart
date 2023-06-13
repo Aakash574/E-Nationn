@@ -22,7 +22,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // int _activeIndex = 1;
   static const List body = [
     Dashboard(),
     PremiumPlanDetailScreen(),

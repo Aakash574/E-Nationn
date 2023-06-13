@@ -22,7 +22,7 @@ class _SplashScreenThreeState extends State<SplashScreenThree> {
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage(
-              "assets/SplashScreenImg/splash_One.png",
+              "assets/SplashScreenImg/splash_Three.png",
             ),
             scale: 1.0,
             fit: BoxFit.cover,
@@ -36,8 +36,10 @@ class _SplashScreenThreeState extends State<SplashScreenThree> {
               SizedBox(
                 width: size.width,
                 height: size.height / 2.3,
-                child:
-                    Image.asset("assets/SplashScreenImg/SplashScreenThree.png"),
+                child: Image.asset(
+                  "assets/SplashScreenImg/SplashScreenThree.png",
+                  scale: 1.5,
+                ),
               ),
               const SizedBox(height: 30),
               Column(
@@ -145,10 +147,11 @@ class _SplashScreenThreeState extends State<SplashScreenThree> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return const SplashScreen();
-                              },
+                            PageTransition(
+                              type: PageTransitionType.fade,
+                              child: const SplashScreen(),
+                              inheritTheme: true,
+                              ctx: context,
                             ),
                           );
                         },

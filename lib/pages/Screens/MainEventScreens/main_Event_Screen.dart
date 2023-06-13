@@ -1,6 +1,5 @@
-import 'dart:developer';
+// ignore_for_file: file_names
 
-import 'package:enationn/ApiMap/APIs/EventEndPoints/event_api.dart';
 import 'package:enationn/const.dart';
 import 'package:flutter/material.dart';
 
@@ -24,16 +23,9 @@ class MainEventScreen extends StatefulWidget {
 class _MainEventScreenState extends State<MainEventScreen> {
   CategoriesSections activeSection = CategoriesSections.hackathon;
 
-  void eventDetails() async {
-    final eventData = await EventApiClient().getEventById(1);
-
-    log(eventData.toString());
-  }
-
   @override
   void initState() {
     super.initState();
-    eventDetails();
   }
 
   @override

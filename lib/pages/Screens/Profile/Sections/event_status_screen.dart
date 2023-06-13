@@ -1,9 +1,16 @@
 import 'dart:developer';
+import 'package:enationn/ApiMap/APIs/EventEndPoints/event_api.dart';
+import 'package:enationn/ApiMap/APIs/EventEndPoints/hackathon_api.dart';
+import 'package:enationn/ApiMap/APIs/EventEndPoints/internship_api.dart';
 import 'package:enationn/ApiMap/APIs/UserEventEndPoints/user_event_api.dart';
 import 'package:enationn/ApiMap/APIs/UserEventEndPoints/user_hackathon_api.dart';
 import 'package:enationn/ApiMap/APIs/UserEventEndPoints/user_internship_api.dart';
+// ignore: unused_import
+import 'package:enationn/Provider/hackathon_provider.dart';
+import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/const.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EventStatusScreen extends StatefulWidget {
   const EventStatusScreen({super.key});
@@ -16,6 +23,9 @@ class _EventStatusScreenState extends State<EventStatusScreen> {
   List userHackathonStatus = [];
   List userInternshipStatus = [];
   List userEventStatus = [];
+  List hackathons = [];
+  List internships = [];
+  List events = [];
 
   void getUserEventDetails() async {
     userHackathonStatus =
@@ -23,7 +33,10 @@ class _EventStatusScreenState extends State<EventStatusScreen> {
     userInternshipStatus =
         await UserInternshipApiClient().getUserInternshipData();
     userEventStatus = await UserEventApiClient().getUserEventDetails();
-    log(userEventStatus.toString());
+
+    hackathons = await HackathonApiClient().getHackathonDetails();
+    internships = await InternShipApiClient().getInternshipDetails();
+    events = await EventApiClient().getEventDetails();
     setState(() {});
   }
 
@@ -70,20 +83,23 @@ class _EventStatusScreenState extends State<EventStatusScreen> {
               const SizedBox(height: 20),
               AppliedOnEvents(
                 userEvents: userHackathonStatus,
-                eventName: "Hackathon",
-                eventName2: "Hackathon You Joins",
-              ),
-              const SizedBox(height: 20),
-              AppliedOnEvents(
-                userEvents: userEventStatus,
-                eventName: "Events",
-                eventName2: "Events You Joins",
+                sectionName: "Hackathon",
+                title: "Hackathon You Joins",
+                events: hackathons,
               ),
               const SizedBox(height: 20),
               AppliedOnEvents(
                 userEvents: userInternshipStatus,
-                eventName: "Internships",
-                eventName2: "Internships You Joins",
+                sectionName: "Internships",
+                title: "Internships You Joins",
+                events: internships,
+              ),
+              const SizedBox(height: 20),
+              AppliedOnEvents(
+                userEvents: userEventStatus,
+                sectionName: "Events",
+                title: "Events You Joins",
+                events: events,
               ),
               const SizedBox(height: 20),
             ],
@@ -99,14 +115,16 @@ class _EventStatusScreenState extends State<EventStatusScreen> {
 class AppliedOnEvents extends StatefulWidget {
   const AppliedOnEvents({
     super.key,
-    required this.eventName,
-    required this.eventName2,
+    required this.sectionName,
+    required this.title,
     required this.userEvents,
+    required this.events,
   });
 
   final List userEvents;
-  final String eventName;
-  final String eventName2;
+  final List events;
+  final String sectionName;
+  final String title;
 
   @override
   State<AppliedOnEvents> createState() => _AppliedOnEventsState();
@@ -118,11 +136,12 @@ class _AppliedOnEventsState extends State<AppliedOnEvents> {
   String nameKey = "";
 
   void temp() async {
-    log(widget.userEvents.toString());
-    switch (widget.eventName) {
+    switch (widget.sectionName) {
       case 'Internships':
         nameKey = 'internship_name';
         dateKey = 'date_of_hackathon';
+        log(widget.userEvents.toString());
+
         break;
       case 'Events':
         nameKey = 'event_name';
@@ -133,7 +152,6 @@ class _AppliedOnEventsState extends State<AppliedOnEvents> {
         dateKey = 'date_of_hackathon';
         break;
     }
-
     setState(() {});
   }
 
@@ -145,6 +163,8 @@ class _AppliedOnEventsState extends State<AppliedOnEvents> {
 
   @override
   Widget build(BuildContext context) {
+    final userProivder = Provider.of<UserProvider>(context);
+
     return Container(
       alignment: Alignment.centerLeft,
       padding: const EdgeInsets.all(16),
@@ -164,10 +184,10 @@ class _AppliedOnEventsState extends State<AppliedOnEvents> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  MyFont().fontSize14Bold(widget.eventName, Colors.black),
+                  MyFont().fontSize14Bold(widget.sectionName, Colors.black),
                   const SizedBox(height: 5),
                   MyFont().fontSize12Weight500(
-                    widget.eventName2,
+                    widget.title,
                     Colors.black.withOpacity(0.5),
                   ),
                 ],
@@ -194,24 +214,23 @@ class _AppliedOnEventsState extends State<AppliedOnEvents> {
                     child: ListView.builder(
                       itemCount: widget.userEvents.length,
                       padding: EdgeInsets.zero,
-                      itemBuilder: (context, index) => ListTile(
-                        contentPadding: EdgeInsetsGeometry.lerp(
-                          const EdgeInsets.all(2),
-                          const EdgeInsets.all(5),
-                          0,
-                        ),
-                        // title:
-                        title: widget.userEvents[index]['apply_status']
-                                    .toString() ==
-                                'active'
-                            ? Section(
+                      itemBuilder: (context, index) => widget.userEvents[index]
+                                  ['uniqueid'] ==
+                              userProivder.uId
+                          ? ListTile(
+                              contentPadding: EdgeInsetsGeometry.lerp(
+                                const EdgeInsets.all(2),
+                                const EdgeInsets.all(5),
+                                0,
+                              ),
+                              title: Section(
                                 eventDate: widget.userEvents[index][dateKey]
                                     .toString(),
                                 eventName: widget.userEvents[index][nameKey]
                                     .toString(),
-                              )
-                            : null,
-                      ),
+                              ),
+                            )
+                          : Container(height: 0),
                     ),
                   ),
                 ],

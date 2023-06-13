@@ -62,15 +62,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: SafeArea(
         child: isFirstUser ? const SplashScreen() : const SplashScreenOne(),
-        // child: LoginScreen(),
       ),
     );
   }
 }
-
-
-// MOM :-
-// 1.)Internship,Event form update and add duration as well
-// 4.)we have show in profile,which internship or event already applied
-// 5.)Use patch for update password in forget
-// 6.)I will send privacy policy content

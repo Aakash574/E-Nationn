@@ -7,11 +7,11 @@ import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
 import 'package:enationn/Provider/basic_variables_provider.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Customs/shared_pref.dart';
+import 'package:enationn/pages/Screens/ExtraScreens/welcome_screen.dart';
 import 'package:enationn/pages/Screens/FormOFSignIn/apple_signin.dart';
 import 'package:enationn/pages/Screens/FormOFSignIn/google_signin.dart';
 import 'package:enationn/pages/Screens/LoginSignUpPage/ForgetScreen/forget_password_screen.dart';
 import 'package:enationn/pages/Screens/LoginSignUpPage/SignUpScreen/signup_Screen.dart';
-import 'package:enationn/pages/Screens/PassCodeScreen/pass_code_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -242,7 +242,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
-                                      return const PassCodeScreen();
+                                      return const WelcomeScreen();
                                     },
                                   ),
                                   (route) => false,

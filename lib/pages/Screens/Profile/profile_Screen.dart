@@ -13,7 +13,6 @@ import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/pages/Customs/shared_pref.dart';
 import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Sections/event_status_screen.dart';
 import 'Sections/help_screen.dart';
 import 'Sections/personal_Info_screen.dart';
 import 'Sections/privacy_policy_screen.dart';
@@ -176,24 +175,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ],
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          profileSection(
-                            () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const EventStatusScreen(),
-                                ),
-                              );
-                            },
-                            "Event Status",
-                            "Check Event You Join",
-                            Icon(
-                              Icons.shield_moon,
-                              color: MyColors.primaryColor,
-                              size: 20,
                             ),
                           ),
                           const SizedBox(height: 20),

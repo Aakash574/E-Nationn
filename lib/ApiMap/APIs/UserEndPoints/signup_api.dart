@@ -14,6 +14,7 @@ class SignUpApiClient {
   Future<Object> registerUser(
     String uId,
     String email,
+    String gender,
     String branch,
     String college,
     String password,
@@ -34,6 +35,7 @@ class SignUpApiClient {
       {
         'uid': uId,
         'email': email,
+        'gender': gender,
         'branch': branch,
         'college': college,
         'password': password,
@@ -67,6 +69,20 @@ class SignUpApiClient {
     return "User Already Exist";
   }
 
+  Future<List<dynamic>> getUsers() async {
+    Uri url = Uri.parse('http://13.232.155.227:8000/account/api/Signup/');
+    Response response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    final userData = json.decode(response.body);
+
+    return userData;
+  }
+
   // Get Specific Data of User -->
 
   Future<Map<dynamic, dynamic>> getUserDataById(int id) async {
@@ -96,39 +112,7 @@ class SignUpApiClient {
     final userData = await jsonDecode(response.body);
     for (var i = 0; i < userData.length; i++) {
       if (await userData[i]['email'] == email) {
-        switch (choose) {
-          case 'id':
-            return userData[i]['id'].toString();
-
-          case 'email':
-            return await userData[i]['email'];
-
-          case 'full_name':
-            return userData[i]['full_name'];
-
-          case 'college':
-            return userData[i]['college'];
-
-          case 'branch':
-            return userData[i]['branch'];
-
-          case 'father_name':
-            return userData[i]['father_name'];
-
-          case 'date_of_birth':
-            return userData[i]['date_of_birth'];
-
-          case 'year_of_passout':
-            return userData[i]['year_of_passout'];
-
-          case 'place_of_birth':
-            return userData[i]['place_of_birth'];
-
-          case 'signupkey':
-            return userData[i]['signupkey'];
-
-          default:
-        }
+        return userData[i][choose].toString();
       }
     }
     return "0";

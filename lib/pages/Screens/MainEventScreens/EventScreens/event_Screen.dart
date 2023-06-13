@@ -1,15 +1,15 @@
 // ignore_for_file: file_names
 
-import 'dart:developer';
+import 'dart:async';
 import 'package:enationn/ApiMap/APIs/EventEndPoints/event_api.dart';
 import 'package:enationn/ApiMap/APIs/UserEventEndPoints/user_event_api.dart';
-import 'package:enationn/Provider/basic_variables_provider.dart';
 import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/PaymentScreens/voucher_code_screen.dart';
-import 'package:enationn/pages/Screens/PopScreens/already_applied.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+import 'event_detail_screen.dart';
 
 class EventScreen extends StatefulWidget {
   const EventScreen({super.key});
@@ -25,33 +25,16 @@ class _EventScreenState extends State<EventScreen> {
   List<dynamic> eventUserData = [];
 
   Future<void> eventDetails() async {
-    event = await EventApiClient().getEventDetails();
+    if (mounted) {
+      event = await EventApiClient().getEventDetails();
+    }
     setState(() {});
-  }
-
-  void _scaleDialog() {
-    showGeneralDialog(
-      context: context,
-      pageBuilder: (ctx, a1, a2) {
-        return Container();
-      },
-      transitionBuilder: (ctx, a1, a2, child) {
-        var curve = Curves.easeInOut.transform(a1.value);
-        return Transform.scale(
-          scale: curve,
-          child: const AlreadyApplied(),
-        );
-      },
-      transitionDuration: const Duration(milliseconds: 300),
-    );
   }
 
   @override
   void initState() {
     super.initState();
     eventDetails();
-
-    setState(() {});
   }
 
   @override
@@ -66,60 +49,84 @@ class _EventScreenState extends State<EventScreen> {
           child: Column(
             children: [
               Expanded(
-                child: ListView.builder(
-                  itemCount: event.length,
-                  itemBuilder: (context, index) => ListTile(
-                    title: event.isEmpty
-                        ? Container(
-                            alignment: Alignment.center,
-                            child: MyFont().fontSize16Bold(
-                              "Hackathon Not Available...",
-                              Colors.black45,
-                            ),
-                          )
-                        : InkWell(
-                            onTap: () async {
-                              eventUserData = await UserEventApiClient()
-                                  .getUserEventDetails();
+                flex: 1,
+                child: RefreshIndicator(
+                  color: MyColors.primaryColor,
+                  onRefresh: eventDetails,
+                  child: ListView.builder(
+                    itemCount: event.length,
+                    itemBuilder: (context, index) => ListTile(
+                      title: event.isEmpty
+                          ? Container(
+                              alignment: Alignment.center,
+                              child: MyFont().fontSize16Bold(
+                                "Hackathon Not Available...",
+                                Colors.black45,
+                              ),
+                            )
+                          : InkWell(
+                              onTap: () async {
+                                eventUserData = await UserEventApiClient()
+                                    .getUserEventDetails();
 
-                              final l1 = eventUserData.length;
+                                final l1 = eventUserData.length;
 
-                              for (var i = 0; i < l1; i++) {
-                                if (event[index]['name'] ==
-                                        eventUserData[i]['event_name'] &&
-                                    eventUserData[i]['uniqueid'] ==
-                                        userProvider.uId) {
-                                  isApplied = true;
-                                  setState(() {});
-                                  break;
-                                } else {
-                                  isApplied = false;
-                                  setState(() {});
+                                for (var i = 0; i < l1; i++) {
+                                  if (event[index]['name'] ==
+                                          eventUserData[i]['event_name'] &&
+                                      eventUserData[i]['uniqueid'] ==
+                                          userProvider.uId) {
+                                    isApplied = true;
+                                    setState(() {});
+                                    break;
+                                  } else {
+                                    isApplied = false;
+                                    setState(() {});
+                                  }
                                 }
-                              }
 
-                              if (!mounted) return;
+                                if (!mounted) return;
 
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) {
-                                    return EventsDetailScreen(
-                                      index: index,
-                                      events: event,
-                                      isApplied: isApplied,
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) {
+                                      return EventsDetailScreen(
+                                        index: index,
+                                        events: event,
+                                        isApplied: isApplied,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              child: FutureBuilder(
+                                future: EventApiClient().getEventDetails(),
+                                builder: (ctx, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: MyColors.tealGreenColor,
+                                        semanticsLabel: "Loading...",
+                                        semanticsValue: "Loading...",
+                                        backgroundColor: MyColors.primaryColor,
+                                        strokeWidth: 4.0,
+                                      ),
                                     );
-                                  },
-                                ),
-                              );
-                            },
-                            child: EventSection(
-                              events: event,
-                              index: index,
-                              listLength: index == event.length - 1 ? 300 : 0,
-                              // isApplyColor: Colors.red,
+                                  } else {
+                                    return EventSection(
+                                      events: event,
+                                      index: index,
+                                      listLength:
+                                          index == event.length - 1 ? 300 : 0,
+                                      // isApplyColor: Colors.red,
+                                    );
+                                  }
+                                },
+                              ),
                             ),
-                          ),
+                    ),
                   ),
                 ),
               ),
@@ -131,7 +138,7 @@ class _EventScreenState extends State<EventScreen> {
   }
 }
 
-class EventSection extends StatelessWidget {
+class EventSection extends StatefulWidget {
   const EventSection({
     super.key,
     required this.listLength,
@@ -144,26 +151,58 @@ class EventSection extends StatelessWidget {
   final double listLength;
 
   @override
+  State<EventSection> createState() => _EventSectionState();
+}
+
+class _EventSectionState extends State<EventSection> {
+  var dateDiffrenceInHours;
+  var dateDiffrenceInDays;
+  String eventDate = "";
+  String newDateOfEvent = "";
+
+  void getTimer() {
+    final dateOfEvent =
+        DateTime.tryParse(widget.events[widget.index]['date_of_event']);
+
+    dateDiffrenceInDays = dateOfEvent?.difference(DateTime.now()).inDays;
+    dateDiffrenceInHours = dateOfEvent?.difference(DateTime.now()).inHours;
+    eventDate = widget.events[widget.index]['date_of_event'];
+
+    newDateOfEvent =
+        (DateFormat.yMMMd('en_US').format(dateOfEvent!)).toString();
+
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getTimer();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     return Column(
       children: [
         Container(
-          width: size.width,
           height: 200,
-          margin: EdgeInsets.only(top: 20, bottom: listLength),
+          margin: EdgeInsets.only(top: 20, bottom: widget.listLength),
           alignment: Alignment.bottomCenter,
           decoration: BoxDecoration(
             image: DecorationImage(
               image: NetworkImage(
-                events[index]['image'].toString(),
+                (widget.events[widget.index]['image']).toString().isEmpty
+                    ? "https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-scaled.png"
+                    : widget.events[widget.index]['image'],
               ),
               fit: BoxFit.cover,
             ),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Container(
+            width: size.width,
             height: 80,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
@@ -171,6 +210,7 @@ class EventSection extends StatelessWidget {
               color: Colors.white.withAlpha(1000),
             ),
             child: Row(
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
                   height: 80,
@@ -186,6 +226,7 @@ class EventSection extends StatelessWidget {
                 Container(
                   width: 70,
                   height: 80,
+                  padding: const EdgeInsets.all(5),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.only(
@@ -197,7 +238,7 @@ class EventSection extends StatelessWidget {
                     // color: Colors.blue,
                   ),
                   child: Text(
-                    events[index]['date_of_event'],
+                    newDateOfEvent,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: MyColors.primaryColor,
@@ -206,19 +247,42 @@ class EventSection extends StatelessWidget {
                     ),
                   ),
                 ),
-                Padding(
+                Container(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        events[index]['name'],
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: MyColors.primaryColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                      SizedBox(
+                        width: size.width / 1.5,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              widget.events[widget.index]['name'],
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: MyColors.primaryColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            TweenAnimationBuilder<Duration>(
+                              duration: Duration(hours: dateDiffrenceInHours),
+                              tween: Tween(
+                                begin: Duration(hours: dateDiffrenceInHours),
+                                end: Duration.zero,
+                              ),
+                              builder: (context, value, child) {
+                                return MyFont().fontSize14Bold(
+                                  dateDiffrenceInHours <= 24
+                                      ? "${dateDiffrenceInHours.toString()} hours left"
+                                      : "${dateDiffrenceInDays.toString()} days left",
+                                  Colors.red,
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -233,7 +297,7 @@ class EventSection extends StatelessWidget {
                             width: 10,
                           ),
                           Text(
-                            events[index]['time'],
+                            widget.events[widget.index]['time'],
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: const Color(0xff2B2849).withOpacity(0.5),
@@ -244,50 +308,63 @@ class EventSection extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_rounded,
-                            size: 15,
-                            color: const Color(0xff2B2849).withOpacity(0.5),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            events[index]['location'],
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: const Color(0xff2B2849).withOpacity(0.5),
-                              // fontWeight: FontWeight.bold,
-                              fontSize: 10,
+                      SizedBox(
+                        width: size.width / 1.5,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on_rounded,
+                                  size: 15,
+                                  color:
+                                      const Color(0xff2B2849).withOpacity(0.5),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  widget.events[widget.index]['location'],
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: const Color(0xff2B2849)
+                                        .withOpacity(0.5),
+                                    // fontWeight: FontWeight.bold,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                      // Container(),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  margin: const EdgeInsets.all(12),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        // events[index]['apply_status'],
-                        events[index]['apply_status'] == 'Available'
-                            ? 'Available'
-                            : 'Not Available',
-                        style: TextStyle(
-                          color: events[index]['apply_status'] == 'Available'
-                              ? MyColors.tealGreenColor
-                              : Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                            Container(
+                              // margin: const EdgeInsets.all(12),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    // events[index]['apply_status'],
+                                    widget.events[widget.index]
+                                                ['apply_status'] ==
+                                            'Available'
+                                        ? 'Available'
+                                        : 'Not Available',
+                                    style: TextStyle(
+                                      color: widget.events[widget.index]
+                                                  ['apply_status'] ==
+                                              'Available'
+                                          ? MyColors.tealGreenColor
+                                          : Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                      // Container(),
                     ],
                   ),
                 ),
@@ -297,466 +374,6 @@ class EventSection extends StatelessWidget {
         ),
         // SizedBox(height: 30),
       ],
-    );
-  }
-}
-
-class EventTeamDetailsScreen extends StatefulWidget {
-  const EventTeamDetailsScreen({
-    super.key,
-    required this.index,
-    required this.event,
-  });
-  final int index;
-  final List event;
-
-  @override
-  State<EventTeamDetailsScreen> createState() => _EventTeamDetailsScreenState();
-}
-
-class _EventTeamDetailsScreenState extends State<EventTeamDetailsScreen> {
-  Map<dynamic, dynamic> eventDetails = {};
-
-  bool isLoading = true;
-
-  void getDetails() async {
-    // ----- For EVENT DETAILS -------->
-
-    final eventData = await EventApiClient().getEventDetails();
-    if (widget.event[widget.index]['name'] == eventData[widget.index]['name']) {
-      final eventId = eventData[widget.index]['id'];
-      eventDetails = await EventApiClient().getEventById(eventId);
-    }
-
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getDetails();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final userDataProvider = Provider.of<UserProvider>(context, listen: false);
-    final screen = Provider.of<BasicVariableModel>(context, listen: false);
-    final size = MediaQuery.of(context).size;
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 1,
-                        color: const Color(0xff6B7280).withOpacity(0.2),
-                      ),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                  MyFont().fontSize16Bold(
-                    widget.event[widget.index]['name'],
-                    Colors.black,
-                  ),
-                  const SizedBox(
-                    width: 45,
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 500,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    userDetailField(
-                      "Full Name",
-                      userDataProvider.fullName,
-                      size,
-                    ),
-                    userDetailField(
-                      "College Name",
-                      userDataProvider.college,
-                      size,
-                    ),
-                    userDetailField(
-                      "Father Name",
-                      userDataProvider.fatherName,
-                      size,
-                    ),
-                    userDetailField(
-                      "Date Of Birth",
-                      userDataProvider.dateOfBirth,
-                      size,
-                    ),
-                    userDetailField(
-                      "Date Of Event",
-                      eventDetails['date_of_event'].toString(),
-                      size,
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                width: size.width / 1.5,
-                height: 56,
-                // alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: MyColors.primaryColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: TextButton(
-                  onPressed: () {
-                    log(screen.whichScreen.toString());
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return VoucherCodeScreen(
-                            name: widget.event[widget.index]['name'],
-                            events: widget.event,
-                            index: widget.index,
-                            screen: 'EventDetailScreen',
-                          );
-                        },
-                      ),
-                    );
-                  },
-                  style:
-                      const ButtonStyle(splashFactory: NoSplash.splashFactory),
-                  child: const Text(
-                    "Submit",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget userDetailField(
-    String fieldName,
-    String data,
-    Size size,
-  ) {
-    return Container(
-      height: 54,
-      width: size.width,
-      alignment: Alignment.center,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xffF9FAFB),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          MyFont().fontSize16Bold(
-            "$fieldName : ",
-            MyColors.darkGreyColor.withAlpha(100),
-          ),
-          const Spacer(),
-          MyFont().fontSize14Bold(
-            data.toUpperCase().toString(),
-            MyColors.darkGreyColor,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class EventsDetailScreen extends StatefulWidget {
-  final int index;
-  final List events;
-  final bool isApplied;
-  const EventsDetailScreen({
-    super.key,
-    required this.index,
-    required this.events,
-    required this.isApplied,
-  });
-
-  @override
-  State<EventsDetailScreen> createState() => _EventsDetailScreenState();
-}
-
-class _EventsDetailScreenState extends State<EventsDetailScreen> {
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
-    return Material(
-      child: SizedBox(
-        height: size.height,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Stack(
-              children: [
-                Container(
-                  height: 262,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        widget.events[widget.index]['image'].toString(),
-                      ),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Container(
-                  width: size.width,
-                  height: size.height - 220,
-                  margin: const EdgeInsets.only(top: 220),
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      topRight: Radius.circular(12),
-                    ),
-                    color: Colors.white,
-                  ),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 46,
-                          height: 2,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-
-                        MyFont().fontSize16Weight500(
-                          widget.events[widget.index]['name'].toString(),
-                          MyColors.darkGreyColor,
-                        ),
-
-                        const SizedBox(height: 15),
-                        MyFont().fontSize16Weight500(
-                          widget.events[widget.index]['title'].toString(),
-                          Colors.black.withOpacity(0.8),
-                        ),
-
-                        const SizedBox(height: 15),
-                        MyFont().fontSize14Weight500(
-                          widget.events[widget.index]['desc'].toString(),
-                          MyColors.darkGreyColor.withOpacity(0.8),
-                        ),
-                        const SizedBox(height: 15),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.all(8),
-                              child: Row(
-                                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: const Color(0xffE1E9F4),
-                                    ),
-                                    child: Icon(
-                                      Icons.calendar_month_outlined,
-                                      color: MyColors.primaryColor,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      MyFont().fontSize16Bold(
-                                        widget.events[widget.index]
-                                            ['date_of_event'],
-                                        Colors.black,
-                                      ),
-                                      const SizedBox(height: 15),
-                                      MyFont().fontSize14Weight500(
-                                        widget.events[widget.index]['time'],
-                                        MyColors.lightGreyColor,
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(width: 45),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.all(8),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: const Color(0xffE1E9F4),
-                                    ),
-                                    child: Icon(
-                                      Icons.location_on_rounded,
-                                      color: MyColors.primaryColor,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      MyFont().fontSize16Bold(
-                                        "Gala Convention Center",
-                                        Colors.black,
-                                      ),
-                                      const SizedBox(height: 15),
-                                      MyFont().fontSize14Weight500(
-                                        widget.events[widget.index]['location'],
-                                        MyColors.lightGreyColor,
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(width: 45),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 15),
-                        Container(
-                          width: 46,
-                          height: 2,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: Colors.grey,
-                          ),
-                        ),
-                        // SizedBox(height: 5),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(
-                                top: 12,
-                                bottom: 12,
-                                right: 12,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  MyFont().fontSize16Weight500(
-                                    "Last Registration Date",
-                                    Colors.black,
-                                  ),
-                                  const SizedBox(height: 15),
-                                  MyFont().fontSize14Weight500(
-                                    widget.events[widget.index]
-                                        ['last_date_to_apply'],
-                                    MyColors.lightGreyColor,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(
-                                top: 12,
-                                bottom: 12,
-                                right: 12,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  MyFont().fontSize16Weight500(
-                                    "Apply Status",
-                                    Colors.black,
-                                  ),
-                                  const SizedBox(height: 15),
-                                  MyFont().fontSize14Weight500(
-                                    widget.isApplied
-                                        ? "Applied"
-                                        : "Not Applied",
-                                    MyColors.lightGreyColor,
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          width: size.width,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            color: widget.isApplied
-                                ? MyColors.lightGreyColor
-                                : MyColors.primaryColor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: TextButton(
-                            onPressed: () {
-                              widget.isApplied
-                                  ? log("Already Applied")
-                                  : Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return EventTeamDetailsScreen(
-                                            index: widget.index,
-                                            event: widget.events,
-                                          );
-                                        },
-                                      ),
-                                    );
-                            },
-                            child: MyFont().fontSize16Bold(
-                              widget.isApplied ? "Applied" : "Apply",
-                              Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
