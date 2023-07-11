@@ -14,6 +14,7 @@ class UserHackathonApiClient {
     String noOfMembers,
     String phone,
     String applyStatus,
+    String paymentStatus,
     String uniqueId,
   ) async {
     Uri url =
@@ -28,6 +29,7 @@ class UserHackathonApiClient {
         'phone': phone,
         'email': email,
         'apply_status': applyStatus,
+        'payment_status': paymentStatus,
         'uniqueid': uniqueId,
       },
     );
@@ -62,9 +64,10 @@ class UserHackathonApiClient {
 
     return userHackathonData;
   }
+
   Future<dynamic> getSpecificUserHackathonDetails(int id) async {
-    Uri url =
-        Uri.parse('http://13.232.155.227:8000/account/api/Hackathon_account/$id/');
+    Uri url = Uri.parse(
+        'http://13.232.155.227:8000/account/api/Hackathon_account/$id/');
     Response response = await http.get(
       url,
       headers: <String, String>{

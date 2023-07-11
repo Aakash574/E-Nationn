@@ -27,7 +27,7 @@ class UserEventApiClient {
         'father_name': fatherName,
         'college': college,
         'date_of_birth': dateOfBirth,
-        'date_of_hackathon': dateOfEvent,
+        'date_of_event': dateOfEvent,
         'event_name': eventName,
         'apply_status': applyStatus,
         'payment_status': paymentStatus,

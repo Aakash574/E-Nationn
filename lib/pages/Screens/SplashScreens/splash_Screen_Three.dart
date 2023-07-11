@@ -42,22 +42,9 @@ class _SplashScreenThreeState extends State<SplashScreenThree> {
                 ),
               ),
               const SizedBox(height: 30),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    child: MyFont().fontSize26Bold(
-                        "A mentor is someone who \nsees more talent",
-                        Colors.white),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    child: MyFont().fontSize18Light(
-                        "Lorem ipsum dolor sit amet, cectetur adipiscing elit,",
-                        MyColors.lightGreyColor),
-                  ),
-                ],
-              ),
+              MyFont().fontSize26Bold(
+                  "\"A mentor is someone who \nsees more talent\"",
+                  Colors.white),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -145,7 +132,7 @@ class _SplashScreenThreeState extends State<SplashScreenThree> {
                       ),
                       child: IconButton(
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushAndRemoveUntil(
                             context,
                             PageTransition(
                               type: PageTransitionType.fade,
@@ -153,6 +140,7 @@ class _SplashScreenThreeState extends State<SplashScreenThree> {
                               inheritTheme: true,
                               ctx: context,
                             ),
+                            (route) => false,
                           );
                         },
                         icon: const Icon(Icons.arrow_forward),

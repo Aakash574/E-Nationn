@@ -2,12 +2,11 @@
 
 import 'dart:developer';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPref {
   Future<void> saveUserCredentials(
-    int id,
+    String id,
     String email,
     String password,
     bool isUserLoggedIn,
@@ -15,17 +14,16 @@ class SharedPref {
     log("Getting User Credentials.....");
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('id', id);
+    await prefs.setString('id', id);
     await prefs.setString('email', email);
     await prefs.setString('password', password);
     await prefs.setBool('isUserLoggedIn', isUserLoggedIn);
-    log(isUserLoggedIn.toString());
   }
 
   Future<Map<String, dynamic>> getUserCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    int? id = prefs.getInt('id');
+    String id = prefs.getString('id').toString();
     String email = prefs.getString('email').toString();
     String password = prefs.getString('password').toString();
     return {
@@ -65,17 +63,17 @@ class SharedPref {
   }
 
   Future<bool> authenticateUser(
-    BuildContext context,
     String email,
     String password,
   ) async {
-    // final model = Provider.of<UserProvider>(context, listen: false);
+    log("User AuthenticateUser :: ");
+
     final id = await SignUpApiClient().getUserDataByEmail(email, 'id');
     final userData = await SignUpApiClient().getUserDataById(int.parse(id));
-    log(userData['email']);
+    log("ID :: $id");
 
     // Simulate an authentication process by checking if the email and password match
-    log("email $email password $password ");
+    log("Email :: $email \nPassword :: $password ");
 
     if (email == userData['email'] && password == userData['password']) {
       return true; // The user is authenticated

@@ -113,6 +113,7 @@ class _MainEventScreenState extends State<MainEventScreen> {
               child: Container(
                 color: Colors.white,
                 child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
                   child: Column(
                     children: [
                       if (activeSection == CategoriesSections.hackathon)

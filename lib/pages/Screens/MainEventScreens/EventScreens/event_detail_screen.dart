@@ -30,6 +30,10 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
         DateTime.parse(widget.events[widget.index]['date_of_event']);
     final dateOfEvent =
         (DateFormat.yMMMd('en_US').format(dateFormat)).toString();
+    final lastDateFormat =
+        DateTime.parse(widget.events[widget.index]['last_date_to_apply']);
+    final lastDateOfEvent =
+        (DateFormat.yMMMd('en_US').format(lastDateFormat)).toString();
 
     return Material(
       child: SizedBox(
@@ -62,6 +66,7 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                     color: Colors.white,
                   ),
                   child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
                     padding: const EdgeInsets.all(24),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -149,22 +154,9 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 15),
-                                  Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      MyFont().fontSize16Bold(
-                                        "Gala Convention Center",
-                                        Colors.black,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      MyFont().fontSize14Weight500(
-                                        widget.events[widget.index]['location'],
-                                        MyColors.lightGreyColor,
-                                      ),
-                                    ],
+                                  MyFont().fontSize16Bold(
+                                    widget.events[widget.index]['location'],
+                                    Colors.black,
                                   ),
                                   const SizedBox(width: 45),
                                 ],
@@ -196,13 +188,12 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   MyFont().fontSize16Weight500(
-                                    "Last Registration Date",
+                                    "Registration Last Date",
                                     Colors.black,
                                   ),
                                   const SizedBox(height: 5),
                                   MyFont().fontSize14Weight500(
-                                    widget.events[widget.index]
-                                        ['last_date_to_apply'],
+                                    lastDateOfEvent,
                                     MyColors.lightGreyColor,
                                   ),
                                 ],
@@ -218,7 +209,7 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   MyFont().fontSize16Weight500(
-                                    "Apply Status",
+                                    "Application Status",
                                     Colors.black,
                                   ),
                                   const SizedBox(height: 5),

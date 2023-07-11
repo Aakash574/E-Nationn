@@ -1,11 +1,16 @@
 // ignore_for_file: prefer_const_constructors, must_be_immutable
 
+import 'dart:developer';
+
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:enationn/pages/Screens/PaymentScreens/premuim_plan_screen_Details.dart';
 import 'package:enationn/pages/Screens/Dashboard/dashboard.dart';
+import 'package:enationn/pages/Screens/PopScreens/exit_pop_up.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'Provider/basic_variables_provider.dart';
 import 'pages/Screens/MainEventScreens/main_event_screen.dart';
 import 'pages/Screens/Profile/profile_screen.dart';
 
@@ -29,12 +34,43 @@ class _HomeScreenState extends State<HomeScreen> {
     ProfileScreen(),
   ];
 
+  void _showExitPopUp() {
+    showGeneralDialog(
+      context: context,
+      pageBuilder: (ctx, a1, a2) {
+        return Container();
+      },
+      transitionBuilder: (ctx, a1, a2, child) {
+        var curve = Curves.easeInOut.transform(a1.value);
+        return Transform.scale(
+          scale: curve,
+          child: const ExitPopUp(),
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 300),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final basicVariable = Provider.of<BasicVariableModel>(context);
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          child: body.elementAt(widget.activeIndex - 1),
+        child: WillPopScope(
+          onWillPop: () async {
+            log((widget.activeIndex - 1).toString());
+            if (widget.activeIndex - 1 == 0) {
+              _showExitPopUp();
+            } else {
+              setState(() {
+                widget.activeIndex = 1;
+              });
+            }
+            return false;
+          },
+          child: Container(
+            child: body.elementAt(widget.activeIndex - 1),
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavBar(
@@ -42,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
         blueTextColor: blueTextColor,
         onTapChange: (int onChangeActiveIndex) {
           setState(() {
+            basicVariable.setDashboardIndex(0);
             widget.activeIndex = onChangeActiveIndex;
           });
         },
@@ -68,7 +105,6 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  // int activeIndex = 1;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -92,7 +128,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           ),
           3: NavBarItem(
             icon: Icons.star_border_outlined,
-            title: 'Event',
+            title: 'Career',
             isActive: widget.activeIndex == 3 ? true : false,
           ),
           4: NavBarItem(
@@ -164,7 +200,7 @@ class NavBarItem extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: Colors.grey.shade500,
+              color: isActive ? blueTextColor : Colors.grey.shade500,
             ),
           )
         ],

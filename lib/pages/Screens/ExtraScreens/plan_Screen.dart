@@ -22,6 +22,7 @@ class _PlanScreenState extends State<PlanScreen> {
         alignment: Alignment.topCenter,
         children: [
           SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: Column(
               children: [
                 Container(

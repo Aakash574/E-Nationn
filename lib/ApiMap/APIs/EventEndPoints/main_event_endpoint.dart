@@ -18,7 +18,7 @@
 //         // For example, show a notification or update the UI
 //         print('API data has been updated!');
 
-//         // Update the previous data with the new data
+//        // Update the previous data with the new data
 //         previousData = responseData;
 //       } else {
 //         // No updates found

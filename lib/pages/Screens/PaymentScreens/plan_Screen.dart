@@ -2,11 +2,13 @@
 
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'package:enationn/Provider/basic_variables_provider.dart';
 import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/const.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'voucher_code_screen.dart';
 
 class PlanScreen extends StatefulWidget {
@@ -18,6 +20,36 @@ class PlanScreen extends StatefulWidget {
 
 class _PlanScreenState extends State<PlanScreen> {
   bool isActive = false;
+
+  forPremium(whatsapp) async {
+    var whatsappAndroid =
+        Uri.parse("whatsapp://send?phone=$whatsapp&text=hello");
+    if (await canLaunchUrl(whatsappAndroid)) {
+      await launchUrl(whatsappAndroid);
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("WhatsApp is not installed on the device"),
+        ),
+      );
+    }
+  }
+
+  forBaisc(whatsapp) async {
+    var whatsappAndroid =
+        Uri.parse("whatsapp://send?phone=$whatsapp&text=hello");
+    if (await canLaunchUrl(whatsappAndroid)) {
+      await launchUrl(whatsappAndroid);
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("WhatsApp is not installed on the device"),
+        ),
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -35,6 +67,7 @@ class _PlanScreenState extends State<PlanScreen> {
               alignment: Alignment.topCenter,
               children: [
                 SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
                   child: Column(
                     children: [
                       Container(
@@ -369,6 +402,57 @@ class _PlanScreenState extends State<PlanScreen> {
                                     ],
                                   ),
                                 ],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                isActive
+                                    ? forBaisc('+919302707264')
+                                    : forPremium('+919302707264');
+                              },
+                              child: Container(
+                                height: 64,
+                                width: size.width,
+                                margin: const EdgeInsets.all(10),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    width: 1,
+                                    color: isActive
+                                        ? MyColors.primaryColor
+                                        : MyColors.secondaryColor,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const FaIcon(
+                                      FontAwesomeIcons.whatsapp,
+                                      color: Colors.green,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        MyFont().fontSize16Bold(
+                                          'For More Enquiry',
+                                          MyColors.darkGreyColor,
+                                        ),
+                                        const SizedBox(height: 5),
+                                        MyFont().fontSize12Bold(
+                                          '+91 9302707264',
+                                          MyColors.lightGreyColor,
+                                        ),
+                                      ],
+                                    ),
+                                    const Spacer(),
+                                    const FaIcon(FontAwesomeIcons.angleRight)
+                                  ],
+                                ),
                               ),
                             ),
                             const Spacer(),

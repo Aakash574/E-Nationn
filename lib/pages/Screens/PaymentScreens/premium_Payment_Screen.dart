@@ -29,6 +29,7 @@ class _PremiumPaymentScreenState extends State<PremiumPaymentScreen> {
       child: Material(
         color: MyColors.primaryColor,
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
               Container(

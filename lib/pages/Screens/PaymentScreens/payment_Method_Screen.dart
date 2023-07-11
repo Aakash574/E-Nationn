@@ -21,6 +21,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       backgroundColor: Colors.white70.withOpacity(0.97),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           child: Container(
             margin: const EdgeInsets.all(12),
             child: Column(

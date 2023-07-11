@@ -8,8 +8,6 @@ import 'package:enationn/Provider/basic_variables_provider.dart';
 import 'package:enationn/const.dart';
 import 'package:enationn/pages/Customs/shared_pref.dart';
 import 'package:enationn/pages/Screens/ExtraScreens/welcome_screen.dart';
-import 'package:enationn/pages/Screens/FormOFSignIn/apple_signin.dart';
-import 'package:enationn/pages/Screens/FormOFSignIn/google_signin.dart';
 import 'package:enationn/pages/Screens/LoginSignUpPage/ForgetScreen/forget_password_screen.dart';
 import 'package:enationn/pages/Screens/LoginSignUpPage/SignUpScreen/signup_Screen.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
 
   bool isVisible = false;
-  bool isfound = false;
+  bool emailfound = true;
+  bool passwordfound = true;
 
   // Stay Login --------------------------->
 
@@ -38,22 +37,19 @@ class _LoginScreenState extends State<LoginScreen> {
     String password = _passwordController.text;
 
     // Authenticate the user and save the credentials if successful
-    log(email);
-    bool isAuthenticated =
-        await SharedPref().authenticateUser(context, email, password);
+    log("Email :: $email");
+    bool isAuthenticated = await SharedPref().authenticateUser(email, password);
     String id = await SignUpApiClient().getUserDataByEmail(email, 'id');
 
-    final int uniqueId = int.parse(id);
-
     if (isAuthenticated) {
-      await SharedPref().saveUserCredentials(uniqueId, email, password, true);
+      await SharedPref().saveUserCredentials(id, email, password, true);
       // Navigate to the home screen
       if (!mounted) return;
       Navigator.pushReplacementNamed(
         context,
         '/lib/pages/Screens/Dashboard/dashboard.dart',
       );
-    } else {}
+    }
   }
 
   @override
@@ -66,6 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Material(
           color: Colors.white,
           child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.all(24),
             child: SizedBox(
               height: size.height - 100,
@@ -88,47 +85,53 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Hi There! 👋",
-                        style: TextStyle(
-                          color: MyColors.primaryColor,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        "Welcome back, Sign In to your account",
-                        style: TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
+                  const Spacer(),
+                  Text(
+                    "Hi There! 👋",
+                    style: TextStyle(
+                      color: MyColors.primaryColor,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Welcome back, Sign In to your account",
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   Form(
-                    key: formKey,
                     child: Column(
+                      key: formKey,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          // height: 50,
                           padding: const EdgeInsets.only(left: 12),
                           decoration: BoxDecoration(
                             color: const Color(0xffF9FAFB),
                             borderRadius: BorderRadius.circular(12),
-                            border: isfound
-                                ? Border.all(
-                                    width: 1,
-                                    color: Colors.green,
-                                  )
-                                : const Border(
-                                    bottom: BorderSide.none,
-                                  ),
+                            border: Border.all(
+                              width: 1,
+                              color: emailfound
+                                  ? MyColors.tealGreenColor
+                                  : Colors.red,
+                            ),
                           ),
                           child: TextField(
+                            onChanged: (value) async {
+                              final loginStatus =
+                                  await LoginApiClient().getUserData(value);
+                              setState(() {
+                                if (loginStatus) {
+                                  emailfound = true;
+                                } else {
+                                  emailfound = false;
+                                }
+                              });
+                            },
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
                             autofocus: true,
@@ -143,16 +146,33 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         Container(
                           margin: const EdgeInsets.only(top: 16),
-                          padding: const EdgeInsets.only(left: 12, right: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
                           decoration: BoxDecoration(
                             color: const Color(0xffF9FAFB),
                             borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              width: 1,
+                              color: passwordfound
+                                  ? MyColors.tealGreenColor
+                                  : Colors.red,
+                            ),
                           ),
                           child: Row(
                             children: [
                               Expanded(
                                 child: TextField(
-                                  // key: _formKey,
+                                  onChanged: (value) async {
+                                    if (await SignUpApiClient()
+                                            .getUserDataByEmail(
+                                                _emailController.text,
+                                                'password') ==
+                                        value) {
+                                      passwordfound = true;
+                                    } else {
+                                      passwordfound = false;
+                                    }
+                                    setState(() {});
+                                  },
                                   obscureText: !isVisible,
                                   keyboardType: TextInputType.visiblePassword,
                                   autofocus: true,
@@ -168,11 +188,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               IconButton(
                                 onPressed: () {
-                                  setState(
-                                    () {
-                                      isVisible = !isVisible;
-                                    },
-                                  );
+                                  setState(() {
+                                    isVisible = !isVisible;
+                                  });
                                 },
                                 icon: isVisible
                                     ? Icon(
@@ -229,12 +247,27 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           child: TextButton(
                             onPressed: () async {
-                              if (await LoginApiClient().login(
-                                      _emailController.text,
-                                      _passwordController.text) ==
-                                  true) {
-                                _onLoginButtonPressed();
+                              final loginStatus = await LoginApiClient().login(
+                                  _emailController.text,
+                                  _passwordController.text);
+                              final signupEmailStatus = await SignUpApiClient()
+                                      .getUserDataByEmail(
+                                          _emailController.text, "email") ==
+                                  _emailController.text;
+                              bool signupPasswordStatus = false;
+                              if (signupEmailStatus) {
+                                signupPasswordStatus = await SignUpApiClient()
+                                        .getUserDataByEmail(
+                                            _emailController.text,
+                                            "password") ==
+                                    _passwordController.text;
+                              }
 
+                              if (loginStatus &&
+                                  signupPasswordStatus &&
+                                  signupEmailStatus) {
+                                log("Correct Login email Password");
+                                _onLoginButtonPressed();
                                 basicVariables.setWhichScreen("LoginScreen");
                                 if (!mounted) return;
 
@@ -250,7 +283,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 setState(() {});
                               } else {
                                 setState(() {
-                                  isfound = true;
+                                  log("Wrong Email Password");
+                                  _passwordController.clear();
                                 });
                               }
                             },
@@ -266,106 +300,107 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              height: 1,
-                              width: size.width,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: MyColors.primaryColor.withOpacity(0.5),
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.transparent,
-                                    MyColors.primaryColor,
-                                    Colors.transparent,
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: 40,
-                              height: 40,
-                              alignment: Alignment.center,
-                              color: Colors.white,
-                              child: const Text(
-                                "OR",
-                                style: TextStyle(color: Color(0xff6B7280)),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return const ByGoogleSignIn();
-                                    },
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: 150,
-                                height: 50,
-                                margin: const EdgeInsets.only(left: 15),
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: Colors.grey.withOpacity(0.2),
-                                  ),
-                                ),
-                                child: Image.asset(
-                                  "./assets/Logos/google.png",
-                                  scale: 15,
-                                ),
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return const ByAppleSignIn();
-                                    },
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: 150,
-                                height: 50,
-                                margin: const EdgeInsets.only(right: 15),
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: Colors.grey.withOpacity(0.2),
-                                  ),
-                                ),
-                                child: Image.asset(
-                                  "./assets/Logos/Apple.png",
-                                  scale: 55,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                        const Spacer(),
+                        // Stack(
+                        //   alignment: Alignment.center,
+                        //   children: [
+                        //     Container(
+                        //       height: 1,
+                        //       width: size.width,
+                        //       alignment: Alignment.center,
+                        //       decoration: BoxDecoration(
+                        //         color: MyColors.primaryColor.withOpacity(0.5),
+                        //         gradient: LinearGradient(
+                        //           colors: [
+                        //             Colors.transparent,
+                        //             MyColors.primaryColor,
+                        //             Colors.transparent,
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     ),
+                        //     Container(
+                        //       width: 40,
+                        //       height: 40,
+                        //       alignment: Alignment.center,
+                        //       color: Colors.white,
+                        //       child: const Text(
+                        //         "OR",
+                        //         style: TextStyle(color: Color(0xff6B7280)),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   children: [
+                        //     InkWell(
+                        //       onTap: () {
+                        //         Navigator.push(
+                        //           context,
+                        //           MaterialPageRoute(
+                        //             builder: (context) {
+                        //               return const ByGoogleSignIn();
+                        //             },
+                        //           ),
+                        //         );
+                        //       },
+                        //       child: Container(
+                        //         width: 150,
+                        //         height: 50,
+                        //         margin: const EdgeInsets.only(left: 15),
+                        //         padding: const EdgeInsets.all(12),
+                        //         decoration: BoxDecoration(
+                        //           color: Colors.white,
+                        //           borderRadius: BorderRadius.circular(16),
+                        //           border: Border.all(
+                        //             width: 1,
+                        //             color: Colors.grey.withOpacity(0.2),
+                        //           ),
+                        //         ),
+                        //         child: Image.asset(
+                        //           "./assets/Logos/google.png",
+                        //           scale: 15,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //     InkWell(
+                        //       onTap: () {
+                        //         Navigator.push(
+                        //           context,
+                        //           MaterialPageRoute(
+                        //             builder: (context) {
+                        //               return const ByAppleSignIn();
+                        //             },
+                        //           ),
+                        //         );
+                        //       },
+                        //       child: Container(
+                        //         width: 150,
+                        //         height: 50,
+                        //         margin: const EdgeInsets.only(right: 15),
+                        //         padding: const EdgeInsets.all(12),
+                        //         decoration: BoxDecoration(
+                        //           color: Colors.white,
+                        //           borderRadius: BorderRadius.circular(16),
+                        //           border: Border.all(
+                        //             width: 1,
+                        //             color: Colors.grey.withOpacity(0.2),
+                        //           ),
+                        //         ),
+                        //         child: Image.asset(
+                        //           "./assets/Logos/Apple.png",
+                        //           scale: 55,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
-                              "Already have an account?",
+                              "Don't have an account?",
                               style: TextStyle(
                                 color: Color(0xff6B7280),
                               ),
@@ -402,14 +437,5 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-  }
-}
-
-class UserNotAvailable extends StatelessWidget {
-  const UserNotAvailable({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(child: Text("User Not Found"));
   }
 }

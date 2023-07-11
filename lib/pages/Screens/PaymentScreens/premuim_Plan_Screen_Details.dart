@@ -47,6 +47,7 @@ class _PremiumPlanDetailScreenState extends State<PremiumPlanDetailScreen> {
                   color: Colors.white,
                 ),
                 child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -64,7 +65,7 @@ class _PremiumPlanDetailScreenState extends State<PremiumPlanDetailScreen> {
                               ),
                             ),
                             TextSpan(
-                              text: "Mentors.\n",
+                              text: "Mentors\n",
                               style: TextStyle(
                                 fontSize: 26,
                                 color: MyColors.primaryColor,
@@ -72,7 +73,7 @@ class _PremiumPlanDetailScreenState extends State<PremiumPlanDetailScreen> {
                               ),
                             ),
                             const TextSpan(
-                              text: "In ",
+                              text: "at ",
                               style: TextStyle(
                                 fontSize: 26,
                                 color: Colors.black,
@@ -128,16 +129,17 @@ class _PremiumPlanDetailScreenState extends State<PremiumPlanDetailScreen> {
                           color: Colors.white,
                         ),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 10),
+                            Align(
+                              alignment: Alignment.center,
                               child: MyFont().fontSize16Weight500(
                                 "You are at the best place.  ",
                                 MyColors.lightGreyColor,
                               ),
                             ),
+                            const Divider(),
                             planDetails(
                               Icons.foundation,
                               "Grounding and Personal Foundation.",
@@ -147,20 +149,16 @@ class _PremiumPlanDetailScreenState extends State<PremiumPlanDetailScreen> {
                               "Preparation and Planning.",
                             ),
                             planDetails(
-                              Icons.brightness_auto_outlined,
-                              "Negotiate and Initialize.",
-                            ),
-                            planDetails(
                               Icons.support_agent_outlined,
-                              "Support and Enable.",
+                              "Support and Assistance.",
                             ),
                             planDetails(
-                              Icons.celebration_rounded,
-                              "Closure and Celebration.",
+                              Icons.directions,
+                              "Direction and Guidance.",
                             ),
                             planDetails(
                               Icons.bar_chart_rounded,
-                              "enabling growth",
+                              "Enabling Growth",
                             ),
                           ],
                         ),

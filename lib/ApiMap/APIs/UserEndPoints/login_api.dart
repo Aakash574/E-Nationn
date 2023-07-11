@@ -43,7 +43,7 @@ class LoginApiClient {
     return "0";
   }
 
-  Future<bool> getUserData(String email) async {
+  Future<bool> getUserData(String choose) async {
     Response response = await http.get(
       loginURL,
       headers: <String, String>{
@@ -53,12 +53,9 @@ class LoginApiClient {
 
     final userData = await jsonDecode(response.body);
 
-    log(response.body);
-    log(response.statusCode.toString());
-
     if (response.statusCode == 200) {
       for (var i = 0; i < userData.length; i++) {
-        if (await userData[i]['email'] == email) {
+        if (await userData[i]['email'] == choose) {
           return true;
         }
       }

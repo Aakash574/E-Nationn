@@ -48,6 +48,7 @@ class _PremiumPlanDetailScreenState extends State<PremiumPlanDetailScreen> {
               color: Colors.white,
             ),
             child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,

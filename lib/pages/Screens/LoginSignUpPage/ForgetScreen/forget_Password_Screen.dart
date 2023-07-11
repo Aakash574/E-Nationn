@@ -1,14 +1,20 @@
-// ignore_for_file: use_build_context_synchronously, file_names
+// ignore_for_file: use_build_context_synchronously, file_names, avoid_print
 
-import 'dart:developer';
-
-import 'package:email_otp/email_otp.dart';
+import 'dart:math';
+import 'dart:developer' as d;
+// import 'package:email_auth/email_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/login_api.dart';
-import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
+import 'package:enationn/Provider/basic_variables_provider.dart';
+import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/ForgetScreen/otp_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
+import 'package:provider/provider.dart';
+
+import 'otp_Screen.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
   const ForgetPasswordScreen({
@@ -26,85 +32,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   bool isSendingOTP = false;
   bool isFound = false;
 
-  Future<void> isOtpSending() async {
-    // Simulating an asynchronous task
-    setState(() {
-      isSendingOTP = true;
-    });
-
-    // Simulating OTP sending process
-    await Future.delayed(const Duration(seconds: 8));
-
-    setState(() {
-      isSendingOTP = false;
-    });
-  }
-
-  Future<void> resetPassword() async {
-    final String email = _emailController.text.trim();
-
-    log("Email : $email");
-
-    EmailOTP myAuth = EmailOTP();
-
-    //Get User Credentials ----
-
-    // log(await LoginApiClient().getUserData(email));
-    final userFound = await LoginApiClient().getUserData(email);
-    final userId = await SignUpApiClient().getUserDataByEmail(email, 'id');
-
-    // Checking Valid User ---
-    log("UserId : $userId");
-    // log("UserEmail $userEmail");
-    log("Email Valid : ${EmailValidator.validate(email).toString()}");
-
-    if (EmailValidator.validate(email) && userFound) {
-      //Sending Opt With this Credentials ---
-
-      myAuth.setConfig(
-        appEmail: "contact@enationn.com",
-        appName: "Enationn",
-        userEmail: email,
-        otpLength: 4,
-        otpType: OTPType.digitsOnly,
-      );
-      bool status = await myAuth.sendOTP();
-      if (status) {
-        log("OTP Send Successfully");
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) {
-              return OTPScreen(
-                myauth: myAuth,
-                email: email,
-                id: userId,
-              );
-            },
-          ),
-        );
-
-        // For Success and Error Massages ---
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("OTP sent Successfully"),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("OOPS! OTP sent Failed"),
-          ),
-        );
-      }
-    } else {
-      log("InvalidEmail");
-    }
-
-    // /
-  }
-
   @override
   void initState() {
     super.initState();
@@ -112,6 +39,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final basicVariable = Provider.of<BasicVariableModel>(context);
+    final userProvider = Provider.of<UserProvider>(context);
     return SafeArea(
       child: Material(
         child: Padding(
@@ -188,17 +117,18 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                           border: InputBorder.none,
                         ),
                         onChanged: (value) async {
-                          log("Email Found : ${await LoginApiClient().getUserDataByEmail(_emailController.text, 'email') == _emailController.text}");
-                          if (await LoginApiClient().getUserDataByEmail(
-                                  _emailController.text, 'email') ==
-                              _emailController.text) {
-                            isFound = true;
-                          } else {
-                            isFound = false;
-                          }
-                          setState(
-                            () {},
-                          );
+                          d.log(
+                              "Email Found : ${await LoginApiClient().getUserDataByEmail(_emailController.text, 'email') == _emailController.text}");
+                          final email = await LoginApiClient()
+                              .getUserDataByEmail(
+                                  _emailController.text, 'email');
+                          setState(() {
+                            if (email == _emailController.text) {
+                              isFound = true;
+                            } else {
+                              isFound = false;
+                            }
+                          });
                         },
                       ),
                     ),
@@ -228,11 +158,45 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
               const Spacer(),
               InkWell(
                 onTap: () async {
-                  resetPassword();
-                  isOtpSending();
-                  await Future.delayed(const Duration(seconds: 8));
-                  log("Button Pressed");
-                  setState(() {});
+                  if (userProvider.email == _emailController.text) {
+                    setState(() {
+                      isSendingOTP = true;
+                    });
+
+                    if (await sendMail(basicVariable, userProvider)) {
+                      setState(() {
+                        isSendingOTP = false;
+                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) {
+                            return const OTPScreen();
+                          },
+                        ),
+                      );
+                    }
+                  } else if (_emailController.text.isEmpty) {
+                    Fluttertoast.showToast(
+                      msg: "Please enter the email first!",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                      fontSize: 16.0,
+                    );
+                  } else {
+                    Fluttertoast.showToast(
+                      msg: "Email is not registered",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                      fontSize: 16.0,
+                    );
+                  }
                 },
                 child: Container(
                   height: 50,
@@ -262,4 +226,223 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
       ),
     );
   }
+
+  Future<bool> sendMail(
+      BasicVariableModel basicVariable, UserProvider userProvider) async {
+    String username = 'enationnindia@gmail.com'; // Your email address
+    String password = 'svklvaghqzvgvmvl';
+
+    final smtpServer = gmail(username, password);
+
+    final message = Message()
+      ..from = Address(username, 'E-Nationn')
+      ..recipients.add(_emailController.text)
+      ..subject = 'E-Nationn email verification Code :: 😀'
+      ..text = 'Verification Code ::'
+      ..html = setEmailBody(userProvider, basicVariable);
+
+    try {
+      final sendReport = await send(message, smtpServer);
+      d.log(sendReport.mail.toString());
+      print('Message sent: $sendReport');
+      return true;
+    } on MailerException catch (e) {
+      print('Message not sent.');
+      d.log(e.toString());
+      for (var p in e.problems) {
+        print('Problem: ${p.code}: ${p.msg}');
+      }
+      return false;
+    }
+  }
+}
+
+String setEmailBody(
+    UserProvider userProvider, BasicVariableModel basicVariable) {
+  Random random = Random();
+  int next(int min, int max) => min + random.nextInt(max - min);
+  final rand = next(999, 9999);
+
+  basicVariable.setVerificationCode(rand.toString());
+
+  String mailBody = """
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            background-image: url('technologies_background.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 36px;
+            font-weight: bold;
+            color: #333333;
+            padding: 20px 0;
+            border-bottom: 1px solid #cccccc;
+        }
+
+        .content {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .text {
+            color: #333333;
+            margin: 0;
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .quote {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            font-style: italic;
+            font-size: 14px;
+            color: #666666;
+            text-align: center;
+        }
+
+        .highlight {
+            background-color: #efefef;
+            padding: 15px;
+            border-radius: 20px;
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333333;
+            text-align: center;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666666;
+            border-top: 1px solid #cccccc;
+            padding-top: 20px;
+        }
+
+        .social-icons {
+            align-items: center;
+
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .social-icons li {
+            margin: 0 5px;
+        }
+
+        .social-icons li a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #666666;
+            text-decoration: none;
+            font-size: 12px;
+            transition: color 0.3s;
+        }
+
+        .social-icons li a img {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 5px;
+        }
+
+        .social-icons li a:hover {
+            color: #333333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Welcome to E-Nationn!
+            </h1>
+        </div>
+        <div class="content">
+            <p class="text">Dear ${userProvider.fullName},</p>
+            <p class="text">Your OTP is:</p>
+            <div class="highlight">{{$rand}}</div>
+            <p class="text">Please use this verification code to proceed with your account registration.</p>
+            <div class="quote">"Success is not final, failure is not fatal: It is the courage to continue that counts."
+            </div>
+        </div>
+        <div class="footer">
+            <ul class="social-icons">
+                <li>
+                    <a href="#">
+                        <i class="fa fa-facebook"></i>
+                        Facebook
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fa fa-twitter"></i>
+                        Twitter
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fa fa-instagram"></i>
+                        Instagram
+                    </a>
+                </li>
+                <li>
+                    <i class="fa fa-linkedin"></i>
+                    <a href="https://www.linkedin.com/" target="_blank">
+                        LinkedIn
+                    </a>
+                </li>
+                <li>
+                    <i class="fa fa-youtube"></i>
+                    <a href="https://www.youtube.com/@Enationn" target="_blank">
+                        Youtube
+                    </a>
+                </li>
+            </ul>
+            <p>&copy; 2023 E-Nationn. All rights reserved.</p>
+            <p>${DateTime.now()}</p>
+        </div>
+    </div>
+</body>""";
+  return mailBody;
 }

@@ -1,26 +1,21 @@
 // ignore_for_file: use_build_context_synchronously, file_names, unrelated_type_equality_checks
 
 import 'dart:developer';
-import 'dart:async';
 
-import 'package:email_otp/email_otp.dart';
+import 'package:enationn/Provider/basic_variables_provider.dart';
 import 'package:enationn/const.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/ForgetScreen/reset_Password_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
-import 'reset_password_screen.dart';
+import '../../../../Provider/user_provider.dart';
 
 class OTPScreen extends StatefulWidget {
   const OTPScreen({
-    Key? key,
-    required this.myauth,
-    required this.email,
-    required this.id,
-  }) : super(key: key);
-
-  final EmailOTP myauth;
-  final String email;
-  final String id;
+    super.key,
+  });
 
   @override
   State<OTPScreen> createState() => _OTPScreenState();
@@ -35,40 +30,6 @@ class _OTPScreenState extends State<OTPScreen> {
   String otpController = "1234";
   String userEmail = "";
 
-  Future<void> resetPassword() async {
-    final String email = widget.email.trim();
-
-    log("Email : $email");
-
-    EmailOTP myAuth = EmailOTP();
-
-    //Sending Opt With this Credentials ---
-
-    myAuth.setConfig(
-      appEmail: "contact@enationn.com",
-      appName: "Enationn",
-      userEmail: email,
-      otpLength: 4,
-      otpType: OTPType.digitsOnly,
-    );
-    bool status = await myAuth.sendOTP();
-    if (status) {
-      // For Success and Error Massages ---
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("OTP Resend Successfully"),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("OOPS! OTP sent Failed"),
-        ),
-      );
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -76,17 +37,15 @@ class _OTPScreenState extends State<OTPScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // log(emailController);
-    log("EmailController: ${widget.email}");
-
     final size = MediaQuery.of(context).size;
+    final basicVariable = Provider.of<BasicVariableModel>(context);
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       body: SafeArea(
         child: Container(
           margin: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -117,8 +76,6 @@ class _OTPScreenState extends State<OTPScreen> {
               const SizedBox(height: 5),
               MyFont().fontSize14Weight500(
                   "We have sent the code Verification", Colors.grey),
-              const SizedBox(height: 5),
-              MyFont().fontSize14Weight500("to ${widget.email}", Colors.grey),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -167,31 +124,45 @@ class _OTPScreenState extends State<OTPScreen> {
                   ),
                   InkWell(
                     onTap: () async {
-                      if (await widget.myauth.verifyOTP(
-                              otp: otp1Controller.text +
-                                  otp2Controller.text +
-                                  otp3Controller.text +
-                                  otp4Controller.text) ==
-                          true) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("OTP is verified"),
-                          ),
+                      log(basicVariable.verificationCode);
+                      log(otp1Controller.text +
+                          otp2Controller.text +
+                          otp3Controller.text +
+                          otp4Controller.text);
+                      if (basicVariable.verificationCode ==
+                          otp1Controller.text +
+                              otp2Controller.text +
+                              otp3Controller.text +
+                              otp4Controller.text) {
+                        log("Correct Otp");
+                        Fluttertoast.showToast(
+                          msg: "Sending...",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
                         );
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => ResetPasswordScreen(
-                              id: widget.id,
-                              email: widget.email,
+                              id: userProvider.id,
+                              email: userProvider.email,
                             ),
                           ),
                         );
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Invalid OTP"),
-                          ),
+                        log("Incorrect otp");
+                        Fluttertoast.showToast(
+                          msg: "Some thing went wrong...",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
                         );
                       }
                     },

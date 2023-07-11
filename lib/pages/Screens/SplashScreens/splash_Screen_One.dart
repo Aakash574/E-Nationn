@@ -42,25 +42,12 @@ class _SplashScreenOneState extends State<SplashScreenOne> {
                   scale: 1.5,
                 ),
               ),
-              // const SizedBox(height: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    child: MyFont().fontSize26Bold(
-                      "What is now proved was\nonce only imagined",
-                      Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    child: MyFont().fontSize18Weight500(
-                      "Lorem ipsum dolor sit amet, cectetur adipiscing elit,",
-                      MyColors.lightGreyColor,
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 25),
+              MyFont().fontSize26Bold(
+                "\"What is now proved was\nonce only imagined\"",
+                Colors.white,
               ),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

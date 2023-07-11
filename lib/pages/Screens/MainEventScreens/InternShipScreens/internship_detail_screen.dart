@@ -28,8 +28,12 @@ class _InternshipDetailsScreenState extends State<InternshipDetailsScreen> {
     final size = MediaQuery.of(context).size;
     final dateFormat =
         DateTime.parse(widget.internship[widget.index]['date_of_interview']);
+    final lastDateFormat =
+        DateTime.parse(widget.internship[widget.index]['last_date_to_apply']);
     final dateOfInternship =
         (DateFormat.yMMMd('en_US').format(dateFormat)).toString();
+    final lastDateOfInternship =
+        (DateFormat.yMMMd('en_US').format(lastDateFormat)).toString();
 
     return Material(
       child: SizedBox(
@@ -59,6 +63,7 @@ class _InternshipDetailsScreenState extends State<InternshipDetailsScreen> {
                     color: Colors.white,
                   ),
                   child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
                     padding: const EdgeInsets.all(24),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -150,23 +155,9 @@ class _InternshipDetailsScreenState extends State<InternshipDetailsScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 15),
-                                  Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      MyFont().fontSize16Bold(
-                                        "Gala Convention Center",
-                                        Colors.black,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      MyFont().fontSize14Weight500(
-                                        widget.internship[widget.index]
-                                            ['location'],
-                                        MyColors.lightGreyColor,
-                                      ),
-                                    ],
+                                  MyFont().fontSize16Bold(
+                                    widget.internship[widget.index]['location'],
+                                    Colors.black,
                                   ),
                                   const SizedBox(width: 45),
                                 ],
@@ -198,13 +189,12 @@ class _InternshipDetailsScreenState extends State<InternshipDetailsScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   MyFont().fontSize16Weight500(
-                                    "Last Registration Date",
+                                    "Registration Last Date",
                                     Colors.black,
                                   ),
                                   const SizedBox(height: 10),
                                   MyFont().fontSize14Weight500(
-                                    widget.internship[widget.index]
-                                        ['last_date_to_apply'],
+                                    lastDateOfInternship,
                                     MyColors.lightGreyColor,
                                   ),
                                 ],
@@ -220,7 +210,7 @@ class _InternshipDetailsScreenState extends State<InternshipDetailsScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   MyFont().fontSize16Weight500(
-                                    "Apply Status",
+                                    "Application Status",
                                     Colors.black,
                                   ),
                                   const SizedBox(height: 10),

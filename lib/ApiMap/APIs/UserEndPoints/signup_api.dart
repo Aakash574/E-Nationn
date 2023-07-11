@@ -27,6 +27,7 @@ class SignUpApiClient {
     String internshipStatus,
     String hackathonStatus,
     String eventStatus,
+    String contact,
     BuildContext context,
   ) async {
     Uri url = Uri.parse('http://13.232.155.227:8000/account/api/Signup/');
@@ -48,6 +49,7 @@ class SignUpApiClient {
         'internship_status': internshipStatus,
         'hackathon_status': hackathonStatus,
         'event_status': eventStatus,
+        'contact': contact,
       },
     );
 
@@ -57,7 +59,8 @@ class SignUpApiClient {
       body: requestBody,
     );
 
-    log(response.body);
+    // log(response.body);
+    log("All Users ::: ${response.body}");
 
     final signUpKey =
         await SignUpApiClient().getUserDataByEmail(email, 'signupkey');
@@ -79,7 +82,7 @@ class SignUpApiClient {
     );
 
     final userData = json.decode(response.body);
-
+    log("UserData :: $userData");
     return userData;
   }
 
@@ -100,6 +103,8 @@ class SignUpApiClient {
   }
 
   Future<String> getUserDataByEmail(String email, String choose) async {
+    log("Getting User Data By Email :::: ");
+
     Uri url = Uri.parse('http://13.232.155.227:8000/account/api/Signup/');
     Response response = await http.get(
       url,
@@ -107,15 +112,15 @@ class SignUpApiClient {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    log("Email : $email");
-    log("Choose : $choose");
+    log("Email Sign Up : $email");
+    log("Choose Sign Up : $choose");
     final userData = await jsonDecode(response.body);
     for (var i = 0; i < userData.length; i++) {
       if (await userData[i]['email'] == email) {
         return userData[i][choose].toString();
       }
     }
-    return "0";
+    return "Id Not Found";
   }
 
   Future<bool> updateDetails(

@@ -30,7 +30,7 @@ class UserInternshipApiClient {
         'internship_name': internshipName,
         'apply_status': applyStatus,
         'payment_status': paymentStatus,
-        'date_of_hackathon': dateOfEvent,
+        'date_of_internship': dateOfEvent,
         'price': price,
         'uniqueid': uniqueId,
       },

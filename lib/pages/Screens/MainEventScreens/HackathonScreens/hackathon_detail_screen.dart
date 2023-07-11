@@ -30,6 +30,11 @@ class _HackathonDetailsScreenState extends State<HackathonDetailsScreen> {
     final dateOfHackathon =
         (DateFormat.yMMMd('en_US').format(dateFormat)).toString();
 
+    final lastDateFormat =
+        DateTime.parse(widget.hackathon[widget.index]['last_date_to_apply']);
+    final lastDateOfHackathon =
+        (DateFormat.yMMMd('en_US').format(lastDateFormat)).toString();
+
     return Material(
       child: SizedBox(
         height: size.height,
@@ -150,22 +155,9 @@ class _HackathonDetailsScreenState extends State<HackathonDetailsScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 15),
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    MyFont().fontSize16Bold(
-                                      "Gala Convention Center",
-                                      Colors.black,
-                                    ),
-                                    const SizedBox(height: 5),
-                                    MyFont().fontSize14Weight500(
-                                      widget.hackathon[widget.index]
-                                          ['location'],
-                                      MyColors.lightGreyColor,
-                                    ),
-                                  ],
+                                MyFont().fontSize16Bold(
+                                  widget.hackathon[widget.index]['location'],
+                                  Colors.black,
                                 ),
                                 const SizedBox(width: 45),
                               ],
@@ -197,13 +189,12 @@ class _HackathonDetailsScreenState extends State<HackathonDetailsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 MyFont().fontSize16Weight500(
-                                  "Last Registration Date",
+                                  "Registration Last Date",
                                   Colors.black,
                                 ),
                                 const SizedBox(height: 5),
                                 MyFont().fontSize14Weight500(
-                                  widget.hackathon[widget.index]
-                                      ['last_date_to_apply'],
+                                  lastDateOfHackathon,
                                   MyColors.lightGreyColor,
                                 ),
                               ],
@@ -219,7 +210,7 @@ class _HackathonDetailsScreenState extends State<HackathonDetailsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 MyFont().fontSize16Weight500(
-                                  "Apply Status",
+                                  "Application Status",
                                   Colors.black,
                                 ),
                                 const SizedBox(height: 5),

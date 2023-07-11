@@ -3,6 +3,7 @@
 import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/const.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class PersonalInfoScreen extends StatefulWidget {
@@ -19,130 +20,157 @@ class PersonalInfoScreenState extends State<PersonalInfoScreen> {
     final size = MediaQuery.of(context).size;
     return Material(
       child: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: SizedBox(
-            height: size.height - 100,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          width: 1,
-                          color: MyColors.lightGreyColor.withOpacity(0.2),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: MyColors.lightGreyColor.withOpacity(0.2),
+                          ),
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                        borderRadius: BorderRadius.circular(15),
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
                       ),
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                        onPressed: () {
-                          Navigator.pop(context);
+                      MyFont().fontSize16Bold("Edit Profile", Colors.black),
+                      const SizedBox(width: 45),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  CircleAvatar(
+                    backgroundColor: Colors.grey.shade300,
+                    radius: 45,
+                    backgroundImage: const AssetImage(
+                      "assets/ProfileScreen/profile.png",
+                      // scale: 2,
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: Colors.transparent,
+                        border: Border.all(
+                          width: 3,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  MyFont().fontSize16Bold(
+                    userDataProvider.fullName,
+                    Colors.black,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      MyFont().fontSize12Weight500(
+                        "UID : ${userDataProvider.uId}",
+                        Colors.black.withOpacity(0.5),
+                      ),
+                      IconButton(
+                        onPressed: () async {
+                          await Clipboard.setData(ClipboardData(
+                              text: "UID : ${userDataProvider.uId}"));
                         },
-                      ),
-                    ),
-                    MyFont().fontSize16Bold("Edit Profile", Colors.black),
-                    const SizedBox(
-                      width: 45,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                CircleAvatar(
-                  backgroundColor: Colors.grey.shade300,
-                  radius: 45,
-                  backgroundImage: const AssetImage(
-                    "assets/ProfileScreen/profile.png",
-                    // scale: 2,
+                        icon: Icon(
+                          Icons.copy,
+                          size: 12,
+                          color: MyColors.darkGreyColor,
+                        ),
+                      )
+                    ],
                   ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: Colors.transparent,
-                      border: Border.all(
-                        width: 3,
-                        color: Colors.black,
-                      ),
-                    ),
+                  const Divider(
+                    thickness: 1,
                   ),
-                ),
-                const SizedBox(height: 10),
-                MyFont().fontSize16Bold(
-                  userDataProvider.fullName,
-                  Colors.black,
-                ),
-                const SizedBox(height: 3),
-                MyFont().fontSize12Weight500(
-                  "UID : ${userDataProvider.uId}",
-                  Colors.black.withOpacity(0.5),
-                ),
-                const SizedBox(height: 30),
-                Container(
-                  height: 1,
-                  color: Colors.grey.withOpacity(0.3),
-                ),
-                const SizedBox(height: 20),
-                fieldForUserCredential(
-                  size,
-                  userDataProvider.fullName,
-                  "Full Name",
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ],
+              ),
+            ),
+            Flexible(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Column(
                   children: [
                     fieldForUserCredential(
-                      size / 2.4,
-                      userDataProvider.gender.toString(),
-                      "Gender",
+                      size,
+                      userDataProvider.fullName,
+                      "Full Name",
                     ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        fieldForUserCredential(
+                          size / 2.4,
+                          userDataProvider.gender.toString(),
+                          "Gender",
+                        ),
+                        fieldForUserCredential(
+                          size / 2.4,
+                          userDataProvider.dateOfBirth,
+                          "Date of Birth",
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
                     fieldForUserCredential(
-                      size / 2.4,
-                      userDataProvider.dateOfBirth,
-                      "Date of Birth",
+                      size,
+                      userDataProvider.contact,
+                      "Phone No.",
                     ),
+                    const SizedBox(height: 20),
+                    fieldForUserCredential(
+                      size,
+                      userDataProvider.email,
+                      "Email",
+                    ),
+                    const SizedBox(height: 20),
+                    fieldForUserCredential(
+                      size,
+                      userDataProvider.branch,
+                      "Branch",
+                    ),
+                    const SizedBox(height: 20),
+                    fieldForUserCredential(
+                      size,
+                      userDataProvider.college,
+                      "College",
+                    ),
+                    const SizedBox(height: 20),
+                    fieldForUserCredential(
+                      size,
+                      userDataProvider.yearOfPassout,
+                      "Year of passout",
+                    ),
+                    const SizedBox(height: 20),
+                    fieldForUserCredential(
+                      size,
+                      userDataProvider.fatherName,
+                      "Father's Name",
+                    ),
+                    // const SizedBox(height: 10),
                   ],
                 ),
-                const SizedBox(height: 20),
-                fieldForUserCredential(
-                  size,
-                  userDataProvider.email,
-                  "Email",
-                ),
-                const SizedBox(height: 20),
-                fieldForUserCredential(
-                  size,
-                  "@${userDataProvider.fullName}",
-                  "User Name",
-                ),
-                const Spacer(),
-                Container(
-                  width: size.width,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: MyColors.primaryColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: TextButton(
-                    onPressed: () async {},
-                    style: const ButtonStyle(
-                      splashFactory: NoSplash.splashFactory,
-                    ),
-                    child: const Text(
-                      "Save",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            const Divider(
+              height: 30,
+              thickness: 1.5,
+            ),
+          ],
         ),
       ),
     );

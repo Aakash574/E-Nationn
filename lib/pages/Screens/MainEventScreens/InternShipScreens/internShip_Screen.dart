@@ -1,12 +1,18 @@
-// ignore_for_file: file_names, prefer_typing_uninitialized_variables
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, must_be_immutable
+
+import 'dart:developer';
 
 import 'package:enationn/ApiMap/APIs/EventEndPoints/internship_api.dart';
-import 'package:enationn/ApiMap/APIs/UserEventEndPoints/user_internship_api.dart';
 import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/const.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../ApiMap/APIs/UserEventEndPoints/user_internship_api.dart';
 import 'internship_detail_screen.dart';
 
 class InternShipScreen extends StatefulWidget {
@@ -20,12 +26,9 @@ class _InternShipScreenState extends State<InternShipScreen> {
   bool isApplied = false;
 
   List internship = [];
-  List<dynamic> internshipUserData = [];
 
   Future<void> internshipDetails() async {
-    if (mounted) {
-      internship = await InternShipApiClient().getInternshipDetails();
-    }
+    internship = await InternShipApiClient().getInternshipDetails();
     setState(() {});
   }
 
@@ -38,100 +41,73 @@ class _InternShipScreenState extends State<InternShipScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    return Material(
-      color: Colors.white,
-      child: SingleChildScrollView(
-        child: SizedBox(
-          height: size.height - 90,
-          child: Column(
-            children: [
-              Expanded(
-                child: RefreshIndicator(
-                  color: MyColors.primaryColor,
-                  onRefresh: internshipDetails,
-                  child: ListView.builder(
-                    itemCount: internship.length,
-                    itemBuilder: (context, index) => ListTile(
-                      title: internship.isEmpty
-                          ? Container(
-                              alignment: Alignment.center,
-                              child: MyFont().fontSize16Bold(
-                                "Hackathon Not Available...",
-                                Colors.black45,
-                              ),
-                            )
-                          : InkWell(
-                              onTap: () async {
-                                internshipUserData =
-                                    await UserInternshipApiClient()
-                                        .getUserInternshipData();
-
-                                final l1 = internshipUserData.length;
-
-                                for (var i = 0; i < l1; i++) {
-                                  if (internship[index]['name'] ==
-                                          internshipUserData[i]
-                                              ['internship_name'] &&
-                                      internshipUserData[i]['uniqueid'] ==
-                                          userProvider.uId) {
-                                    isApplied = true;
-                                    setState(() {});
-                                    break;
-                                  } else {
-                                    isApplied = false;
-                                    setState(() {});
-                                  }
-                                }
-
-                                if (!mounted) return;
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) {
-                                      return InternshipDetailsScreen(
-                                        index: index,
-                                        internship: internship,
-                                        isApplied: isApplied,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                              child: FutureBuilder(
-                                future: InternShipApiClient()
-                                    .getInternshipDetails(),
-                                builder: (ctx, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        color: MyColors.tealGreenColor,
-                                        semanticsLabel: "Loading...",
-                                        semanticsValue: "Loading...",
-                                        backgroundColor: MyColors.primaryColor,
-                                        strokeWidth: 4.0,
-                                      ),
-                                    );
-                                  } else {
-                                    return InternshipSection(
-                                      index: index,
-                                      internship: internship,
-                                      isApplied: isApplied,
-                                      listLength: index == internship.length - 1
-                                          ? 300
-                                          : 0,
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: SizedBox(
+        height: size.height / 1.8,
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: InternShipApiClient().getInternshipDetails(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  log('Connection State Waiting');
+                  return Center(
+                    heightFactor: 2.5,
+                    child: CircularProgressIndicator(
+                      color: MyColors.tealGreenColor,
+                      semanticsLabel: "Loading...",
+                      semanticsValue: "Loading...",
+                      backgroundColor: MyColors.primaryColor,
+                      strokeWidth: 4.0,
                     ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+                  );
+                } else if (snapshot.connectionState == ConnectionState.done) {
+                  log('Connection State Done');
+                  return Expanded(
+                    child: ListView.builder(
+                        itemCount: internship.length,
+                        itemBuilder: (context, index) {
+                          if (internship[index]['apply_status'] == 'Active') {
+                            return ListTile(
+                              title: InternshipSection(
+                                index: index,
+                                internship: internship,
+                                listLength:
+                                    index == internship.length - 1 ? 20 : 10,
+                              )
+                                  .animate(delay: 200.ms)
+                                  .fadeIn()
+                                  .moveX(begin: 100),
+                            );
+                          } else {
+                            return null;
+                          }
+                        }),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Column(
+                      children: [
+                        const FaIcon(FontAwesomeIcons.rotate),
+                        MyFont().fontSize16Bold(
+                          "Refresh Again",
+                          MyColors.darkGreyColor,
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return Center(
+                    child: MyFont().fontSize16Bold(
+                      "No Internship",
+                      MyColors.darkGreyColor,
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -144,13 +120,11 @@ class InternshipSection extends StatefulWidget {
     required this.index,
     required this.internship,
     required this.listLength,
-    required this.isApplied,
   });
 
   final int index;
   final List internship;
   final double listLength;
-  final bool isApplied;
 
   @override
   State<InternshipSection> createState() => _InternshipSectionState();
@@ -159,10 +133,27 @@ class InternshipSection extends StatefulWidget {
 class _InternshipSectionState extends State<InternshipSection> {
   var dateDiffrenceInHours;
   var dateDiffrenceInDays;
-  String eventDate = "";
-  String year = "";
-  String month = "";
-  String day = "";
+  List<dynamic> internshipUserData = [];
+
+  List iAccount = [];
+  bool isUserApplied = false;
+
+  void getHackathonAccount() async {
+    iAccount = await UserInternshipApiClient().getUserInternshipData();
+    if (!mounted) return;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    for (var i = 0; i < iAccount.length; i++) {
+      if (iAccount[i]['internship_name'] ==
+              widget.internship[widget.index]['name'] &&
+          userProvider.uId == iAccount[i]['uniqueid']) {
+        isUserApplied = true;
+        break;
+      } else {
+        isUserApplied = false;
+      }
+    }
+    setState(() {});
+  }
 
   void getTimer() {
     final dateOfEvent =
@@ -170,215 +161,165 @@ class _InternshipSectionState extends State<InternshipSection> {
 
     dateDiffrenceInDays = dateOfEvent?.difference(DateTime.now()).inDays;
     dateDiffrenceInHours = dateOfEvent?.difference(DateTime.now()).inHours;
-    eventDate = widget.internship[widget.index]['date_of_interview'];
-    final date = DateTime.parse(eventDate);
-    year = date.year.toString();
-    month = date.month.toString();
-    day = date.day.toString();
-    switch (month) {
-      case "1":
-        month = 'Jan';
-        break;
-      case "2":
-        month = 'Feb';
-        break;
-      case "3":
-        month = 'Mar';
-        break;
-      case "4":
-        month = 'Apr';
-        break;
-      case "5":
-        month = 'May';
-        break;
-      case "6":
-        month = 'Jun';
-        break;
-      case "7":
-        month = 'July';
-        break;
-      case "8":
-        month = 'Aug';
-        break;
-      case "9":
-        month = 'Sept';
-        break;
-      case "10":
-        month = 'Oct';
-        break;
-      case "11":
-        month = 'Nov';
-        break;
-      case "12":
-        month = 'Dec';
-        break;
-
-      default:
-    }
   }
 
   @override
   void initState() {
     super.initState();
     getTimer();
+    getHackathonAccount();
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final dateOfInterview =
+        DateTime.parse(widget.internship[widget.index]['date_of_interview']);
 
-    return Column(
-      children: [
-        Container(
-          width: size.width,
-          height: 200,
-          margin: EdgeInsets.only(top: 20, bottom: widget.listLength),
-          alignment: Alignment.bottomCenter,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(
-                (widget.internship[widget.index]['image']).toString().isEmpty
-                    ? "https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-scaled.png"
-                    : widget.internship[widget.index]['image'],
-              ),
-              fit: BoxFit.cover,
+    final formattedateOfInterview =
+        (DateFormat.yMMMd('en_US').format(dateOfInterview)).toString();
+
+    return InkWell(
+      onTap: dateDiffrenceInHours >= 0
+          ? () async {
+              internshipUserData =
+                  await UserInternshipApiClient().getUserInternshipData();
+
+              if (!mounted) return;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) {
+                    return InternshipDetailsScreen(
+                      index: widget.index,
+                      internship: widget.internship,
+                      isApplied: isUserApplied,
+                    );
+                  },
+                ),
+              );
+            }
+          : () {
+              Fluttertoast.showToast(
+                msg: "Expired",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0,
+              );
+            },
+      child: Container(
+        width: size.width,
+        height: 200,
+        margin: EdgeInsets.only(top: 10, bottom: widget.listLength),
+        alignment: Alignment.bottomCenter,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            colorFilter: dateDiffrenceInHours < 0
+                ? const ColorFilter.mode(Colors.black, BlendMode.color)
+                : null,
+            image: NetworkImage(
+              (widget.internship[widget.index]['image']).toString().isEmpty
+                  ? "https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-scaled.png"
+                  : widget.internship[widget.index]['image'],
             ),
-            borderRadius: BorderRadius.circular(12),
+            fit: BoxFit.cover,
           ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(
           child: Container(
-            // height: 80,
-            width: size.width,
+            width: size.width / 1.2,
+            height: 160,
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: Colors.white.withAlpha(1000),
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withOpacity(0.8),
+                  Colors.white.withOpacity(0.1)
+                ],
+              ),
             ),
-            child: Row(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: 80,
-                  width: 5,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(4),
-                      bottomLeft: Radius.circular(4),
-                    ),
-                    color: MyColors.primaryColor,
-                  ),
+                MyFont().fontSize16Bold(
+                  (widget.internship[widget.index]['name'])
+                      .toString()
+                      .toUpperCase(),
+                  MyColors.primaryColor,
                 ),
-                Container(
-                  width: 70,
-                  height: 80,
-                  padding: const EdgeInsets.all(5),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(4),
-                      bottomRight: Radius.circular(4),
-                    ),
-                    border: Border.all(width: 1, color: MyColors.primaryColor),
-                    color: Colors.white,
-                    // color: Colors.blue,
-                  ),
-                  child: Text(
-                    "$day $month\n$year",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
+                MyFont().fontSize14Bold(
+                  formattedateOfInterview,
+                  Colors.black,
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.watch_later_outlined,
                       color: MyColors.primaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      size: 16,
                     ),
-                  ),
+                    const SizedBox(width: 10),
+                    MyFont().fontSize12Bold(
+                      widget.internship[widget.index]['time'],
+                      Colors.black,
+                    ),
+                  ],
                 ),
-                Container(
-                  width: 270,
-                  height: 80,
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            widget.internship[widget.index]['name'],
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: MyColors.primaryColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const Spacer(),
-                          MyFont().fontSize14Bold(
-                            dateDiffrenceInHours <= 24
-                                ? "${dateDiffrenceInHours.toString()} hours left"
-                                : "${dateDiffrenceInDays.toString()} days left",
-                            Colors.red,
-                          )
-                        ],
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_on_outlined,
+                      color: MyColors.primaryColor,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 10),
+                    MyFont().fontSize12Bold(
+                      widget.internship[widget.index]['location'],
+                      Colors.black,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Container(
+                      width: 75,
+                      height: 30,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: isUserApplied
+                            ? MyColors.primaryColor
+                            : const Color.fromARGB(255, 245, 73, 73),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.watch_later_outlined,
-                            size: 15,
-                            color: const Color(0xff2B2849).withOpacity(0.5),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            widget.internship[widget.index]['time'],
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: const Color(0xff2B2849).withOpacity(0.5),
-                              // fontWeight: FontWeight.bold,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_rounded,
-                            size: 15,
-                            color: const Color(0xff2B2849).withOpacity(0.5),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            widget.internship[widget.index]['location'],
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: const Color(0xff2B2849).withOpacity(0.5),
-                              // fontWeight: FontWeight.bold,
-                              fontSize: 10,
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            widget.isApplied ? "Applied" : "Not Applied",
-                            style: TextStyle(
-                              color: widget.isApplied
-                                  ? MyColors.tealGreenColor
-                                  : Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                      child: isUserApplied
+                          ? MyFont().fontSize12Bold('Applied', Colors.white)
+                          : MyFont()
+                              .fontSize12Bold('Not Applied', Colors.white),
+                    ),
+                    const Spacer(),
+                    MyFont().fontSize14Bold(
+                      dateDiffrenceInHours! <= 24
+                          ? dateDiffrenceInHours < 0
+                              ? "Expired"
+                              : "${dateDiffrenceInHours.toString()} hours left"
+                          : dateDiffrenceInHours != 0
+                              ? "${dateDiffrenceInDays.toString()} days left"
+                              : "Hackathon Ended",
+                      Colors.red,
+                    )
+                  ],
                 ),
               ],
             ),
           ),
         ),
-        // SizedBox(height: 30),
-      ],
+      ),
     );
   }
 }

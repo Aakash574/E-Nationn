@@ -3,15 +3,19 @@
 import 'package:enationn/Provider/hackathon_provider.dart';
 import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/pages/Customs/shared_pref.dart';
+import 'package:enationn/pages/Screens/SplashScreens/splash_Screen.dart';
+import 'package:enationn/pages/Screens/SplashScreens/splash_Screen_One.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+
 import 'Provider/basic_variables_provider.dart';
-import 'pages/Screens/SplashScreens/splash_screen.dart';
-import 'pages/Screens/SplashScreens/splash_screen_one.dart';
 
 void main() {
   runApp(const MyApp());
 }
+
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -25,9 +29,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => BasicVariableModel()),
         ChangeNotifierProvider(create: (context) => HackathonProvider()),
       ],
-      child: const MaterialApp(
-        home: HomePage(),
+      child: MaterialApp(
+        builder: FToastBuilder(),
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
+        home: const HomePage(),
       ),
     );
   }
@@ -45,10 +51,11 @@ class _HomePageState extends State<HomePage> {
 
   isFirstUserLoggedIn() async {
     isFirstUser = await SharedPref().getShowIntroScreen();
-    setState(() {});
-    if (isFirstUser == false) {
-      SharedPref().setShowIntroScreen(true);
-    }
+    setState(() {
+      if (isFirstUser == false) {
+        SharedPref().setShowIntroScreen(true);
+      }
+    });
   }
 
   @override
@@ -62,6 +69,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: SafeArea(
         child: isFirstUser ? const SplashScreen() : const SplashScreenOne(),
+        // child: PassCodeScreen(),
       ),
     );
   }

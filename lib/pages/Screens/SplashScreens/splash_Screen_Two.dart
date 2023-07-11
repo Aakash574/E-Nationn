@@ -41,24 +41,10 @@ class _SplashScreenTwoState extends State<SplashScreenTwo> {
                   scale: 1.5,
                 ),
               ),
-              const SizedBox(height: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    child: MyFont().fontSize26Bold(
-                      "Winners never quit and \nquitters never win",
-                      Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    child: MyFont().fontSize18Light(
-                      "Lorem ipsum dolor sit amet, cectetur adipiscing elit,",
-                      MyColors.lightGreyColor,
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 20),
+              MyFont().fontSize26Bold(
+                "\"Winners never quit and \nquitters never win\"",
+                Colors.white,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

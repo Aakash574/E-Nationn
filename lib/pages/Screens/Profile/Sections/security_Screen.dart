@@ -39,7 +39,8 @@ class SecurityScreenState extends State<SecurityScreen> {
 
   void userCredentials() async {
     var loginCredentials = await SharedPref().getUserCredentials();
-    userData = await SharedPref().getUserData(loginCredentials['id']);
+    userData =
+        await SharedPref().getUserData(int.parse(loginCredentials['id']));
     userName = userData['full_name'];
     userEmail = userData['email'];
     dateOfBirth = userData['date_of_birth'];
@@ -58,6 +59,7 @@ class SecurityScreenState extends State<SecurityScreen> {
     return Material(
       child: SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.all(24),
           child: SizedBox(
             height: size.height - 100,

@@ -41,10 +41,11 @@ class PaymentVoucherApiClient {
       },
     );
     final voucherCode = await jsonDecode(response.body);
-
+    log(userVoucherCode);
     if (response.statusCode == 200) {
       for (var i = 0; i < voucherCode.length; i++) {
-        if (userVoucherCode == voucherCode[i]['payment_voucher_code']) {
+        if (userVoucherCode == voucherCode[i]['payment_voucher_code'] &&
+            voucherCode[i]['apply_status'] == 'Active') {
           return true;
         }
       }
@@ -85,7 +86,8 @@ class PaymentVoucherApiClient {
   Future<bool> deleteVoucherCode(String id) async {
     log(id);
     Uri voucherCodeApi = Uri.parse(
-        'http://13.232.155.227:8000/account/api/Payment_Voucher/$id/');
+      'http://13.232.155.227:8000/account/api/Payment_Voucher/$id/',
+    );
 
     Response response = await http.delete(voucherCodeApi);
 

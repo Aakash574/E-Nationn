@@ -2,17 +2,15 @@
 
 //Flutter defaults
 
-import 'dart:developer';
+import 'package:enationn/pages/Screens/PopScreens/logout_pop_up.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 // User Define
 
 import 'package:enationn/const.dart';
 import 'package:enationn/Provider/user_provider.dart';
-import 'package:enationn/pages/Customs/shared_pref.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'Sections/help_screen.dart';
 import 'Sections/personal_Info_screen.dart';
 import 'Sections/privacy_policy_screen.dart';
@@ -26,6 +24,16 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  void _onShare(BuildContext context) async {
+    final box = context.findRenderObject() as RenderBox?;
+    await Share.share(
+      'https://play.google.com/store/apps/details?id=com.enationn.enationn',
+      subject:
+          'https://play.google.com/store/apps/details?id=com.enationn.enationn',
+      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -47,17 +55,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
               margin: const EdgeInsets.all(24),
               child: Row(
                 children: [
-                  const Text(
-                    "Profile",
-                    style: TextStyle(
+                  Container(
+                    // height: 30,
+                    // width: 100,
+                    padding: const EdgeInsets.all(5),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
                       color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.cruelty_free,
+                          color: MyColors.secondaryColor,
+                        ),
+                        const Text(
+                          " 0 ",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const Spacer(),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () => _onShare(context),
                     icon: const Icon(Icons.share, color: Colors.white),
                   ),
                   IconButton(
@@ -82,6 +108,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Colors.white,
                     ),
                     child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.all(24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,15 +116,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const SizedBox(height: 35),
                           Row(
                             children: [
-                              MyFont().fontSize16Bold("General", Colors.black),
+                              MyFont()
+                                  .fontSize16Bold("General Info", Colors.black),
                               const Spacer(),
                               MyFont().fontSize12Weight700(
                                 "UID : ${userDataProvider.uId}",
-                                MyColors.lightGreyColor,
+                                Colors.black,
                               ),
                             ],
                           ),
                           const SizedBox(height: 30),
+                          const RemarkField(),
+                          const SizedBox(height: 20),
                           InkWell(
                             onTap: () {
                               Navigator.push(
@@ -234,25 +264,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const SizedBox(height: 20),
                           InkWell(
                             onTap: () async {
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              setState(() {
-                                SharedPref().setUserLoggedIn(false);
-                                prefs.clear();
-                                log("User Credentials is clear");
-                                log(SharedPref()
-                                    .getUserCredentials()
-                                    .toString());
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) {
-                                      return const LoginScreen();
-                                    },
-                                  ),
-                                  (route) => false,
-                                );
-                              });
+                              LogoutPopups().scaleDialog(context);
                             },
                             child: Container(
                               height: 72,
@@ -386,6 +398,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class RemarkField extends StatefulWidget {
+  const RemarkField({super.key});
+
+  @override
+  State<RemarkField> createState() => _RemarkFieldState();
+}
+
+class _RemarkFieldState extends State<RemarkField> {
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final userProvider = Provider.of<UserProvider>(context);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          // height: 50,
+          width: size.width,
+          padding: const EdgeInsets.all(8),
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              width: 1,
+              color: Colors.grey.shade300,
+            ),
+          ),
+          child: Text(
+            userProvider.remark == 'Null'
+                ? 'Remark : Remark pending...'
+                : 'Remark : ${userProvider.remark}',
+            style: TextStyle(
+              color: userProvider.remark == "Null"
+                  ? Colors.amber
+                  : MyColors.darkGreyColor,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -2,9 +2,12 @@
 
 import 'dart:developer';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
+import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/const.dart';
+import 'package:enationn/pages/Customs/sendEmail.dart';
 import 'package:enationn/pages/Screens/LoginSignUpPage/LoginScreen/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({
@@ -25,8 +28,31 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       TextEditingController();
   bool isVisible = true;
   bool notValidPassword = false;
+  String body = "";
+
+  void getData() async {
+    final name =
+        await SignUpApiClient().getUserDataByEmail(widget.email, 'full_name');
+
+    body = """
+
+Hi $name,
+
+Your Enation password has been changed. You can now log in to your account.
+
+To log in, please use your new password: ${_confirmPasswordController.text}
+
+Please remember to keep your password confidential and do not share it with anyone.
+
+If you have any questions, please contact Enation support at ${widget.email}.
+
+Thank you,
+
+The Enation Team""";
+  }
 
   Future<void> _resetPassword() async {
+    getData();
     String userId =
         await SignUpApiClient().getUserDataByEmail(widget.email, 'id');
     bool passwordReset = await SignUpApiClient()
@@ -36,6 +62,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     log("Reset Password : $passwordReset");
 
     if (passwordReset) {
+      SendEmail.sendEmail(
+        context,
+        "Your Enation password has been changed",
+        body,
+        widget.email,
+      );
       //Navigate to Login Screen
 
       Navigator.pushAndRemoveUntil(
@@ -54,6 +86,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Material(
       child: Container(
         margin: const EdgeInsets.all(24),
@@ -183,17 +216,20 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 onTap: () async {
                   log("Password : ${_passwordController.text}");
                   log("Confirm Password ${_confirmPasswordController.text}");
-                  _resetPassword();
-                  // setState(() {
-                  //   _passwordController.text ==
-                  //               _confirmPasswordController.text &&
-                  //           _passwordController.text.isNotEmpty &&
-                  //           _confirmPasswordController.text.isNotEmpty
-                  //       ? _resetPassword()
-                  //       : notValidPassword = true;
-                  // });
-                  // await SignUpApiClient().updatePassword(
-                  //     _passwordController.text, widget.id, context);
+                  // _resetPassword();
+                  setState(() {
+                    _passwordController.text ==
+                                _confirmPasswordController.text &&
+                            _passwordController.text.isNotEmpty &&
+                            _confirmPasswordController.text.isNotEmpty
+                        ? _resetPassword()
+                        : notValidPassword = true;
+                  });
+                  await SignUpApiClient().updatePassword(
+                    _passwordController.text,
+                    widget.id,
+                    userProvider.email,
+                  );
                 },
                 child: Container(
                   height: 50,

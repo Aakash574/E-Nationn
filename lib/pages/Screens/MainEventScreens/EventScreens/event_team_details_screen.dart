@@ -4,7 +4,7 @@ import 'package:enationn/ApiMap/APIs/EventEndPoints/event_api.dart';
 import 'package:enationn/Provider/basic_variables_provider.dart';
 import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/const.dart';
-import 'package:enationn/pages/Screens/PaymentScreens/voucher_code_screen.dart';
+import 'package:enationn/pages/Screens/PopScreens/job_code_pop_up.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,6 +25,8 @@ class _EventTeamDetailsScreenState extends State<EventTeamDetailsScreen> {
   Map<dynamic, dynamic> eventDetails = {};
 
   bool isLoading = true;
+  String body = "";
+  String subject = "";
 
   void getDetails() async {
     // ----- For EVENT DETAILS -------->
@@ -34,8 +36,29 @@ class _EventTeamDetailsScreenState extends State<EventTeamDetailsScreen> {
       final eventId = eventData[widget.index]['id'];
       eventDetails = await EventApiClient().getEventById(eventId);
     }
+    if (!mounted) return;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-    setState(() {});
+    subject =
+        "Congratulations! You're registered for ${widget.event[widget.index]['name']}!";
+    body = """
+Hi ${userProvider.fullName},\n\n
+
+We're excited to say that you've been registered for ${widget.event[widget.index]['name']}!\n\n
+
+The event will be held on ${widget.event[widget.index]['date_of_event']} at ${widget.event[widget.index]['location']}. To confirm your attendance, please RSVP by ${widget.event[widget.index]['date_of_event']}.\n\n
+
+We'll be sending out more information in the coming weeks, including the schedule, speakers, and activities.\n\n
+
+In the meantime, please feel free to contact us with any questions.\n\n
+
+We can't wait to see you there!\n\n
+\n
+Sincerely,\n
+
+The ${widget.event[widget.index]['name']}\n
+E-Nationn Team
+""";
   }
 
   @override
@@ -53,115 +76,141 @@ class _EventTeamDetailsScreenState extends State<EventTeamDetailsScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 1,
-                        color: const Color(0xff6B7280).withOpacity(0.2),
-                      ),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                  MyFont().fontSize16Bold(
-                    widget.event[widget.index]['name'],
-                    Colors.black,
-                  ),
-                  const SizedBox(
-                    width: 45,
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 500,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Container(
+            height: size.height - 100,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    userDetailField(
-                      "Full Name",
-                      userDataProvider.fullName,
-                      size,
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1,
+                          color: const Color(0xff6B7280).withOpacity(0.2),
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
                     ),
-                    userDetailField(
-                      "College Name",
-                      userDataProvider.college,
-                      size,
+                    MyFont().fontSize16Bold(
+                      widget.event[widget.index]['name'],
+                      Colors.black,
                     ),
-                    userDetailField(
-                      "Father Name",
-                      userDataProvider.fatherName,
-                      size,
-                    ),
-                    userDetailField(
-                      "Date Of Birth",
-                      userDataProvider.dateOfBirth,
-                      size,
-                    ),
-                    userDetailField(
-                      "Date Of Event",
-                      eventDetails['date_of_event'].toString(),
-                      size,
+                    const SizedBox(
+                      width: 45,
                     ),
                   ],
                 ),
-              ),
-              Container(
-                width: size.width / 1.5,
-                height: 56,
-                // alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: MyColors.primaryColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: TextButton(
-                  onPressed: () {
-                    log(screen.whichScreen.toString());
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return VoucherCodeScreen(
-                            name: widget.event[widget.index]['name'],
-                            events: widget.event,
-                            index: widget.index,
-                            screen: 'EventDetailScreen',
-                          );
-                        },
+                SizedBox(
+                  height: 500,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      userDetailField(
+                        "Full Name",
+                        userDataProvider.fullName,
+                        size,
                       ),
-                    );
-                  },
-                  style:
-                      const ButtonStyle(splashFactory: NoSplash.splashFactory),
-                  child: const Text(
-                    "Submit",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      userDetailField(
+                        "College Name",
+                        userDataProvider.college,
+                        size,
+                      ),
+                      userDetailField(
+                        "Father Name",
+                        userDataProvider.fatherName,
+                        size,
+                      ),
+                      userDetailField(
+                        "Date Of Birth",
+                        userDataProvider.dateOfBirth,
+                        size,
+                      ),
+                      userDetailField(
+                        "Date Of Event",
+                        eventDetails['date_of_event'].toString(),
+                        size,
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: size.width / 1.5,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: MyColors.primaryColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TextButton(
+                    onPressed: () {
+                      log(screen.whichScreen.toString());
+                      screen.setWhichScreen('EventDetailScreen');
+                      _scaleDialog();
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) {
+                      //       return JobCodePopUp(
+                      //         jobData: widget.event,
+                      //         index: widget.index,
+                      //         body: body,
+                      //         subject: subject,
+                      //       );
+                      //     },
+                      //   ),
+                      // );
+                    },
+                    style: const ButtonStyle(
+                        splashFactory: NoSplash.splashFactory),
+                    child: const Text(
+                      "Submit",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  void _scaleDialog() {
+    showGeneralDialog(
+      context: context,
+      pageBuilder: (ctx, a1, a2) {
+        return Container();
+      },
+      transitionBuilder: (ctx, a1, a2, child) {
+        var curve = Curves.easeInOut.transform(a1.value);
+        return Transform.scale(
+          scale: curve,
+          child: JobCodePopUp(
+            index: widget.index,
+            jobData: widget.event,
+            body: body,
+            subject: subject,
+          ),
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 300),
     );
   }
 
@@ -171,7 +220,7 @@ class _EventTeamDetailsScreenState extends State<EventTeamDetailsScreen> {
     Size size,
   ) {
     return Container(
-      height: 54,
+      height: 64,
       width: size.width,
       alignment: Alignment.center,
       padding: const EdgeInsets.all(16),
@@ -180,15 +229,23 @@ class _EventTeamDetailsScreenState extends State<EventTeamDetailsScreen> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MyFont().fontSize16Bold(
+          MyFont().fontSize14Bold(
             "$fieldName : ",
             MyColors.darkGreyColor.withAlpha(100),
           ),
           const Spacer(),
-          MyFont().fontSize14Bold(
-            data.toUpperCase().toString(),
-            MyColors.darkGreyColor,
+          SizedBox(
+            width: 190,
+            child: Text(
+              data,
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: MyColors.darkGreyColor,
+              ),
+            ),
           ),
         ],
       ),

@@ -53,6 +53,7 @@ class _EventStatusScreenState extends State<EventStatusScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
@@ -205,6 +206,7 @@ class _AppliedOnEventsState extends State<AppliedOnEvents> {
             ],
           ),
           SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.only(top: 10),
             child: SizedBox(
               height: widget.userEvents.isEmpty ? 0 : 200,

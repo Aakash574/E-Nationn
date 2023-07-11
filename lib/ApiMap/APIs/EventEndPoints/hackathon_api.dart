@@ -20,7 +20,6 @@ class HackathonApiClient {
     if (response.statusCode == 200) {
       hackathonDetails = await jsonDecode(response.body);
     }
-
     return hackathonDetails;
   }
 }
