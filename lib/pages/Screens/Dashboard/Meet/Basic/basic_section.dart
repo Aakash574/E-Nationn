@@ -24,7 +24,6 @@ class _BasicSectionState extends State<BasicSection> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     futureCall();
   }

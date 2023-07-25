@@ -1,10 +1,12 @@
 // ignore_for_file:
 
+// import 'dart:math';
+
+import 'package:enationn/Provider/college_provider.dart';
 import 'package:enationn/Provider/hackathon_provider.dart';
 import 'package:enationn/Provider/user_provider.dart';
 import 'package:enationn/pages/Customs/shared_pref.dart';
-import 'package:enationn/pages/Screens/SplashScreens/splash_Screen.dart';
-import 'package:enationn/pages/Screens/SplashScreens/splash_Screen_One.dart';
+import 'package:enationn/pages/Screens/LoginSignUpPage/SignUpScreen/signup_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +30,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => BasicVariableModel()),
         ChangeNotifierProvider(create: (context) => HackathonProvider()),
+        ChangeNotifierProvider(create: (context) => CollegeProvier()),
       ],
       child: MaterialApp(
         builder: FToastBuilder(),
@@ -66,10 +69,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: SafeArea(
-        child: isFirstUser ? const SplashScreen() : const SplashScreenOne(),
-        // child: PassCodeScreen(),
+        // child: isFirstUser ? const SplashScreen() : const SplashScreenOne(),
+        child: SignUpScreen(),
       ),
     );
   }

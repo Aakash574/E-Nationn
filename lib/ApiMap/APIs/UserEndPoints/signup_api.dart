@@ -82,7 +82,7 @@ class SignUpApiClient {
     );
 
     final userData = json.decode(response.body);
-    log("UserData :: $userData");
+    // log("UserData :: $userData");
     return userData;
   }
 
@@ -103,7 +103,7 @@ class SignUpApiClient {
   }
 
   Future<String> getUserDataByEmail(String email, String choose) async {
-    log("Getting User Data By Email :::: ");
+    // log("Getting User Data By Email :::: ");
 
     Uri url = Uri.parse('http://13.232.155.227:8000/account/api/Signup/');
     Response response = await http.get(
@@ -112,8 +112,8 @@ class SignUpApiClient {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    log("Email Sign Up : $email");
-    log("Choose Sign Up : $choose");
+    // log("Email Sign Up : $email");
+    // log("Choose Sign Up : $choose");
     final userData = await jsonDecode(response.body);
     for (var i = 0; i < userData.length; i++) {
       if (await userData[i]['email'] == email) {

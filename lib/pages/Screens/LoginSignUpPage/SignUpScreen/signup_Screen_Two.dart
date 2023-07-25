@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 import 'dart:math' as math;
+import 'package:enationn/ApiMap/APIs/CollegeEndPoints/college_api.dart';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
 import 'package:enationn/Provider/basic_variables_provider.dart';
 import 'package:enationn/Provider/user_provider.dart';
@@ -10,19 +11,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../Provider/college_provider.dart';
 import '../../PassCodeScreen/pass_Code_Screen.dart';
 
 class SignUpScreenTwo extends StatefulWidget {
-  final String fullName;
-  final String email;
-  final String password;
-
-  const SignUpScreenTwo({
-    super.key,
-    required this.fullName,
-    required this.email,
-    required this.password,
-  });
+  const SignUpScreenTwo({super.key});
 
   @override
   State<SignUpScreenTwo> createState() => _SignUpScreenTwoState();
@@ -48,14 +41,58 @@ class _SignUpScreenTwoState extends State<SignUpScreenTwo> {
 
   // For Drop Down ----------->
 
+  static List<String> selectCollege = [
+    "College",
+  ];
+
   static const List<String> selectGender = <String>[
     'Select gender*',
     'Male',
     'Female'
   ];
+  static const List<String> selectState = [
+    "State*",
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jammu and Kashmir",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttarakhand",
+    "Uttar Pradesh",
+    "West Bengal",
+    "Andaman and Nicobar Islands",
+    "Chandigarh",
+    "Dadra and Nagar Haveli",
+    "Daman and Diu",
+    "Delhi",
+    "Lakshadweep",
+    "Puducherry"
+  ];
 
   String uId = "";
   String gender = "";
+  String state = "";
   String fathersName = "";
   String branch = "";
   String college = "";
@@ -66,12 +103,15 @@ class _SignUpScreenTwoState extends State<SignUpScreenTwo> {
   String hackathonStatus = "no";
   String eventStatus = "no";
   String dropdownValue = selectGender.first;
+  String stateDropDown = selectState.first;
+  String collegeDropDown = selectCollege.first;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final basicVariables = Provider.of<BasicVariableModel>(context);
     final userDataProvider = Provider.of<UserProvider>(context);
+    final collegeProvider = Provider.of<CollegeProvier>(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -126,7 +166,6 @@ class _SignUpScreenTwoState extends State<SignUpScreenTwo> {
                     ),
                   ],
                 ),
-                // SizedBox(height: 10),
                 Text(
                   "Please Fill all the details\ncorrectly !!",
                   style: TextStyle(
@@ -134,42 +173,122 @@ class _SignUpScreenTwoState extends State<SignUpScreenTwo> {
                     fontSize: 16,
                   ),
                 ),
-                textFieldForDetails(
-                  hintText: "Phone No.",
-                  onChange: (newValue) {
-                    setState(() {
-                      userDataProvider.setContact(newValue);
-                    });
+                TextButton(
+                  onPressed: () async {
+                    final colleges = await CollegeApiClient().getCollege();
+                    setState(() {});
                   },
-                  isEmpty: isEmpty,
-                  controller: _contactController,
-                  textInputType: TextInputType.text,
+                  child: const Text("Button"),
                 ),
-                textFieldForDetails(
-                  hintText: "Father's Name",
-                  onChange: (newValue) {
-                    setState(() {
-                      fathersName = newValue;
-                      userDataProvider.setFatherName(fathersName);
-                    });
-                  },
-                  isEmpty: isEmpty,
-                  controller: _fatherNameController,
-                  textInputType: TextInputType.text,
+                Container(
+                  width: size.width,
+                  padding: const EdgeInsets.only(left: 12, right: 12),
+                  decoration: BoxDecoration(
+                    color: MyColors.lightGreyColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      width: 1,
+                      color: isEmpty
+                          ? stateDropDown == 'State*'
+                              ? Colors.red
+                              : Colors.green
+                          : MyColors.primaryColor,
+                    ),
+                  ),
+                  child: DropdownButton<String>(
+                    alignment: Alignment.centerRight,
+                    borderRadius: BorderRadius.circular(10),
+                    underline: Row(
+                      children: [
+                        MyFont().fontSize16Weight500(
+                          stateDropDown,
+                          MyColors.lightGreyColor,
+                        ),
+                        const Spacer(),
+                        Icon(
+                          Icons.arrow_drop_down_rounded,
+                          size: 32,
+                          color: MyColors.lightGreyColor,
+                        ),
+                      ],
+                    ),
+                    iconSize: 0.0,
+                    elevation: 16,
+                    style: TextStyle(
+                      color: MyColors.lightGreyColor,
+                      fontSize: 16,
+                    ),
+                    onChanged: (String? value) {
+                      setState(() {
+                        stateDropDown = value!;
+                        state = dropdownValue;
+                        userDataProvider.setState(state);
+                      });
+                    },
+                    items: selectState
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
                 ),
-                textFieldForDetails(
-                  hintText: "College",
-                  onChange: (newValue) {
-                    setState(() {
-                      college = newValue;
-                      userDataProvider.setCollege(college);
-                    });
-                  },
-                  isEmpty: isEmpty,
-                  controller: _collegeController,
-                  textInputType: TextInputType.text,
+                Container(
+                  width: size.width,
+                  padding: const EdgeInsets.only(left: 12, right: 12),
+                  decoration: BoxDecoration(
+                    color: MyColors.lightGreyColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      width: 1,
+                      color: isEmpty
+                          ? collegeDropDown == 'College*'
+                              ? Colors.red
+                              : Colors.green
+                          : MyColors.primaryColor,
+                    ),
+                  ),
+                  child: DropdownButton<String>(
+                    alignment: Alignment.centerRight,
+                    borderRadius: BorderRadius.circular(10),
+                    underline: Row(
+                      children: [
+                        MyFont().fontSize16Weight500(
+                          collegeDropDown,
+                          MyColors.lightGreyColor,
+                        ),
+                        const Spacer(),
+                        Icon(
+                          Icons.arrow_drop_down_rounded,
+                          size: 32,
+                          color: MyColors.lightGreyColor,
+                        ),
+                      ],
+                    ),
+                    iconSize: 0.0,
+                    elevation: 16,
+                    style: TextStyle(
+                      color: MyColors.lightGreyColor,
+                      fontSize: 16,
+                    ),
+                    onChanged: (String? value) {
+                      setState(() {
+                        collegeDropDown = value!;
+                        college = collegeDropDown;
+                        userDataProvider.setCollege(college);
+                      });
+                    },
+                    items: selectCollege
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
                 ),
-                textFieldForDetails(
+                TextFieldForDetails(
                   hintText: "Branch",
                   onChange: (newValue) {
                     setState(() {
@@ -181,7 +300,7 @@ class _SignUpScreenTwoState extends State<SignUpScreenTwo> {
                   controller: _branchController,
                   textInputType: TextInputType.text,
                 ),
-                textFieldForDetails(
+                TextFieldForDetails(
                   hintText: "Year of passout",
                   onChange: (newValue) {
                     setState(() {
@@ -193,7 +312,7 @@ class _SignUpScreenTwoState extends State<SignUpScreenTwo> {
                   controller: _yearOfPassoutController,
                   textInputType: TextInputType.number,
                 ),
-                textFieldForDetails(
+                TextFieldForDetails(
                   hintText: "Place of birth",
                   onChange: (newValue) {
                     setState(() {
@@ -349,29 +468,27 @@ class _SignUpScreenTwoState extends State<SignUpScreenTwo> {
 
                         //* Registering User...
 
-                        for (var i = 0; i < users.length; i++) {
-                          if (users[i]['uid'] != uId) {
-                            isFound = true;
-                            setState(() {});
-                          } else {
-                            isFound = false;
-                            uId = "EN101${math.Random().nextInt(99999999)}";
-                            setState(() {});
-                          }
-                        }
-                        if (isFound) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return const PassCodeScreen();
-                              },
-                            ),
-                          );
-                        } else {
-                          log("Already Exist");
-                        }
                         setState(() {
+                          for (var i = 0; i < users.length; i++) {
+                            if (users[i]['uid'] != uId) {
+                              isFound = true;
+                            } else {
+                              isFound = false;
+                              uId = "EN101${math.Random().nextInt(99999999)}";
+                            }
+                          }
+                          if (isFound) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return const PassCodeScreen();
+                                },
+                              ),
+                            );
+                          } else {
+                            log("Already Exist");
+                          }
                           isEmpty = false;
                         });
                       } else {
@@ -451,6 +568,80 @@ class _SignUpScreenTwoState extends State<SignUpScreenTwo> {
         Container(
           child: isEmpty
               ? controller.text.isEmpty
+                  ? const Text(
+                      "Field Required *",
+                      style: TextStyle(color: Colors.red),
+                    )
+                  : null
+              : null,
+        ),
+      ],
+    );
+  }
+}
+
+class TextFieldForDetails extends StatefulWidget {
+  const TextFieldForDetails({
+    super.key,
+    required this.hintText,
+    required this.onChange,
+    required this.isEmpty,
+    required this.controller,
+    required this.textInputType,
+  });
+  final String hintText;
+  final Function(String newValue) onChange;
+  final bool isEmpty;
+  final TextEditingController controller;
+  final TextInputType textInputType;
+
+  @override
+  State<TextFieldForDetails> createState() => _TextFieldForDetailsState();
+}
+
+class _TextFieldForDetailsState extends State<TextFieldForDetails> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.only(left: 12, right: 12),
+          decoration: BoxDecoration(
+            border: Border.all(
+              width: 1,
+              color: widget.isEmpty
+                  ? widget.controller.text.isEmpty
+                      ? Colors.red
+                      : Colors.green
+                  : MyColors.primaryColor,
+            ),
+            color: MyColors.lightGreyColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: TextField(
+            onSubmitted: (value) => TextInputAction.next,
+            keyboardType: widget.textInputType,
+            autofocus: true,
+            controller: widget.controller,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: "${widget.hintText}*",
+              hintStyle: TextStyle(
+                color: MyColors.lightGreyColor,
+                fontSize: 16,
+              ),
+            ),
+            onChanged: (value) {
+              setState(() {});
+              widget.onChange(value);
+            },
+          ),
+        ),
+        const SizedBox(height: 5),
+        Container(
+          child: widget.isEmpty
+              ? widget.controller.text.isEmpty
                   ? const Text(
                       "Field Required *",
                       style: TextStyle(color: Colors.red),

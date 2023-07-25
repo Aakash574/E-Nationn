@@ -234,6 +234,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
 
     final smtpServer = gmail(username, password);
 
+    d.log("email Sending");
+
     final message = Message()
       ..from = Address(username, 'E-Nationn')
       ..recipients.add(_emailController.text)

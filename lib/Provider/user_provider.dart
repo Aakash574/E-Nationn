@@ -24,6 +24,8 @@ class UserProvider extends ChangeNotifier {
   String _remark = '';
   String _contact = '';
 
+  String _state = '';
+
   String get id => _id;
   String get fullName => _fullName;
   String get email => _email;
@@ -44,6 +46,7 @@ class UserProvider extends ChangeNotifier {
   String get planStatus => _planStatus;
   String get remark => _remark;
   String get contact => _contact;
+  String get state => _state;
 
   void setID(String id) {
     _id = id;
@@ -142,6 +145,11 @@ class UserProvider extends ChangeNotifier {
 
   void setContact(String contact) {
     _contact = contact;
+    notifyListeners();
+  }
+
+  void setState(String state) {
+    _state = state;
     notifyListeners();
   }
 }

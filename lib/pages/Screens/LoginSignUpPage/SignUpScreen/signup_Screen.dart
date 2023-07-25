@@ -22,15 +22,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _fatherNameController = TextEditingController();
+  final TextEditingController _contactController = TextEditingController();
   bool isVisible = false;
   String fullName = "";
   String email = "";
+  String fatherName = "";
   String password = "";
+  String contact = "";
 
   bool isUserFound = false;
   bool isValid = false;
   bool isPasswordShort = false;
   bool isPasswordLong = false;
+  bool isLoading = false;
+  bool isEmpty = false;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +95,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           color: const Color(0xffF9FAFB),
                           border: Border.all(
                             width: 1,
-                            color: MyColors.primaryColor,
+                            color: _fullNameController.text.isEmpty
+                                ? MyColors.primaryColor
+                                : Colors.green,
                           ),
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -110,7 +118,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           },
                         ),
                       ),
-                      // const Spacer(),
                       Container(
                         margin: const EdgeInsets.only(top: 16),
                         padding: const EdgeInsets.only(left: 12, right: 12),
@@ -151,9 +158,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           },
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      TextFieldForDetails(
+                        hintText: "Father's Name",
+                        onChange: (newValue) {
+                          setState(() {
+                            fatherName = newValue;
+                            userProvider.setFatherName(fatherName);
+                          });
+                        },
+                        isEmpty: isEmpty,
+                        controller: _fatherNameController,
+                        textInputType: TextInputType.text,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFieldForDetails(
+                        hintText: "Phone No.",
+                        onChange: (newValue) {
+                          setState(() {
+                            contact = newValue;
+                            userProvider.setContact(contact);
+                          });
+                        },
+                        isEmpty: isEmpty,
+                        controller: _contactController,
+                        textInputType: TextInputType.text,
+                      ),
                       isUserFound
                           ? const Padding(
-                              padding: EdgeInsets.only(top: 10.0),
+                              padding: EdgeInsets.only(top: 16.0),
                               child: Text(
                                 "User Already Exist",
                                 style: TextStyle(color: Colors.red),
@@ -248,33 +281,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     child: TextButton(
                       onPressed: () async {
-                        if (await LoginApiClient()
-                                    .getUserData(_emailController.text) !=
-                                true &&
-                            isValid &&
-                            _passwordController.text.length >= 6 &&
-                            _passwordController.text.length <= 15) {
+                        if (_emailController.text.isNotEmpty &&
+                            _passwordController.text.isNotEmpty &&
+                            _fullNameController.text.isNotEmpty &&
+                            _contactController.text.isNotEmpty &&
+                            _fatherNameController.text.isNotEmpty) {
                           setState(() {
-                            isPasswordShort = false;
-                            isPasswordLong = false;
+                            isLoading = true;
                           });
-                          if (_emailController.text.isNotEmpty &
-                                  _passwordController.text.isNotEmpty &&
-                              _fullNameController.text.isNotEmpty) {
-                            if (!mounted) return;
+                          if (await LoginApiClient()
+                                      .getUserData(_emailController.text) !=
+                                  true &&
+                              isValid &&
+                              _passwordController.text.length >= 6 &&
+                              _passwordController.text.length <= 15) {
+                            setState(() {
+                              isPasswordShort = false;
+                              isPasswordLong = false;
+                              isEmpty = false;
+                            });
 
+                            if (!mounted) return;
+                            isLoading = false;
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) {
-                                  return SignUpScreenTwo(
-                                    email: _emailController.text,
-                                    password: _passwordController.text,
-                                    fullName: _fullNameController.text,
-                                  );
+                                  return const SignUpScreenTwo();
                                 },
                               ),
                             );
+                          } else {
+                            setState(() {
+                              isEmpty = true;
+                            });
                           }
                         } else {
                           setState(() {
@@ -292,116 +332,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         }
                       },
                       style: const ButtonStyle(
-                          splashFactory: NoSplash.splashFactory),
-                      child: const Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        splashFactory: NoSplash.splashFactory,
                       ),
+                      child: !isLoading
+                          ? const Text(
+                              "Sign Up",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          : const CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
                     ),
                   ),
                   const Spacer(),
-                  // Stack(
-                  //   alignment: Alignment.center,
-                  //   children: [
-                  //     Container(
-                  //       height: 1,
-                  //       width: size.width,
-                  //       alignment: Alignment.center,
-                  //       decoration: BoxDecoration(
-                  //         color: MyColors.primaryColor.withOpacity(0.5),
-                  //         gradient: LinearGradient(
-                  //           colors: [
-                  //             Colors.transparent,
-                  //             MyColors.primaryColor,
-                  //             Colors.transparent,
-                  //           ],
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     Container(
-                  //       width: 40,
-                  //       height: 40,
-                  //       alignment: Alignment.center,
-                  //       color: Colors.white,
-                  //       child: const Text(
-                  //         "OR",
-                  //         style: TextStyle(color: Color(0xff6B7280)),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                  // const Spacer(),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: [
-                  //     InkWell(
-                  //       onTap: () {
-                  //         Navigator.push(
-                  //           context,
-                  //           MaterialPageRoute(
-                  //             builder: (context) {
-                  //               return const ByGoogleSignIn();
-                  //             },
-                  //           ),
-                  //         );
-                  //       },
-                  //       child: Container(
-                  //         width: 150,
-                  //         height: 50,
-                  //         margin: const EdgeInsets.only(left: 15),
-                  //         padding: const EdgeInsets.all(12),
-                  //         decoration: BoxDecoration(
-                  //           color: Colors.white,
-                  //           borderRadius: BorderRadius.circular(16),
-                  //           border: Border.all(
-                  //             width: 1,
-                  //             color: Colors.grey.withOpacity(0.2),
-                  //           ),
-                  //         ),
-                  //         child: Image.asset(
-                  //           "./assets/Logos/google.png",
-                  //           scale: 15,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     InkWell(
-                  //       onTap: () {
-                  //         Navigator.push(
-                  //           context,
-                  //           MaterialPageRoute(
-                  //             builder: (context) {
-                  //               return const ByAppleSignIn();
-                  //             },
-                  //           ),
-                  //         );
-                  //       },
-                  //       child: Container(
-                  //         width: 150,
-                  //         height: 50,
-                  //         margin: const EdgeInsets.only(right: 15),
-                  //         padding: const EdgeInsets.all(12),
-                  //         decoration: BoxDecoration(
-                  //           color: Colors.white,
-                  //           borderRadius: BorderRadius.circular(16),
-                  //           border: Border.all(
-                  //             width: 1,
-                  //             color: Colors.grey.withOpacity(0.2),
-                  //           ),
-                  //         ),
-                  //         child: Image.asset(
-                  //           "./assets/Logos/Apple.png",
-                  //           scale: 55,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                  // const Spacer(),
-                  // const SizedBox(height: 50),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

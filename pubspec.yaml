@@ -2,7 +2,7 @@ name: enationn
 description: A new Flutter project.
 publish_to: "none"
 
-version: 1.0.5+7
+version: 1.0.6+8
 
 environment:
   sdk: ">=2.19.4 <3.0.0"
@@ -69,3 +69,4 @@ flutter:
     - assets/PopUpScreenImages/
     - assets/ProfileScreen/
     - assets/ExtrasScreens/
+    - assets/Email/

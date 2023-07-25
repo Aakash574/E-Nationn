@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:core';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:enationn/ApiMap/APIs/EventEndPoints/event_api.dart';
 import 'package:enationn/ApiMap/APIs/JobEndPoints/job_api.dart';
 import 'package:enationn/ApiMap/APIs/UserEndPoints/signup_api.dart';
@@ -466,15 +465,15 @@ class _DashboardState extends State<Dashboard> {
                                       ).animate(delay: 200.ms).fadeIn().moveX(),
                                     ),
                                   ),
-                                  sliderEachSection(
-                                    internshipToShow,
-                                    internship,
-                                    internshipIndex,
-                                    () {},
-                                    "Internship",
-                                    "assets/Dashboard/sliderCover.png",
-                                    "name",
-                                  ),
+                                  // sliderEachSection(
+                                  //   internshipToShow,
+                                  //   internship,
+                                  //   internshipIndex,
+                                  //   () {},
+                                  //   "Internship",
+                                  //   "assets/Dashboard/sliderCover.png",
+                                  //   "name",
+                                  // ),
                                   Container(
                                     margin: const EdgeInsets.all(8.0),
                                     alignment: Alignment.center,
@@ -870,43 +869,43 @@ class _SliderSectionState extends State<SliderSection> {
             Stack(
               alignment: Alignment.bottomCenter,
               children: [
-                ClipRRect(
-                  child: CachedNetworkImage(
-                    imageUrl: widget.listOfJobs[widget.index]['image'] ??
-                        "assets/Dashboard/sliderCover.png",
-                    // imageBuilder: (context, imageProvider) => Container(
-                    //   decoration: BoxDecoration(
-                    //     image: DecorationImage(
-                    //       image: imageProvider,
-                    //       fit: BoxFit.cover,
-                    //       colorFilter: const ColorFilter.mode(
-                    //         Colors.red,
-                    //         BlendMode.colorBurn,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                  ),
-                ),
-                // Container(
-                //   height: 160,
-                //   width: size.width - 30,
-                //   alignment: Alignment.bottomCenter,
-                //   decoration: BoxDecoration(
-                //     image: DecorationImage(
-                //       image: NetworkImage(
-                //         widget.listOfJobs[widget.index]['image'] ??
-                //             "https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-scaled.png",
-                //       ),
-                //       fit: BoxFit.cover,
-                //     ),
-                //     borderRadius: BorderRadius.circular(12),
+                // ClipRRect(
+                //   child: CachedNetworkImage(
+                //     imageUrl: widget.listOfJobs[widget.index]['image'] ??
+                //         "assets/Dashboard/sliderCover.png",
+                //     // imageBuilder: (context, imageProvider) => Container(
+                //     //   decoration: BoxDecoration(
+                //     //     image: DecorationImage(
+                //     //       image: imageProvider,
+                //     //       fit: BoxFit.cover,
+                //     //       colorFilter: const ColorFilter.mode(
+                //     //         Colors.red,
+                //     //         BlendMode.colorBurn,
+                //     //       ),
+                //     //     ),
+                //     //   ),
+                //     // ),
+                //     placeholder: (context, url) =>
+                //         const CircularProgressIndicator(),
+                //     errorWidget: (context, url, error) =>
+                //         const Icon(Icons.error),
                 //   ),
                 // ),
+                Container(
+                  height: 160,
+                  width: size.width - 30,
+                  alignment: Alignment.bottomCenter,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        widget.listOfJobs[widget.index]['image'] ??
+                            "https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-scaled.png",
+                      ),
+                      fit: BoxFit.cover,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 Container(
                   width: size.width - 30,
                   height: 80,

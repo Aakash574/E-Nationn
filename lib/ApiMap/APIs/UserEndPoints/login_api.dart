@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_interpolation_to_compose_strings
+// ignore_for_file: file_names, prefer_interpolation_to_compose_strings, avoid_print
 
 import 'dart:convert';
 import 'dart:developer';
@@ -9,6 +9,20 @@ import 'package:http/http.dart';
 
 class LoginApiClient {
   Uri loginURL = Uri.parse('http://13.232.155.227:8000/account/api/Login/');
+
+  Future<dynamic> getAllUsers() async {
+    Uri url = Uri.parse('http://13.232.155.227:8000/account/api/Login/');
+    Response response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    final userData = json.decode(response.body);
+
+    return userData;
+  }
 
   // Get user Data ---------------------------->
 
@@ -104,7 +118,6 @@ class LoginApiClient {
     List userResponseList = await jsonDecode(response.body);
     log(email.toString());
     for (var i = 0; i < userResponseList.length; i++) {
-      // log((await userResponseList[i]['email']).toString());
       if (await userResponseList[i]['email'] == email &&
           await userResponseList[i]['password'] == password) {
         return true;
