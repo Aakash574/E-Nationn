@@ -1,17 +1,13 @@
-// ignore_for_file:
-
-// import 'dart:math';
-
-import 'package:enationn/Provider/college_provider.dart';
-import 'package:enationn/Provider/hackathon_provider.dart';
-import 'package:enationn/Provider/user_provider.dart';
-import 'package:enationn/pages/Customs/shared_pref.dart';
-import 'package:enationn/pages/Screens/LoginSignUpPage/SignUpScreen/signup_Screen.dart';
+import 'package:enationn/src/config/router/routes.dart';
+import 'package:enationn/src/presentation/provider/basic_variables_provider.dart';
+import 'package:enationn/src/presentation/provider/hackathon_provider.dart';
+import 'package:enationn/src/presentation/provider/user_provider.dart';
+import 'package:enationn/src/presentation/views/SplashScreens/splash_Screen.dart';
+import 'package:enationn/src/presentation/views/SplashScreens/splash_Screen_One.dart';
+import 'package:enationn/src/utils/constants/shared_Pref.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-
-import 'Provider/basic_variables_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,10 +26,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => BasicVariableModel()),
         ChangeNotifierProvider(create: (context) => HackathonProvider()),
-        ChangeNotifierProvider(create: (context) => CollegeProvier()),
       ],
       child: MaterialApp(
         builder: FToastBuilder(),
+        initialRoute: '/',
+        routes: routes,
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         home: const HomePage(),
@@ -69,10 +66,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: SafeArea(
-        // child: isFirstUser ? const SplashScreen() : const SplashScreenOne(),
-        child: SignUpScreen(),
+        child: isFirstUser ? const SplashScreen() : const SplashScreenOne(),
       ),
     );
   }
